@@ -1,0 +1,31 @@
+{
+  "name": "startup-and-investors-portal-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker-up": "docker compose up -d",
+    "docker-down": "docker compose down",
+    "docker-rebuild": "docker compose build --no-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mladen-995/startup-and-investors-portal-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mladen-995/startup-and-investors-portal-backend/issues"
+  },
+  "homepage": "https://github.com/mladen-995/startup-and-investors-portal-backend#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.2",
+    "nodemon": "^2.0.19"
+  }
+}
