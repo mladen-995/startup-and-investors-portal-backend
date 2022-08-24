@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const usersService = require("../services/users.service");
 const rolesService = require("../services/roles.service");
 const { ROLENAMES } = require("../utils/consts");
@@ -13,46 +12,31 @@ async function login(email, password) {
     if (!checkUserPassword) {
         throw new ApplicationError("Username or Password not valid!", 401);
     }
-    const token = createUserJWTToken(databaseUser.id, databaseUser.email);
+    const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.email);
     return token;
 }
 
-async function registerInvestor(email, password, firstName, lastName, middleName = null) {
-    const investorRole = await rolesService.getRoleByName(ROLENAMES.INVESTITOR);
-    return usersService.registerUser(email, password, firstName, lastName, investorRole.id, middleName);
+async function registerInvestor(user, userProfile) {
+    const investorRole = await rolesService.getRoleByName(ROLENAMES.INVESTOR);
+    user.roleId = investorRole.id;
+    // @TODO disable user until an administrator approves it
+    const databaseUser = await usersService.createUser(user);
+    userProfile.user_id = databaseUser.id;
+    await usersService.createInvestorUserProfile(userProfile);
 }
 
-async function registerStartup(email, password, firstName, lastName, middleName = null) {
+async function registerStartup(user, userProfile) {
     const startupRole = await rolesService.getRoleByName(ROLENAMES.STARTUP);
-    return usersService.registerUser(email, password, firstName, lastName, startupRole.id, middleName);
+    user.roleId = startupRole.id;
+    // @TODO disable user until an administrator approves it
+    const databaseUser = await usersService.createUser(user);
+    userProfile.user_id = databaseUser.id;
+    await usersService.createStartupUserProfile(userProfile);
 }
 
-function createUserJWTToken(id, email) {
-    try {
-        return jwt.sign(
-            { userId: id, email: email },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN }
-        );
-    } catch {
-        throw new ApplicationError("Error signing jwt token!", 500);
-    }
-}
-
-function decodeUserJWTToken(token) {
-    try {
-        token.split(' ')[1]; 
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        return decodedToken;
-    } catch {
-        throw new ApplicationError("Error decoding jwt token!", 500);
-    }
-}
 
 module.exports = {
     login,
     registerInvestor,
     registerStartup,
-    createUserJWTToken,
-    decodeUserJWTToken,
 };

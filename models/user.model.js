@@ -57,11 +57,11 @@ module.exports = (sequelize, Sequelize) => {
     Users.associate = function(models) {
         models.User.hasOne(models.StartupUserProfile, {
             foreignKey: "user_id",
-            as: "startup_profile",
+            as: "startupProfile",
         });
-        models.User.hasOne(models.InvestitorUserProfiles, {
+        models.User.hasOne(models.InvestorUserProfiles, {
             foreignKey: "user_id",
-            as: "investitor_profile",
+            as: "investorProfile",
         });
     };
 

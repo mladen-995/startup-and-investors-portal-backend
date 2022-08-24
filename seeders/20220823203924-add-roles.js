@@ -9,7 +9,7 @@ module.exports = {
     }, {
       name: ROLENAMES.STARTUP,
     }, {
-      name: ROLENAMES.INVESTITOR,
+      name: ROLENAMES.INVESTOR,
     }]);
   },
 

@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-    const InvestitorUserProfiles = sequelize.define(
-        "InvestitorUserProfiles",
+    const InvestorUserProfiles = sequelize.define(
+        "InvestorUserProfiles",
         {
             userId: {
                 type: Sequelize.UUID,
@@ -83,7 +83,7 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.FLOAT,
                 allowNull: false,
             },
-            investitorType: {
+            investorType: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
@@ -108,13 +108,13 @@ module.exports = (sequelize, Sequelize) => {
             timestamps: true,
         });
         
-        InvestitorUserProfiles.associate = function(models) {
-            models.InvestitorUserProfiles.hasOne(models.Users, {
+        InvestorUserProfiles.associate = function(models) {
+            models.InvestorUserProfiles.hasOne(models.Users, {
                 foreignKey: "user_id",
                 targetKey: "id",
                 as: "user",
             });
         };
 
-        return InvestitorUserProfiles;
+        return InvestorUserProfiles;
 };

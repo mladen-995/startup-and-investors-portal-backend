@@ -1,6 +1,6 @@
 const ROLENAMES = {
     ADMINISTARTOR: 'Administrator',
-    INVESTITOR: 'Investitor',
+    INVESTOR: 'Investor',
     STARTUP: 'Startup',
 };
 
