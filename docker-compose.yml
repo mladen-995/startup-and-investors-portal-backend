@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    container_name: $APP_CONTAINER_NAME
     build:
       context: .
     restart: unless-stopped
@@ -14,6 +15,7 @@ services:
       - ./:/code
 
   db:
+    container_name: $DB_CONTAINER_NAME
     image: postgres:14.4
     restart: unless-stopped
     env_file: ./.env
@@ -27,6 +29,7 @@ services:
       - db:/data/db
 
   adminer:
+    container_name: $ADMINER_CONTAINER_NAME
     image: adminer
     restart: always
     env_file: ./.env
