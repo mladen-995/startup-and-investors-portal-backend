@@ -1,4 +1,5 @@
 const usersController = require("../controllers/users.controller");
+const { validationResult } = require('express-validator');
 
 async function login(req, res, next) {
     try {
@@ -22,6 +23,12 @@ async function registerInvestor(req, res, next) {
             linkedInLink, instagramLink, businessType, employeeNumber, currentCompanyPhase, 
             lastThreeYearIncome, lastThreeYearProfit, investorType, providedServiceTypes, 
             minAmountOfMoney, maxAmountOfMoney, logo} = req.body;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+
         const user = { 
             email, 
             password, 
@@ -71,6 +78,12 @@ async function registerStartup(req, res, next) {
             linkedInLink, instagramLink, businessType, employeeNumber, currentCompanyPhase, 
             lastThreeYearIncome, lastThreeYearProfit, projectProposal, requiredAmountOfMoney, 
             intellectualPropertyStatus, patentInfo, logo} = req.body;
+            
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        
         const user = { 
             email, 
             password, 
