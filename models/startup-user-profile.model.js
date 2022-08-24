@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
     const StartupUserProfiles = sequelize.define(
-        "StartupUserProfile",
+        "StartupUserProfiles",
         {
             userId: {
                 type: Sequelize.UUID,
