@@ -1,13 +1,16 @@
 const express = require("express");
 const users = require("./users.route");
-const userVal = require("../utils/validators/users.validators");
+const userValidators = require("../utils/validators/users.validators");
 const errorHandleUtil = require("../utils/error-handle-util");
+const userMiddleware = require("../middlewares/users.middleware");
 const router = express.Router();
 
-router.post("/register-investor", userVal.registerInvestor, users.registerInvestor);
-router.post("/register-startup", userVal.registerStartup, users.registerStartup);
+router.post("/register-investor", userValidators.registerInvestor, users.registerInvestor);
+router.post("/register-startup", userValidators.registerStartup, users.registerStartup);
+router.put("/update-investor/:userId",userMiddleware.checkUser, userValidators.updateInvestor, users.updateInvestor);
+router.put("/update-startup/:userId", userMiddleware.checkUser, userValidators.updateStartup, users.updateStartup);
+router.put("/update-administrator/:userId", userMiddleware.checkUser, userValidators.updateAdministrator, users.updateAdministrator);
 router.post("/login", users.login);
-router.get("/decode", users.decode);
 
 router.use(errorHandleUtil.handleInternalApiError);
 

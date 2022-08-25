@@ -13,25 +13,52 @@ async function login(email, password) {
         throw new ApplicationError("Username or Password not valid!", 401);
     }
     const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.email);
-    return token;
+    const user = await usersService.getUserAndProfile(databaseUser.id);
+    const result = {
+        token,
+        user,
+    };
+    return result;
 }
 
-async function registerInvestor(user, userProfile) {
+async function registerInvestor(user, userProfile, transaction = null) {
+    const userWithEmail = await usersService.getUserByEmail(user.email);
+    if (userWithEmail) {
+        throw new ApplicationError("Email already in use!", 409);
+    }
     const investorRole = await rolesService.getRoleByName(ROLENAMES.INVESTOR);
     user.roleId = investorRole.id;
     // @TODO disable user until an administrator approves it
-    const databaseUser = await usersService.createUser(user);
-    userProfile.user_id = databaseUser.id;
-    await usersService.createInvestorUserProfile(userProfile);
+    const databaseUser = await usersService.createUser(user, transaction);
+    userProfile.userId = databaseUser.id;
+    await usersService.createInvestorUserProfile(userProfile, transaction);
 }
 
-async function registerStartup(user, userProfile) {
+async function registerStartup(user, userProfile, transaction = null) {
+    const userWithEmail = await usersService.getUserByEmail(user.email);
+    if (userWithEmail) {
+        throw new ApplicationError("Email already in use!", 409);
+    }
     const startupRole = await rolesService.getRoleByName(ROLENAMES.STARTUP);
     user.roleId = startupRole.id;
     // @TODO disable user until an administrator approves it
-    const databaseUser = await usersService.createUser(user);
-    userProfile.user_id = databaseUser.id;
-    await usersService.createStartupUserProfile(userProfile);
+    const databaseUser = await usersService.createUser(user, transaction);
+    userProfile.userId = databaseUser.id;
+    await usersService.createStartupUserProfile(userProfile, transaction);
+}
+
+async function updateInvestor(user, userProfile, transaction = null) {
+    await usersService.updateUser(user, transaction);
+    await usersService.updateInvestorUserProfile(userProfile, transaction);
+}
+
+async function updateStartup(user, userProfile, transaction = null) {
+    await usersService.updateUser(user, transaction);
+    await usersService.updateStartupUserProfile(userProfile, transaction);
+}
+
+async function updateAdministrator(user) {
+    await usersService.updateUser(user);
 }
 
 
@@ -39,4 +66,7 @@ module.exports = {
     login,
     registerInvestor,
     registerStartup,
+    updateAdministrator,
+    updateInvestor,
+    updateStartup,
 };
