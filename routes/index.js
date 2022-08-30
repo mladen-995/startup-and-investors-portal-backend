@@ -1,6 +1,8 @@
 const express = require("express");
 const users = require("./users.route");
+const ads = require("./ads.route");
 const userValidators = require("../utils/validators/users.validators");
+const adValidators = require("../utils/validators/ads.validators");
 const errorHandleUtil = require("../utils/error-handle-util");
 const userMiddleware = require("../middlewares/users.middleware");
 const router = express.Router();
@@ -10,6 +12,12 @@ router.post("/register-startup", userValidators.registerStartup, users.registerS
 router.put("/update-investor/:userId",userMiddleware.checkUser, userValidators.updateInvestor, users.updateInvestor);
 router.put("/update-startup/:userId", userMiddleware.checkUser, userValidators.updateStartup, users.updateStartup);
 router.put("/update-administrator/:userId", userMiddleware.checkUser, userValidators.updateAdministrator, users.updateAdministrator);
+// check if user is investor
+router.post("/ads", userMiddleware.checkUser, adValidators.createAd, ads.createAd);
+// check if user is admin
+router.post("/ads/delete-request/:adId", userMiddleware.checkUser, adValidators.adDeleteRequest, ads.adDeleteRequest);
+router.delete("/ads/:adId", userMiddleware.checkUser, adValidators.deleteAd, ads.deleteAd);
+router.get("/ads", userMiddleware.addUserIdToReqIfExists, ads.getAds);
 router.post("/login", users.login);
 
 router.use(errorHandleUtil.handleInternalApiError);

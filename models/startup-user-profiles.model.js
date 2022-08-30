@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-    const InvestorUserProfiles = sequelize.define(
-        "InvestorUserProfiles",
+    const StartupUserProfiles = sequelize.define(
+        "StartupUserProfiles",
         {
             userId: {
                 type: Sequelize.UUID,
@@ -83,20 +83,20 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.FLOAT,
                 allowNull: false,
             },
-            investorType: {
+            projectProposal: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            providedServiceTypes: {
+            requiredAmountOfMoney: {
+                type: Sequelize.FLOAT,
+                allowNull: false,
+            },
+            intellectualPropertyStatus: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            minAmountOfMoney: {
-                type: Sequelize.FLOAT,
-                allowNull: false,
-            },
-            maxAmountOfMoney: {
-                type: Sequelize.FLOAT,
+            patentInfo: {
+                type: Sequelize.STRING,
                 allowNull: false,
             },
             logo: {
@@ -107,14 +107,14 @@ module.exports = (sequelize, Sequelize) => {
             underscored: true,
             timestamps: true,
         });
-        
-        InvestorUserProfiles.associate = function(models) {
-            models.InvestorUserProfiles.hasOne(models.Users, {
-                foreignKey: "user_id",
+
+        StartupUserProfiles.associate = function(models) {
+            models.StartupUserProfiles.belongsTo(models.Users, {
+                foreignKey: "userId",
                 targetKey: "id",
                 as: "user",
             });
         };
 
-        return InvestorUserProfiles;
+        return StartupUserProfiles;
 };
