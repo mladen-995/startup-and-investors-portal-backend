@@ -53,8 +53,28 @@ const NEWSVISIBILITYTYPES = {
     },
 };
 
+const DISCUSSIONVISIBILITYTYPES = {
+    INVESTORIDS: {
+        name: 'investorIds',
+        hasPair: true,
+    },
+    STRATUPIDS: {
+        name: 'startupIds',
+        hasPair: true,
+    },
+    STARTUPSONLY: {
+        name: 'startupsOnly',
+        hasPair: false,
+    },
+    ALL: {
+        name: 'all',
+        hasPair: false,
+    },
+};
+
 module.exports = {
     ROLENAMES,
     NOTIFADVISIBILITYTYPES,
     NEWSVISIBILITYTYPES,
+    DISCUSSIONVISIBILITYTYPES,
 };

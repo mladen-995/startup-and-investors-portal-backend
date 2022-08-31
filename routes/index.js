@@ -3,10 +3,12 @@ const users = require("./users.route");
 const ads = require("./ads.route");
 const news = require("./news.route");
 const notifs = require("./notifications.route");
+const discussions = require("./discussions.route");
 const userValidators = require("../utils/validators/users.validators");
 const adValidators = require("../utils/validators/ads.validators");
 const notifValidators = require("../utils/validators/notifications.validators");
 const newsValidators = require("../utils/validators/news.validators");
+const discussionsValidators = require("../utils/validators/discussions.validators");
 const errorHandleUtil = require("../utils/error-handle-util");
 const userMiddleware = require("../middlewares/users.middleware");
 const router = express.Router();
@@ -35,6 +37,15 @@ router.post("/notifications", userMiddleware.checkUser, notifValidators.createNo
 router.post("/notifications/delete-request/:notificationId", userMiddleware.checkUser, notifValidators.notifDeleteRequest, notifs.notificationDeleteRequest);
 router.delete("/notifications/:notificationId", userMiddleware.checkUser, notifValidators.deleteNotif, notifs.deleteNotification);
 router.get("/notifications", userMiddleware.addUserIdToReqIfExists, notifs.getNotifications);
+// check if user is investor
+router.post("/discussions", userMiddleware.checkUser, discussionsValidators.createDiscussion, discussions.createDiscussion);
+router.post("/discussions-reply/:parentId", userMiddleware.checkUser, discussionsValidators.createDiscussionReply, discussions.createDiscussionReply);
+// // check if user is admin
+router.post("/discussions/delete-request/:discussionId", userMiddleware.checkUser, discussionsValidators.discussionDeleteRequest, discussions.discussionDeleteRequest);
+router.delete("/discussions/:discussionId", userMiddleware.checkUser, discussionsValidators.deleteDiscussion, discussions.deleteDiscussion);
+router.get("/discussions", userMiddleware.addUserIdToReqIfExists, discussions.getDiscussions);
+router.get("/discussions-for-author", userMiddleware.checkUser, discussions.getDiscussionsForAuthor);
+router.get("/discussions-replies/:parentId", userMiddleware.checkUser, discussionsValidators.getDiscussionReplies, discussions.getDiscussionReplies);
 router.post("/login", users.login);
 
 router.use(errorHandleUtil.handleInternalApiError);
