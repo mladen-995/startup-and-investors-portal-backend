@@ -1,10 +1,10 @@
 const { body, param } = require("express-validator");
-const { NOTIFADVISIBILITYTYPES } = require("../consts");
+const { NEWSVISIBILITYTYPES } = require("../consts");
 const { ApplicationError } = require("../errors");
 
 module.exports = {
-    createAd: [
-        body(["title", "text", "expiryDate", "visibility"])
+    createNews: [
+        body(["title", "text", "newsCategory", "visibility"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
 
@@ -12,25 +12,21 @@ module.exports = {
         // @TODO
         // add validators if pairValues exist
         // expiryDate > NOW
-        let adVisibilityType;
-        Object.keys(NOTIFADVISIBILITYTYPES).forEach((type) => {
-            if (NOTIFADVISIBILITYTYPES[type].name === req.body.visibility) {
-                adVisibilityType = NOTIFADVISIBILITYTYPES[type];
+        let newsVisibilityType;
+        Object.keys(NEWSVISIBILITYTYPES).forEach((type) => {
+            if (NEWSVISIBILITYTYPES[type].name === req.body.visibility) {
+                newsVisibilityType = NEWSVISIBILITYTYPES[type];
             }
         });
-        if (!adVisibilityType) {
+        if (!newsVisibilityType) {
             throw new ApplicationError("Wrong visibility type value!", 422);
         }
-        if (adVisibilityType.hasPair) {
+        if (newsVisibilityType.hasPair) {
             if (!req.body.visibilityPairObject) {
                 throw new ApplicationError("visibilityPairObject field is required for this visibility type!", 422);
             }
-            if (adVisibilityType.isPairArray) {
+            if (newsVisibilityType.isPairArray) {
                 if (!Array.isArray(req.body.visibilityPairObject) && req.body.visibilityPairObject.length > 0) {
-                    throw new ApplicationError("visibilityPairObject must be an array for this visibility type!", 422);
-                }
-            } else {
-                if (Array.isArray(req.body.visibilityPairObject)) {
                     throw new ApplicationError("visibilityPairObject must be an array for this visibility type!", 422);
                 }
             }
@@ -38,13 +34,18 @@ module.exports = {
         return next();
     }
     ],
-    adDeleteRequest: [
-        param("adId")
+    archiveNews: [
+        param("newsId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
     ],
-    deleteAd: [
-        param("adId")
+    newsDeleteRequest: [
+        param("newsId")
+            .notEmpty()
+            .withMessage("Please make sure you filled out all the fields."),
+    ],
+    deleteNews: [
+        param("newsId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
     ]

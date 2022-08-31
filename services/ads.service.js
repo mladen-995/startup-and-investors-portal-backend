@@ -1,6 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const { ADVISIBILITYTYPES } = require("../utils/consts");
+const { NOTIFADVISIBILITYTYPES } = require("../utils/consts");
 
 async function createAd(userId, title, text, expiryDate, visibility, transaction) {
     return db.Ads.create({
@@ -14,10 +14,12 @@ async function createAd(userId, title, text, expiryDate, visibility, transaction
     }); 
 }
 
-async function createAdVisibilityPair(adId, pairId) {
+async function createAdVisibilityPair(adId, pairId, transaction) {
     return db.AdVisibilityPairs.create({
         adId,
         pairId,
+    }, { 
+        transaction: transaction 
     });
 }
 
@@ -69,7 +71,7 @@ async function getAdsForAuthor(authorId) {
 async function getAdsForGuest() {
     return db.Ads.findAll({
         where: {
-            visibility: ADVISIBILITYTYPES.ALL.name,
+            visibility: NOTIFADVISIBILITYTYPES.ALL.name,
             expiryDate: {
                 [Op.gte]: new Date(),
             }
@@ -101,9 +103,9 @@ async function getAdsForStartup(startupId, startupBusinessType) {
             },
             // createdBy: {[Op.notIn]: mutedInvestorIds }
             [Op.or]: [{
-                visibility: ADVISIBILITYTYPES.ALL.name,
+                visibility: NOTIFADVISIBILITYTYPES.ALL.name,
             }, {
-                visibility: ADVISIBILITYTYPES.STARTUPSONLY.name,
+                visibility: NOTIFADVISIBILITYTYPES.STARTUPSONLY.name,
             }, {
                 id: adIdsFromVisibilityPairs.map(pair => pair.dataValues.adId),
             }]

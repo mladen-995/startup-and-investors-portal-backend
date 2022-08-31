@@ -4,7 +4,7 @@ const ROLENAMES = {
     STARTUP: 'Startup',
 };
 
-const ADVISIBILITYTYPES = {
+const NOTIFADVISIBILITYTYPES = {
     STARTUPGROUP: {
         name: 'startupGroup',
         hasPair: true,
@@ -30,7 +30,31 @@ const ADVISIBILITYTYPES = {
     },
 };
 
+const NEWSVISIBILITYTYPES = {
+    INVESTORIDS: {
+        name: 'investorIds',
+        hasPair: true,
+    },
+    STRATUPIDS: {
+        name: 'startupIds',
+        hasPair: true,
+    },
+    INVESTORSONLY: {
+        name: 'investorsOnly',
+        hasPair: false,
+    },
+    STARTUPSONLY: {
+        name: 'startupsOnly',
+        hasPair: false,
+    },
+    ALL: {
+        name: 'all',
+        hasPair: false,
+    },
+};
+
 module.exports = {
     ROLENAMES,
-    ADVISIBILITYTYPES,
+    NOTIFADVISIBILITYTYPES,
+    NEWSVISIBILITYTYPES,
 };

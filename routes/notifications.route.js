@@ -1,16 +1,16 @@
 const db = require("../models");
 const { validationResult } = require("express-validator");
-const adsController = require("../controllers/ads.controller");
+const notifsController = require("../controllers/notifications.controller");
 
-async function createAd(req, res, next) {
+async function createNotification(req, res, next) {
     const t = await db.sequelize.transaction();
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const { title, text, expiryDate, visibility, visibilityPairObject } = req.body;
-        await adsController.createAd(req.userId, title, text, expiryDate, visibility, visibilityPairObject, t);
+        const { title, text, isEmailNotification, visibility, visibilityPairObject } = req.body;
+        await notifsController.createNotification(req.userId, title, text, isEmailNotification, visibility, visibilityPairObject, t);
         await t.commit();
         res.status(200).json({
             success: true,
@@ -21,14 +21,14 @@ async function createAd(req, res, next) {
     }
 }
 
-async function adDeleteRequest(req, res, next) {
+async function notificationDeleteRequest(req, res, next) {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const adId = req.params.adId;
-        await adsController.adDeleteRequest(req.userId, adId);
+        const notificationId = req.params.notificationId;
+        await notifsController.notificationDeleteRequest(req.userId, notificationId);
         res.status(200).json({
             success: true,
         });
@@ -37,16 +37,16 @@ async function adDeleteRequest(req, res, next) {
     }
 }
 
-async function deleteAd(req, res, next) {
+async function deleteNotification(req, res, next) {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         // add log
-        const adId = req.params.adId;
+        const notificationId = req.params.notificationId;
         // check if admin
-        await adsController.deleteAd(adId);
+        await notifsController.deleteNotification(notificationId);
         res.status(200).json({
             success: true,
         });
@@ -55,13 +55,13 @@ async function deleteAd(req, res, next) {
     }
 }
 
-async function getAds(req, res, next) {
+async function getNotifications(req, res, next) {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const ads = await adsController.getAds(req.userId);
+        const ads = await notifsController.getNotifications(req.userId);
         res.status(200).json({
             success: true,
             data: ads
@@ -72,8 +72,8 @@ async function getAds(req, res, next) {
 }
 
 module.exports = {
-    createAd,
-    adDeleteRequest,
-    deleteAd,
-    getAds,
+    createNotification,
+    notificationDeleteRequest,
+    deleteNotification,
+    getNotifications,
 };

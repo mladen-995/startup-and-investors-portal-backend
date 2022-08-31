@@ -1,22 +1,22 @@
 const adsService = require("../services/ads.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
-const { ADVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
+const { NOTIFADVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
 
 async function createAd(userId, title, text, expiryDate, visibility, visibilityPairObject, transaction) {
     const ad = await adsService.createAd(userId, title, text, expiryDate, visibility, transaction);
-    Object.keys(ADVISIBILITYTYPES).forEach(async (type) => {
-        if (ADVISIBILITYTYPES[type].name === visibility && ADVISIBILITYTYPES[type].hasPair) {
+    for (const type of Object.keys(NOTIFADVISIBILITYTYPES)) {
+        if (NOTIFADVISIBILITYTYPES[type].name === visibility && NOTIFADVISIBILITYTYPES[type].hasPair) {
             if (Array.isArray(visibilityPairObject)) {
-                visibilityPairObject.forEach(async (pairId) => {
+                for (const pairId of visibilityPairObject) {
                     await adsService.createAdVisibilityPair(ad.id, pairId, transaction);
-                });
+                }
             } else {
                 await adsService.createAdVisibilityPair(ad.id, visibilityPairObject, transaction);
             }
         }
-    });
+    }
 }
 
 async function adDeleteRequest(userId, adId) {

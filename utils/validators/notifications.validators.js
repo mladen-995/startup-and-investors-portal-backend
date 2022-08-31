@@ -3,29 +3,28 @@ const { NOTIFADVISIBILITYTYPES } = require("../consts");
 const { ApplicationError } = require("../errors");
 
 module.exports = {
-    createAd: [
-        body(["title", "text", "expiryDate", "visibility"])
+    createNotif: [
+        body(["title", "text", "isEmailNotification", "visibility"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
 
     function(req, res, next) {
         // @TODO
         // add validators if pairValues exist
-        // expiryDate > NOW
-        let adVisibilityType;
+        let notifVisibilityType;
         Object.keys(NOTIFADVISIBILITYTYPES).forEach((type) => {
             if (NOTIFADVISIBILITYTYPES[type].name === req.body.visibility) {
-                adVisibilityType = NOTIFADVISIBILITYTYPES[type];
+                notifVisibilityType = NOTIFADVISIBILITYTYPES[type];
             }
         });
-        if (!adVisibilityType) {
+        if (!notifVisibilityType) {
             throw new ApplicationError("Wrong visibility type value!", 422);
         }
-        if (adVisibilityType.hasPair) {
+        if (notifVisibilityType.hasPair) {
             if (!req.body.visibilityPairObject) {
                 throw new ApplicationError("visibilityPairObject field is required for this visibility type!", 422);
             }
-            if (adVisibilityType.isPairArray) {
+            if (notifVisibilityType.isPairArray) {
                 if (!Array.isArray(req.body.visibilityPairObject) && req.body.visibilityPairObject.length > 0) {
                     throw new ApplicationError("visibilityPairObject must be an array for this visibility type!", 422);
                 }
@@ -38,13 +37,13 @@ module.exports = {
         return next();
     }
     ],
-    adDeleteRequest: [
-        param("adId")
+    notifDeleteRequest: [
+        param("notificationId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
     ],
-    deleteAd: [
-        param("adId")
+    deleteNotif: [
+        param("notificationId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
     ]
