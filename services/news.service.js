@@ -25,8 +25,10 @@ async function createNewsVisibilityPair(newsId, pairId, transaction) {
 
 async function findNewsById(id) {
     return db.News.findOne({
-        id,
-    });
+        where: {
+            id,
+        },
+    }); 
 }
 
 async function archiveNews(id) {

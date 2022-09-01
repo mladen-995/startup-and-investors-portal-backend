@@ -25,8 +25,10 @@ async function createAdVisibilityPair(adId, pairId, transaction) {
 
 async function findAdById(id) {
     return db.Ads.findOne({
-        id,
-    });
+        where: {
+            id,
+        },
+    }); 
 }
 
 async function adDeleteRequest(id) {

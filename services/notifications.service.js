@@ -25,8 +25,10 @@ async function createNotificationVisibilityPair(notificationsId, pairId, transac
 
 async function findNotificationById(id) {
     return db.Notifications.findOne({
-        id,
-    });
+        where: {
+            id,
+        },
+    }); 
 }
 
 async function notificationDeleteRequest(id) {

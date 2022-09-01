@@ -4,11 +4,13 @@ const ads = require("./ads.route");
 const news = require("./news.route");
 const notifs = require("./notifications.route");
 const discussions = require("./discussions.route");
+const surveys = require("./surveys.route");
 const userValidators = require("../utils/validators/users.validators");
 const adValidators = require("../utils/validators/ads.validators");
 const notifValidators = require("../utils/validators/notifications.validators");
 const newsValidators = require("../utils/validators/news.validators");
 const discussionsValidators = require("../utils/validators/discussions.validators");
+const surveysValidators = require("../utils/validators/surveys.validators");
 const errorHandleUtil = require("../utils/error-handle-util");
 const userMiddleware = require("../middlewares/users.middleware");
 const router = express.Router();
@@ -46,6 +48,13 @@ router.delete("/discussions/:discussionId", userMiddleware.checkUser, discussion
 router.get("/discussions", userMiddleware.addUserIdToReqIfExists, discussions.getDiscussions);
 router.get("/discussions-for-author", userMiddleware.checkUser, discussions.getDiscussionsForAuthor);
 router.get("/discussions-replies/:parentId", userMiddleware.checkUser, discussionsValidators.getDiscussionReplies, discussions.getDiscussionReplies);
+router.post("/surveys", userMiddleware.checkUser, surveysValidators.createSurvey, surveys.createSurvey);
+router.post("/surveys/reject/:surveyId", userMiddleware.checkUser, surveysValidators.rejectSurvey, surveys.rejectSurvey);
+router.get("/surveys-questions/:surveyId", userMiddleware.checkUser, surveysValidators.getSurveyQuestions, surveys.getSurveyQuestions);
+// check question IDS match answer IDS
+router.post("/surveys/answer/:surveyId", userMiddleware.checkUser, surveysValidators.answerSurvey, surveys.answerSurvey);
+router.get("/surveys", userMiddleware.checkUser, surveys.getSurveys);
+router.get("/surveys/question-answers/:questionId", userMiddleware.checkUser, surveysValidators.getSurveyQuestionAnswers, surveys.getSurveyQuestionAnswers);
 router.post("/login", users.login);
 
 router.use(errorHandleUtil.handleInternalApiError);

@@ -42,8 +42,10 @@ async function getDiscussionReplies(parentId) {
 
 async function findDiscussionById(id) {
     return db.Discussions.findOne({
-        id,
-    });
+        where: {
+            id,
+        },
+    }); 
 }
 
 async function discussionDeleteRequest(id) {
