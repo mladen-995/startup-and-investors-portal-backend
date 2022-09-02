@@ -95,6 +95,23 @@ async function getSurveys(req, res, next) {
     }
 }
 
+async function getSurvey(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const surveyId = req.params.surveyId;
+        const survey = await surveysController.getSurvey(req.userId, surveyId);
+        res.status(200).json({
+            success: true,
+            data: survey,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function getSurveyQuestionAnswers(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -118,5 +135,6 @@ module.exports = {
     getSurveyQuestions,
     answerSurvey,
     getSurveys,
+    getSurvey,
     getSurveyQuestionAnswers,
 };

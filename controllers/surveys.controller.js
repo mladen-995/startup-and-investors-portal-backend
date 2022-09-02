@@ -43,6 +43,10 @@ async function answerSurvey(userId, surveyId, answersObjects, transaction) {
     }
 }
 
+async function getSurvey(surveyId) {
+    return await surveysService.getSurveyById(surveyId);
+}
+
 async function getSurveys(userId, filter, pagination, showAnswered = false, showUnanswered = false) {
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
@@ -106,4 +110,5 @@ module.exports = {
     answerSurvey,
     getSurveyQuestionAnswers,
     getSurveys,
+    getSurvey,
 };
