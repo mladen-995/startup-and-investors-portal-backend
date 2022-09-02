@@ -115,6 +115,10 @@ module.exports = (sequelize, Sequelize) => {
                 targetKey: "id",
                 as: "user",
             });
+            models.StartupUserProfiles.hasMany(models.StartupGroupPairs, {
+                foreignKey: "startupId",
+                as: "startupGroupPairs",
+            });
         };
 
         return StartupUserProfiles;

@@ -1,6 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 const { NOTIFADVISIBILITYTYPES } = require("../utils/consts");
+const startupGroupsService = require("./startup-groups.service");
 
 async function createNotification(userId, title, text, isEmailNotification, visibility, transaction) {
     return db.Notifications.create({
@@ -96,19 +97,19 @@ async function getNotificationsForGuest(filter, pagination) {
 }
 
 async function getNotificationsForStartup(startupId, startupBusinessType, filter, pagination) {
-    // const startupGroups = startupsGroupsService.getGroupsForStartup(startup.id);
+    const startupGroupPairs = startupGroupsService.getStartupGroupPairsByStartupId(startupId);
     const notifIdsFromVisibilityPairs = await db.NotificationVisibilityPairs.findAll({
         where: {
-            // [Op.or]: [{
+            [Op.or]: [{
                 pairId: startupId,
-            // }
+            }
             // , {
             //     pairId: startupBusinessType,
-            // }, 
-            // {
-            //     // pairId: startupGroups,
-            // }
-        // ]
+            // } 
+            , {
+                pairId: startupGroupPairs.map(startupGroupPair => startupGroupPair.dataValues.startupId),
+            }
+        ]
         },
     });
     filter.isEmailNotification = false;

@@ -1,6 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 const { NOTIFADVISIBILITYTYPES } = require("../utils/consts");
+const startupGroupsService = require("../services/startup-groups.service");
 
 async function createAd(userId, title, text, expiryDate, visibility, transaction) {
     return db.Ads.create({
@@ -97,19 +98,19 @@ async function getAdsForGuest(filter, pagination) {
 }
 
 async function getAdsForStartup(startupId, startupBusinessType, filter, pagination) {
-    // const startupGroups = startupsGroupsService.getGroupsForStartup(startup.id);
+    const startupGroupPairs = startupGroupsService.getStartupGroupPairsByStartupId(startupId);
     const adIdsFromVisibilityPairs = await db.AdVisibilityPairs.findAll({
         where: {
-            // [Op.or]: [{
+            [Op.or]: [{
                 pairId: startupId,
-            // }
+            }
             // , {
             //     pairId: startupBusinessType,
             // }, 
-            // {
-            //     // pairId: startupGroups,
-            // }
-        // ]
+            , {
+                pairId: startupGroupPairs.map(startupGroupPair => startupGroupPair.dataValues.startupId),
+            }
+        ]
         },
     });
     filter.expiryDate = {
