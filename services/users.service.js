@@ -121,7 +121,7 @@ function createUserJWTToken(id, username) {
 
 function decodeUserJWTToken(token) {
     try {
-        token.split(' ')[1]; 
+        token = token.split(' ')[1]; 
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         return decodedToken;
     } catch {
