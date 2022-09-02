@@ -66,10 +66,11 @@ async function getSurveys(userId, filter, pagination, showAnswered = false, show
                     return surveysService.getSurveysWithIdInArray(answeredSurveysIds, filter, pagination);
                 }
             }
+            break;
         }
-        // case ROLENAMES.ADMINISTARTOR: {
-        //     return notifsService.getNotificationsForDeletion();
-        // }
+        case ROLENAMES.ADMINISTARTOR: {
+            return surveysService.getAllSurveys(filter, pagination);
+        }
     }
 }
 
