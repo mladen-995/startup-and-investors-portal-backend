@@ -44,14 +44,14 @@ async function getNotifications(userId, filter, pagination) {
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return notifsService.getNotificationsForAuthor(userId, filter, pagination);
+            return notifsService.getNotificationsForInvestor(userId, filter, pagination);
         }
         case ROLENAMES.STARTUP: {
             const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
             return notifsService.getNotificationsForStartup(userId, startupProfile.businessType, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return notifsService.getNotificationsForDeletion(filter, pagination);
+            return notifsService.getAllNotifications(filter, pagination);
         }
     }
 }

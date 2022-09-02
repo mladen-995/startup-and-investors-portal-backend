@@ -38,8 +38,8 @@ async function notificationDeleteRequest(id) {
     );
 }
 
-async function getNotificationsForDeletion(filter, pagination) {
-    filter.requestedDeletion = true;
+async function getAllNotifications(filter, pagination) {
+    filter.isEmailNotification = false;
     return db.Notifications.findAll({
         where: filter,
         limit: pagination.limit,
@@ -60,9 +60,17 @@ async function deleteNotification(id) {
     });
 }
 
-async function getNotificationsForAuthor(authorId, filter, pagination) {
-    filter.createdBy = authorId;
+async function getNotificationsForInvestor(investorId, filter, pagination) {
     filter.isEmailNotification = false;
+    filter[Op.or] = [{
+        createdBy: investorId,
+    }, {
+        [Op.and]: [{
+                isArchived: false,
+            }, {
+                visibility: NOTIFADVISIBILITYTYPES.ALL.name,
+            }],
+    }];
     return db.Notifications.findAll({
         where: filter,
         limit: pagination.limit,
@@ -104,11 +112,19 @@ async function getNotificationsForStartup(startupId, startupBusinessType, filter
     });
     filter.isEmailNotification = false;
     filter[Op.or] = [{
-        visibility: NOTIFADVISIBILITYTYPES.ALL.name,
+        createdBy: startupId,
     }, {
-        visibility: NOTIFADVISIBILITYTYPES.STARTUPSONLY.name,
-    }, {
-        id: notifIdsFromVisibilityPairs.map(pair => pair.dataValues.notificationsId),
+        [Op.and]: [{
+            isArchived: false,
+            }, {
+                [Op.or]: [{
+                    visibility: NOTIFADVISIBILITYTYPES.ALL.name,
+                }, {
+                    visibility: NOTIFADVISIBILITYTYPES.STARTUPSONLY.name,
+                }, {
+                    id: notifIdsFromVisibilityPairs.map(pair => pair.dataValues.notificationsId),
+                }],
+            }],
     }];
     return db.Notifications.findAll({
         where: filter,
@@ -123,9 +139,9 @@ module.exports = {
     createNotificationVisibilityPair,
     findNotificationById,
     notificationDeleteRequest,
-    getNotificationsForDeletion,
+    getAllNotifications,
     deleteNotification,
-    getNotificationsForAuthor,
+    getNotificationsForInvestor,
     getNotificationsForGuest,
     getNotificationsForStartup,
 };
