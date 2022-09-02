@@ -1,28 +1,27 @@
 module.exports = (sequelize, Sequelize) => {
-    const Surveys = sequelize.define(
-        "Surveys",
+    const Categories = sequelize.define(
+        "Categories",
         {
             id: {
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
                 primaryKey: true,
             },
-            title: {
+            name: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            public: {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
-            createdAt: {
+            dateFrom: {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.NOW,
             },
-            createdBy: {
-                type: Sequelize.UUID,
+            dateTo: {
+                type: Sequelize.DATE,
+                allowNull: true,
+            },
+            entityName: {
+                type: Sequelize.STRING,
                 allowNull: false,
             },
         }, {
@@ -30,17 +29,17 @@ module.exports = (sequelize, Sequelize) => {
             timestamps: true,
             paranoid: true,
         });
-
-    Surveys.associate = function(models) {
-        models.Surveys.hasMany(models.SurveyQuestions, {
-            foreignKey: "surveyId",
-            as: "surveyQuestions",
+    
+    Categories.associate = function(models) {
+        models.Categories.hasMany(models.News, {
+            foreignKey: "categoryId",
+            as: "newsCategory",
         });
-        models.Surveys.hasMany(models.UserSurveys, {
-            foreignKey: "surveyId",
-            as: "userSurveys",
+        models.Categories.hasMany(models.Discussions, {
+            foreignKey: "categoryId",
+            as: "discussionCategory",
         });
     };
 
-    return Surveys;
+    return Categories;
 };

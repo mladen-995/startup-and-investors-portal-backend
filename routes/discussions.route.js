@@ -1,3 +1,4 @@
+const lodash = require("lodash");
 const db = require("../models");
 const { validationResult } = require("express-validator");
 const discussionsController = require("../controllers/discussions.controller");
@@ -9,8 +10,8 @@ async function createDiscussion(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const { title, text, discussionCategory, visibility, visibilityPairObject } = req.body;
-        await discussionsController.createDiscussion(req.userId, title, text, discussionCategory, visibility, visibilityPairObject, t);
+        const { title, text, categoryId, visibility, visibilityPairObject } = req.body;
+        await discussionsController.createDiscussion(req.userId, title, text, categoryId, visibility, visibilityPairObject, t);
         await t.commit();
         res.status(200).json({
             success: true,
@@ -78,7 +79,10 @@ async function getDiscussionsForAuthor(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const discussions = await discussionsController.getDiscussionsForAuthor(req.userId);
+        const { pagination } = req.params;
+        const filterParams = ["title", "categoryId"];
+        const filter = lodash.pick(req.query, filterParams);
+        const discussions = await discussionsController.getDiscussionsForAuthor(req.userId, filter, pagination);
         res.status(200).json({
             success: true,
             data: discussions
@@ -94,7 +98,10 @@ async function getDiscussions(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const discussions = await discussionsController.getDiscussions(req.userId);
+        const { pagination } = req.params;
+        const filterParams = ["title", "categoryId"];
+        const filter = lodash.pick(req.query, filterParams);
+        const discussions = await discussionsController.getDiscussions(req.userId, filter, pagination);
         res.status(200).json({
             success: true,
             data: discussions

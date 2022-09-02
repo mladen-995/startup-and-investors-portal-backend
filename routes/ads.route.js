@@ -1,3 +1,4 @@
+const lodash = require("lodash");
 const db = require("../models");
 const { validationResult } = require("express-validator");
 const adsController = require("../controllers/ads.controller");
@@ -61,7 +62,10 @@ async function getAds(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const ads = await adsController.getAds(req.userId);
+        const { pagination } = req.params;
+        const filterParams = ["title"];
+        const filter = lodash.pick(req.query, filterParams);
+        const ads = await adsController.getAds(req.userId, filter, pagination);
         res.status(200).json({
             success: true,
             data: ads

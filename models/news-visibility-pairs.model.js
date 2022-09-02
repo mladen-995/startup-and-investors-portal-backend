@@ -18,6 +18,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
     
         NewsVisibilityPairs.associate = function(models) {

@@ -12,6 +12,14 @@ async function getUserByEmail(email) {
     });
 }
 
+async function getUserByUsername(username) {
+    return db.Users.findOne({
+        where: {
+            username: username,
+        }
+    });
+}
+
 async function getUserById(id) {
     return db.Users.findOne({
         where: {
@@ -99,10 +107,10 @@ async function updateInvestorUserProfile(userProfile, transaction = null) {
 }
 
 
-function createUserJWTToken(id, email) {
+function createUserJWTToken(id, username) {
     try {
         return jwt.sign(
-            { userId: id, email: email },
+            { userId: id, username: username },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
         );
@@ -122,6 +130,7 @@ function decodeUserJWTToken(token) {
 }
 
 module.exports = {
+    getUserByUsername,
     getUserByEmail,
     getUserById,
     getInvestorUserProfilByUserId,

@@ -4,14 +4,14 @@ const { ApplicationError } = require("../errors");
 
 module.exports = {
     createDiscussion: [
-        body(["title", "text", "discussionCategory", "visibility"])
+        body(["title", "text", "categoryId", "visibility"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
 
     function(req, res, next) {
         // @TODO
         // add validators if pairValues exist
-        // expiryDate > NOW
+        // categoryId exists!
         let discussionsVisibilityType;
         Object.keys(DISCUSSIONVISIBILITYTYPES).forEach((type) => {
             if (DISCUSSIONVISIBILITYTYPES[type].name === req.body.visibility) {

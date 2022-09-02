@@ -1,3 +1,4 @@
+const lodash = require("lodash");
 const db = require("../models");
 const { validationResult } = require("express-validator");
 const newsController = require("../controllers/news.controller");
@@ -80,7 +81,10 @@ async function getNews(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const news = await newsController.getNews(req.userId);
+        const { pagination } = req.params;
+        const filterParams = ["title", "newsCategory"];
+        const filter = lodash.pick(req.query, filterParams);
+        const news = await newsController.getNews(req.userId, filter, pagination);
         res.status(200).json({
             success: true,
             data: news
@@ -96,7 +100,10 @@ async function getNewsForAuthor(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const news = await newsController.getNewsForAuthor(req.userId);
+        const { pagination } = req.params;
+        const filterParams = ["title", "newsCategory"];
+        const filter = lodash.pick(req.query, filterParams);
+        const news = await newsController.getNewsForAuthor(req.userId, filter, pagination);
         res.status(200).json({
             success: true,
             data: news

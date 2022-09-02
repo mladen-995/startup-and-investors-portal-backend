@@ -4,8 +4,8 @@ const usersService = require("../services/users.service");
 const { DISCUSSIONVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
 
-async function createDiscussion(userId, title, text, discussionCategory, visibility, visibilityPairObject, transaction) {
-    const discussion = await discussionsService.createDiscussion(userId, title, text, discussionCategory, visibility, transaction);
+async function createDiscussion(userId, title, text, categoryId, visibility, visibilityPairObject, transaction) {
+    const discussion = await discussionsService.createDiscussion(userId, title, text, categoryId, visibility, transaction);
     for (const type of Object.keys(DISCUSSIONVISIBILITYTYPES)) {
         if (DISCUSSIONVISIBILITYTYPES[type].name === visibility && DISCUSSIONVISIBILITYTYPES[type].hasPair) {
             for (const pairId of visibilityPairObject) {
@@ -40,26 +40,26 @@ async function deleteDiscussion(id) {
     return discussionsService.deleteDiscussion(id);
 }
 
-async function getDiscussionsForAuthor(id) {
-    return discussionsService.getDiscussionsForAuthor(id);
+async function getDiscussionsForAuthor(id, filter, pagination) {
+    return discussionsService.getDiscussionsForAuthor(id, filter, pagination);
 }
 
-async function getDiscussions(userId = null) {
+async function getDiscussions(userId, filter, pagination) {
     if (!userId) {
-        return discussionsService.getDiscussionsForGuest();
+        return discussionsService.getDiscussionsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return discussionsService.getDiscussionsForInvestor(userId);
+            return discussionsService.getDiscussionsForInvestor(userId, filter, pagination);
         }
         case ROLENAMES.STARTUP: {
             const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
-            return discussionsService.getDiscussionsForStartup(userId, startupProfile.businessType);
+            return discussionsService.getDiscussionsForStartup(userId, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return discussionsService.getDiscussionsForDeletion();
+            return discussionsService.getDiscussionsForDeletion(filter, pagination);
         }
     }
 }

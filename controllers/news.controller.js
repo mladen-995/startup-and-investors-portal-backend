@@ -36,28 +36,27 @@ async function deleteNews(id) {
     return newsService.deleteNews(id);
 }
 
-async function getNews(userId = null) {
+async function getNews(userId, filter, pagination) {
     if (!userId) {
-        return newsService.getNewsForGuest();
+        return newsService.getNewsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return newsService.getNewsForInvestor(userId);
+            return newsService.getNewsForInvestor(userId, filter, pagination);
         }
         case ROLENAMES.STARTUP: {
-            const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
-            return newsService.getNewsForStartup(userId, startupProfile.businessType);
+            return newsService.getNewsForStartup(userId, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return newsService.getNewsForDeletion();
+            return newsService.getNewsForDeletion(filter, pagination);
         }
     }
 }
 
-async function getNewsForAuthor(authorId) {
-    return newsService.getNewsForAuthor(authorId);
+async function getNewsForAuthor(authorId, filter, pagination) {
+    return newsService.getNewsForAuthor(authorId, filter, pagination);
 }
 
 module.exports = {

@@ -24,8 +24,8 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.UUID,
                 allowNull: false,
             },
-            discussionCategory: {
-                type: Sequelize.STRING,
+            categoryId: {
+                type: Sequelize.UUID,
                 allowNull: false,
             },
             requestedDeletion: {
@@ -60,6 +60,11 @@ module.exports = (sequelize, Sequelize) => {
         models.Discussions.hasMany(models.DiscussionReplies, {
             foreignKey: "parentId",
             as: "discussionReplies",
+        });
+        models.Discussions.belongsTo(models.Categories, {
+            foreignKey: "categoryId",
+            targetKey: "id",
+            as: "discussionCategory",
         });
     };
 

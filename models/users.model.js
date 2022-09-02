@@ -9,6 +9,11 @@ module.exports = (sequelize, Sequelize) => {
                 defaultValue: Sequelize.UUIDV4,
                 primaryKey: true,
             },
+            username: {
+                type: Sequelize.STRING,
+                allowNull: false,
+                unique: true,
+            },
             firstName: {
                 type: Sequelize.STRING,
                 allowNull: false,
@@ -38,6 +43,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
 
     Users.beforeCreate(async (user) => {

@@ -38,11 +38,16 @@ async function adDeleteRequest(id) {
     );
 }
 
-async function getAdsForDeletion() {
+async function getAdsForDeletion(filter, pagination) {
+    filter.requestedDeletion = true;
+    filter.expiryDate = {
+        [Op.gte]: new Date(),
+    };
     return db.Ads.findAll({
-        where: {
-            requestedDeletion: true,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.AdVisibilityPairs,
             as: "adPairs",
@@ -58,11 +63,16 @@ async function deleteAd(id) {
     });
 }
 
-async function getAdsForAuthor(authorId) {
+async function getAdsForAuthor(authorId, filter, pagination) {
+    filter.createdBy = authorId;
+    filter.expiryDate = {
+        [Op.gte]: new Date(),
+    };
     return db.Ads.findAll({
-        where: {
-            createdBy: authorId,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.AdVisibilityPairs,
             as: "adPairs",
@@ -70,18 +80,20 @@ async function getAdsForAuthor(authorId) {
     });
 }
 
-async function getAdsForGuest() {
+async function getAdsForGuest(filter, pagination) {
+    filter.visibility = NOTIFADVISIBILITYTYPES.ALL.name;
+    filter.expiryDate = {
+        [Op.gte]: new Date(),
+    };
     return db.Ads.findAll({
-        where: {
-            visibility: NOTIFADVISIBILITYTYPES.ALL.name,
-            expiryDate: {
-                [Op.gte]: new Date(),
-            }
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 
-async function getAdsForStartup(startupId, startupBusinessType) {
+async function getAdsForStartup(startupId, startupBusinessType, filter, pagination) {
     // const startupGroups = startupsGroupsService.getGroupsForStartup(startup.id);
     const adIdsFromVisibilityPairs = await db.AdVisibilityPairs.findAll({
         where: {
@@ -97,21 +109,21 @@ async function getAdsForStartup(startupId, startupBusinessType) {
         // ]
         },
     });
-    // mutedInvestorIds get
+    filter.expiryDate = {
+        [Op.gte]: new Date(),
+    },
+    filter[Op.or] = [{
+        visibility: NOTIFADVISIBILITYTYPES.ALL.name,
+    }, {
+        visibility: NOTIFADVISIBILITYTYPES.STARTUPSONLY.name,
+    }, {
+        id: adIdsFromVisibilityPairs.map(pair => pair.dataValues.adId),
+    }];
     return db.Ads.findAll({
-        where: {
-            expiryDate: {
-                [Op.gte]: new Date(),
-            },
-            // createdBy: {[Op.notIn]: mutedInvestorIds }
-            [Op.or]: [{
-                visibility: NOTIFADVISIBILITYTYPES.ALL.name,
-            }, {
-                visibility: NOTIFADVISIBILITYTYPES.STARTUPSONLY.name,
-            }, {
-                id: adIdsFromVisibilityPairs.map(pair => pair.dataValues.adId),
-            }]
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 

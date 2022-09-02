@@ -14,6 +14,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
 
     return Roles;

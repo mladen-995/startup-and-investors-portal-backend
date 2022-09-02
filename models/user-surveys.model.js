@@ -28,6 +28,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
 
     UserSurveys.associate = function(models) {

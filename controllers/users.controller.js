@@ -3,8 +3,8 @@ const rolesService = require("../services/roles.service");
 const { ROLENAMES } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
 
-async function login(email, password) {
-    const databaseUser = await usersService.getUserByEmail(email);
+async function login(username, password) {
+    const databaseUser = await usersService.getUserByUsername(username);
     if (!databaseUser || !databaseUser.password) {
         throw new ApplicationError("Username or Password not valid!", 401);
     }
@@ -12,7 +12,7 @@ async function login(email, password) {
     if (!checkUserPassword) {
         throw new ApplicationError("Username or Password not valid!", 401);
     }
-    const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.email);
+    const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.username);
     const user = await usersService.getUserAndProfile(databaseUser.id);
     const result = {
         token,
@@ -22,6 +22,10 @@ async function login(email, password) {
 }
 
 async function registerInvestor(user, userProfile, transaction = null) {
+    const userWithUsername = await usersService.getUserByUsername(user.username);
+    if (userWithUsername) {
+        throw new ApplicationError("Username already in use!", 409);
+    }
     const userWithEmail = await usersService.getUserByEmail(user.email);
     if (userWithEmail) {
         throw new ApplicationError("Email already in use!", 409);
@@ -35,6 +39,10 @@ async function registerInvestor(user, userProfile, transaction = null) {
 }
 
 async function registerStartup(user, userProfile, transaction = null) {
+    const userWithUsername = await usersService.getUserByUsername(user.username);
+    if (userWithUsername) {
+        throw new ApplicationError("Username already in use!", 409);
+    }
     const userWithEmail = await usersService.getUserByEmail(user.email);
     if (userWithEmail) {
         throw new ApplicationError("Email already in use!", 409);

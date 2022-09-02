@@ -4,8 +4,8 @@ const db = require("../models");
 
 async function login(req, res, next) {
     try {
-        const { email, password } = req.body;
-        const data = await usersController.login(email, password);
+        const { username, password } = req.body;
+        const data = await usersController.login(username, password);
         res.status(200).json({
             success: true,
             data: data,
@@ -128,8 +128,9 @@ async function updateAdministrator(req, res, next) {
 }
 
 function getUserFromRequestBody(req, includePassword = false) {
-    const { email, password, firstName, lastName, middleName } = req.body;
+    const { username, email, password, firstName, lastName, middleName } = req.body;
     const res = { 
+        username,
         email, 
         firstName, 
         lastName, 

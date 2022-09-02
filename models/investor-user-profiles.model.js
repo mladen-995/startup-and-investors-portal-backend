@@ -106,6 +106,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
         
         InvestorUserProfiles.associate = function(models) {

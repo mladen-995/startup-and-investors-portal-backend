@@ -43,23 +43,23 @@ async function answerSurvey(userId, surveyId, answersObjects, transaction) {
     }
 }
 
-async function getSurveys(userId, showAnswered = false, showUnanswered = false) {
+async function getSurveys(userId, filter, pagination, showAnswered = false, showUnanswered = false) {
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return surveysService.getAllSurveys();
+            return surveysService.getAllSurveys(filter, pagination);
         }
         case ROLENAMES.STARTUP: {
-            if (showAnswered && showUnanswered) {
-                return surveysService.getAllSurveys();
+            if ((showAnswered && showUnanswered) || (!showAnswered && !showUnanswered)) {
+                return surveysService.getAllSurveys(filter, pagination);
             } else {
                 const answeredSurveys = await surveysService.getAnsweredUserSurveysForUserId(userId);
                 const answeredSurveysIds = answeredSurveys.map(answeredSurvey => answeredSurvey.surveyId);
                 if (!showAnswered && showUnanswered) {
-                    return surveysService.getSurveysWithIdNotInArray(answeredSurveysIds);
+                    return surveysService.getSurveysWithIdNotInArray(answeredSurveysIds, filter, pagination);
                 } else if (showAnswered && !showUnanswered) {
-                    return surveysService.getSurveysWithIdInArray(answeredSurveysIds);
+                    return surveysService.getSurveysWithIdInArray(answeredSurveysIds, filter, pagination);
                 }
             }
         }

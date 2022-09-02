@@ -31,6 +31,14 @@ async function findNewsById(id) {
     }); 
 }
 
+async function getNewsByCategoryId(categoryId) {
+    return db.News.findOne({
+        where: {
+            categoryId,
+        },
+    }); 
+}
+
 async function archiveNews(id) {
     return db.News.update(
         { isArchived: true },
@@ -53,61 +61,68 @@ async function deleteNews(id) {
     });
 }
 
-async function getNewsForGuest() {
+async function getNewsForGuest(filter, pagination) {
+    filter.isArchived = false;
+    filter.visibility = NEWSVISIBILITYTYPES.ALL.name;
     return db.News.findAll({
-        where: {
-            visibility: NEWSVISIBILITYTYPES.ALL.name,
-            isArchived: false
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 
-async function getNewsForStartup(startupId) {
+async function getNewsForStartup(startupId, filter, pagination) {
     const newsIdsFromVisibilityPairs = await db.NewsVisibilityPairs.findAll({
         where: {
             pairId: startupId,
         },
     });
+    filter.isArchived = false;
+    filter[Op.or] = [{
+        visibility: NEWSVISIBILITYTYPES.ALL.name,
+    }, {
+        visibility: NEWSVISIBILITYTYPES.STARTUPSONLY.name,
+    }, {
+        id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
+    }];
     return db.News.findAll({
-        where: {
-            isArchived: false,
-            // createdBy: {[Op.notIn]: mutedInvestorIds }
-            [Op.or]: [{
-                visibility: NEWSVISIBILITYTYPES.ALL.name,
-            }, {
-                visibility: NEWSVISIBILITYTYPES.STARTUPSONLY.name,
-            }, {
-                id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
-            }]
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 
-async function getNewsForInvestor(investorId) {
+async function getNewsForInvestor(investorId, filter, pagination) {
     const newsIdsFromVisibilityPairs = await db.NewsVisibilityPairs.findAll({
         where: {
             pairId: investorId,
         },
     });
+    filter.isArchived = false;
+    filter[Op.or] = [{
+        visibility: NEWSVISIBILITYTYPES.ALL.name,
+    }, {
+        visibility: NEWSVISIBILITYTYPES.INVESTORSONLY.name,
+    }, {
+        id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
+    }];
     return db.News.findAll({
-        where: {
-            isArchived: false,
-            [Op.or]: [{
-                visibility: NEWSVISIBILITYTYPES.ALL.name,
-            }, {
-                visibility: NEWSVISIBILITYTYPES.INVESTORSONLY.name,
-            }, {
-                id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
-            }]
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 
-async function getNewsForDeletion() {
+async function getNewsForDeletion(filter, pagination) {
+    filter.requestedDeletion = true;
     return db.News.findAll({
-        where: {
-            requestedDeletion: true,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.NewsVisibilityPairs,
             as: "newsPairs",
@@ -115,11 +130,13 @@ async function getNewsForDeletion() {
     });
 }
 
-async function getNewsForAuthor(authorId) {
+async function getNewsForAuthor(authorId, filter, pagination) {
+    filter.createdBy = authorId;
     return db.News.findAll({
-        where: {
-            createdBy: authorId,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.NewsVisibilityPairs,
             as: "newsPairs",
@@ -139,4 +156,5 @@ module.exports = {
     getNewsForStartup,
     getNewsForDeletion,
     getNewsForAuthor,
+    getNewsByCategoryId,
 };

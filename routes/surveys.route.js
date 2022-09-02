@@ -1,3 +1,4 @@
+const lodash = require("lodash");
 const db = require("../models");
 const { validationResult } = require("express-validator");
 const surveysController = require("../controllers/surveys.controller");
@@ -80,8 +81,11 @@ async function getSurveys(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
+        const { pagination } = req.params;
+        const filterParams = ["title", "public"];
+        const filter = lodash.pick(req.query, filterParams);
         const { showAnswered, showUnanswered } = req.body;
-        const surveys = await surveysController.getSurveys(req.userId, showAnswered, showUnanswered);
+        const surveys = await surveysController.getSurveys(req.userId, filter, pagination, showAnswered, showUnanswered);
         res.status(200).json({
             success: true,
             data: surveys,

@@ -15,8 +15,8 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            newsCategory: {
-                type: Sequelize.STRING,
+            categoryId: {
+                type: Sequelize.UUID,
                 allowNull: false,
             },
             createdAt: {
@@ -52,10 +52,15 @@ module.exports = (sequelize, Sequelize) => {
             paranoid: true,
         });
 
-        News.associate = function(models) {
+    News.associate = function(models) {
         models.News.hasMany(models.NewsVisibilityPairs, {
             foreignKey: "newsId",
             as: "newsPairs",
+        });
+        models.News.belongsTo(models.Categories, {
+            foreignKey: "categoryId",
+            targetKey: "id",
+            as: "newsCategory",
         });
     };
 

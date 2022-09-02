@@ -2,11 +2,11 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const { DISCUSSIONVISIBILITYTYPES } = require("../utils/consts");
 
-async function createDiscussion(userId, title, text, discussionCategory, visibility, transaction) {
+async function createDiscussion(userId, title, text, categoryId, visibility, transaction) {
     return db.Discussions.create({
         title,
         text,
-        discussionCategory,
+        categoryId,
         visibility,
         createdBy: userId,
     }, { 
@@ -48,6 +48,14 @@ async function findDiscussionById(id) {
     }); 
 }
 
+async function getDiscussionByCategoryId(categoryId) {
+    return db.Discussions.findOne({
+        where: {
+            categoryId,
+        },
+    }); 
+}
+
 async function discussionDeleteRequest(id) {
     return db.Discussions.update(
         { requestedDeletion: true },
@@ -55,16 +63,18 @@ async function discussionDeleteRequest(id) {
     );
 }
 
-async function getDiscussionsForDeletion() {
+async function getDiscussionsForDeletion(filter, pagination) {
+    filter.requestedDeletion = true;
     return db.Discussions.findAll({
-        where: {
-            requestedDeletion: true,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.DiscussionVisibilityPairs,
             as: "discussionPairs",
         },
-    });
+    }); 
 }
 
 async function deleteDiscussion(id) {
@@ -75,67 +85,73 @@ async function deleteDiscussion(id) {
     });
 }
 
-async function getDiscussionsForAuthor(authorId) {
+async function getDiscussionsForAuthor(authorId, filter, pagination) {
+    filter.createdBy = authorId;
     return db.Discussions.findAll({
-        where: {
-            createdBy: authorId,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.DiscussionVisibilityPairs,
             as: "discussionPairs",
         },
-    });
+    }); 
 }
 
-async function getDiscussionsForGuest() {
+async function getDiscussionsForGuest(filter, pagination) {
+    filter.visibility = DISCUSSIONVISIBILITYTYPES.ALL.name;
+    filter.isArchived = false;
     return db.Discussions.findAll({
-        where: {
-            visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
-            isArchived: false,
-        },
-    });
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+    }); 
 }
 
-async function getDiscussionsForStartup(startupId) {
+async function getDiscussionsForStartup(startupId, filter, pagination) {
     const discussionIdsFromVisibilityPairs = await db.DiscussionVisibilityPairs.findAll({
         where: {
             pairId: startupId,
         },
     });
-    // mutedInvestorIds get
-    return db.Discussions.findAll({
-        where: {
-            isArchived: false,
-            // createdBy: {[Op.notIn]: mutedInvestorIds }
-            [Op.or]: [{
+    filter.isArchived = false;
+    filter[Op.or] = [{
                 visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
             }, {
                 visibility: DISCUSSIONVISIBILITYTYPES.STARTUPSONLY.name,
             }, {
                 id: discussionIdsFromVisibilityPairs.map(pair => pair.dataValues.discussionId),
-            }]
-        },
+    }];
+    // mutedInvestorIds get
+    // createdBy: {[Op.notIn]: mutedInvestorIds }
+    return db.Discussions.findAll({
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 
-async function getDiscussionsForInvestor(startupId) {
+async function getDiscussionsForInvestor(investorId, filter, pagination) {
     const discussionIdsFromVisibilityPairs = await db.DiscussionVisibilityPairs.findAll({
         where: {
-            pairId: startupId,
+            pairId: investorId,
         },
     });
-    // mutedInvestorIds get
+    filter.isArchived = false;
+    filter[Op.or] = [{
+        visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
+    }, {
+        id: discussionIdsFromVisibilityPairs.map(pair => pair.dataValues.discussionId),
+    }];
     return db.Discussions.findAll({
-        where: {
-            isArchived: false,
-            // createdBy: {[Op.notIn]: mutedInvestorIds }
-            [Op.or]: [{
-                visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
-            }, {
-                id: discussionIdsFromVisibilityPairs.map(pair => pair.dataValues.discussionId),
-            }]
-        },
-    });
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+    }); 
 }
 
 module.exports = {
@@ -151,4 +167,5 @@ module.exports = {
     getDiscussionsForStartup,
     getDiscussionsForInvestor,
     getDiscussionReplies,
+    getDiscussionByCategoryId,
 };

@@ -36,22 +36,22 @@ async function deleteNotification(id) {
     return notifsService.deleteNotification(id);
 }
 
-async function getNotifications(userId = null) {
+async function getNotifications(userId, filter, pagination) {
     if (!userId) {
-        return notifsService.getNotificationsForGuest();
+        return notifsService.getNotificationsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return notifsService.getNotificationsForAuthor(userId);
+            return notifsService.getNotificationsForAuthor(userId, filter, pagination);
         }
         case ROLENAMES.STARTUP: {
             const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
-            return notifsService.getNotificationsForStartup(userId, startupProfile.businessType);
+            return notifsService.getNotificationsForStartup(userId, startupProfile.businessType, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return notifsService.getNotificationsForDeletion();
+            return notifsService.getNotificationsForDeletion(filter, pagination);
         }
     }
 }

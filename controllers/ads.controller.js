@@ -35,22 +35,22 @@ async function deleteAd(id) {
     return adsService.deleteAd(id);
 }
 
-async function getAds(userId = null) {
+async function getAds(userId, filter, pagination) {
     if (!userId) {
-        return adsService.getAdsForGuest();
+        return adsService.getAdsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return adsService.getAdsForAuthor(userId);
+            return adsService.getAdsForAuthor(userId, filter, pagination);
         }
         case ROLENAMES.STARTUP: {
             const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
-            return adsService.getAdsForStartup(userId, startupProfile.businessType);
+            return adsService.getAdsForStartup(userId, startupProfile.businessType, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return adsService.getAdsForDeletion();
+            return adsService.getAdsForDeletion(filter, pagination);
         }
     }
 }

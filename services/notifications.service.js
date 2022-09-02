@@ -38,11 +38,13 @@ async function notificationDeleteRequest(id) {
     );
 }
 
-async function getNotificationsForDeletion() {
+async function getNotificationsForDeletion(filter, pagination) {
+    filter.requestedDeletion = true;
     return db.Notifications.findAll({
-        where: {
-            requestedDeletion: true,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.NotificationVisibilityPairs,
             as: "notificationsPairs",
@@ -58,12 +60,14 @@ async function deleteNotification(id) {
     });
 }
 
-async function getNotificationsForAuthor(authorId) {
+async function getNotificationsForAuthor(authorId, filter, pagination) {
+    filter.createdBy = authorId;
+    filter.isEmailNotification = false;
     return db.Notifications.findAll({
-        where: {
-            createdBy: authorId,
-            isEmailNotification: false,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.NotificationVisibilityPairs,
             as: "notificationsPairs",
@@ -71,16 +75,18 @@ async function getNotificationsForAuthor(authorId) {
     });
 }
 
-async function getNotificationsForGuest() {
+async function getNotificationsForGuest(filter, pagination) {
+    filter.visibility = NOTIFADVISIBILITYTYPES.ALL.name;
+    filter.isEmailNotification = false;
     return db.Notifications.findAll({
-        where: {
-            visibility: NOTIFADVISIBILITYTYPES.ALL.name,
-            isEmailNotification: false,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 
-async function getNotificationsForStartup(startupId, startupBusinessType) {
+async function getNotificationsForStartup(startupId, startupBusinessType, filter, pagination) {
     // const startupGroups = startupsGroupsService.getGroupsForStartup(startup.id);
     const notifIdsFromVisibilityPairs = await db.NotificationVisibilityPairs.findAll({
         where: {
@@ -96,19 +102,19 @@ async function getNotificationsForStartup(startupId, startupBusinessType) {
         // ]
         },
     });
-    // mutedInvestorIds get
+    filter.isEmailNotification = false;
+    filter[Op.or] = [{
+        visibility: NOTIFADVISIBILITYTYPES.ALL.name,
+    }, {
+        visibility: NOTIFADVISIBILITYTYPES.STARTUPSONLY.name,
+    }, {
+        id: notifIdsFromVisibilityPairs.map(pair => pair.dataValues.notificationsId),
+    }];
     return db.Notifications.findAll({
-        where: {
-            isEmailNotification: false,
-            // createdBy: {[Op.notIn]: mutedInvestorIds }
-            [Op.or]: [{
-                visibility: NOTIFADVISIBILITYTYPES.ALL.name,
-            }, {
-                visibility: NOTIFADVISIBILITYTYPES.STARTUPSONLY.name,
-            }, {
-                id: notifIdsFromVisibilityPairs.map(pair => pair.dataValues.notificationsId),
-            }]
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
     });
 }
 

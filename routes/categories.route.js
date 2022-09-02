@@ -1,35 +1,16 @@
 const lodash = require("lodash");
 const db = require("../models");
 const { validationResult } = require("express-validator");
-const notifsController = require("../controllers/notifications.controller");
+const categoriesController = require("../controllers/categories.controller");
 
-async function createNotification(req, res, next) {
-    const t = await db.sequelize.transaction();
+async function createCategory(req, res, next) {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const { title, text, isEmailNotification, visibility, visibilityPairObject } = req.body;
-        await notifsController.createNotification(req.userId, title, text, isEmailNotification, visibility, visibilityPairObject, t);
-        await t.commit();
-        res.status(200).json({
-            success: true,
-        });
-    } catch(err) {
-        await t.rollback();
-        next(err);
-    }
-}
-
-async function notificationDeleteRequest(req, res, next) {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errorCode: 422, errors: errors.array() });
-        }
-        const notificationId = req.params.notificationId;
-        await notifsController.notificationDeleteRequest(req.userId, notificationId);
+        const { name, dateFrom, dateTo, entityName } = req.body;
+        await categoriesController.createCategory(req.userId, name, dateFrom, dateTo, entityName);
         res.status(200).json({
             success: true,
         });
@@ -38,37 +19,53 @@ async function notificationDeleteRequest(req, res, next) {
     }
 }
 
-async function deleteNotification(req, res, next) {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errorCode: 422, errors: errors.array() });
-        }
-        // add log
-        const notificationId = req.params.notificationId;
-        // check if admin
-        await notifsController.deleteNotification(notificationId);
-        res.status(200).json({
-            success: true,
-        });
-    } catch(err) {
-        next(err);
-    }
-}
-
-async function getNotifications(req, res, next) {
+async function getCategories(req, res, next) {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const { pagination } = req.params;
-        const filterParams = ["title"];
+        const filterParams = ["name"];
         const filter = lodash.pick(req.query, filterParams);
-        const ads = await notifsController.getNotifications(req.userId, filter, pagination);
+        const { entityName, activeOnly } = req.body;
+        const categories = await categoriesController.getCategories(entityName, activeOnly, filter, pagination);
         res.status(200).json({
             success: true,
-            data: ads
+            data: categories,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getCategory(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const categoryId = req.params.categoryId;
+        const category = await categoriesController.getCategoryById(categoryId);
+        res.status(200).json({
+            success: true,
+            data: category,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function deleteCategory(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const categoryId = req.params.categoryId;
+        await categoriesController.deleteCategory(categoryId);
+        res.status(200).json({
+            success: true,
         });
     } catch(err) {
         next(err);
@@ -76,8 +73,8 @@ async function getNotifications(req, res, next) {
 }
 
 module.exports = {
-    createNotification,
-    notificationDeleteRequest,
-    deleteNotification,
-    getNotifications,
+    createCategory,
+    getCategories,
+    getCategory,
+    deleteCategory,
 };

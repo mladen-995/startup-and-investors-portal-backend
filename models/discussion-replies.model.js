@@ -27,6 +27,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
 
         DiscussionReplies.associate = function(models) {

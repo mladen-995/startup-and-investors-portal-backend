@@ -106,6 +106,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
 
         StartupUserProfiles.associate = function(models) {

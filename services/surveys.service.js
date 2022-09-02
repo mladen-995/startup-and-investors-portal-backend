@@ -81,11 +81,13 @@ async function getAnsweredUserSurveysForUserId(userId) {
     }); 
 }
 
-async function getSurveysWithIdNotInArray(notIds) {
+async function getSurveysWithIdNotInArray(notIds, filter, pagination) {
+    filter.id = {[Op.notIn]: notIds };
     return db.Surveys.findAll({
-        where: {
-            id: {[Op.notIn]: notIds }
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.SurveyQuestions,
             as: "surveyQuestions",
@@ -93,11 +95,13 @@ async function getSurveysWithIdNotInArray(notIds) {
     }); 
 }
 
-async function getSurveysWithIdInArray(ids) {
+async function getSurveysWithIdInArray(ids, filter, pagination) {
+    filter.id = ids;
     return db.Surveys.findAll({
-        where: {
-            id: ids,
-        },
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.SurveyQuestions,
             as: "surveyQuestions",
@@ -113,8 +117,12 @@ async function getSurveyQuestionAnswers(surveyQuestionId) {
     }); 
 }
 
-async function getAllSurveys() {
+async function getAllSurveys(filter, pagination) {
     return db.Surveys.findAll({
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.SurveyQuestions,
             as: "surveyQuestions",

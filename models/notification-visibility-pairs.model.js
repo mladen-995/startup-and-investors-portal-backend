@@ -18,6 +18,7 @@ module.exports = (sequelize, Sequelize) => {
         }, {
             underscored: true,
             timestamps: true,
+            paranoid: true,
         });
     
         NotificationVisibilityPairs.associate = function(models) {
