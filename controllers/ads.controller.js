@@ -55,10 +55,15 @@ async function getAds(userId, filter, pagination) {
     }
 }
 
+async function getAd(adId) {
+    return adsService.findAdById(adId);
+}
+
 module.exports = {
     createAd,
     adDeleteRequest,
     getAdsForDeletion,
     deleteAd,
     getAds,
+    getAd,
 };

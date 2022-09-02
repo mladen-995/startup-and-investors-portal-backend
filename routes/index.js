@@ -29,6 +29,7 @@ router.post("/ads", userMiddleware.checkUser, adValidators.createAd, ads.createA
 router.post("/ads/delete-request/:adId", userMiddleware.checkUser, adValidators.adDeleteRequest, ads.adDeleteRequest);
 router.delete("/ads/:adId", userMiddleware.checkUser, adValidators.deleteAd, ads.deleteAd);
 router.get("/ads", userMiddleware.addUserIdToReqIfExists, addPagination, ads.getAds);
+router.get("/ads/:adId", adValidators.getAd, ads.getAd);
 // check if investor or startup
 router.post("/news", userMiddleware.checkUser, newsValidators.createNews, news.createNews);
 router.post("/news/archive/:newsId", userMiddleware.checkUser, newsValidators.archiveNews, news.archiveNews);

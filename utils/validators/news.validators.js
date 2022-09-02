@@ -53,5 +53,5 @@ module.exports = {
         param("newsId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
-    ]
+    ],
 };

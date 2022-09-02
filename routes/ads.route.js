@@ -75,9 +75,27 @@ async function getAds(req, res, next) {
     }
 }
 
+async function getAd(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const adId = req.params.adId;
+        const ad = await adsController.getAd(adId);
+        res.status(200).json({
+            success: true,
+            data: ad
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 module.exports = {
     createAd,
     adDeleteRequest,
     deleteAd,
     getAds,
+    getAd,
 };
