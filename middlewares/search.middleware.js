@@ -1,7 +1,7 @@
 function addPagination(req, res, next) {
     let { limit, page, direction, orderBy } = req.query;
 
-    limit = limit || 10;
+    limit = limit || 100;
     page = page ? Math.abs(page - 1) : 0; // mozda samo page || 0
     direction = direction || "desc";
     orderBy = orderBy || "createdAt";
