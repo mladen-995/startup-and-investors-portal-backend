@@ -26,7 +26,7 @@ module.exports = (sequelize, Sequelize) => {
             },
             categoryId: {
                 type: Sequelize.UUID,
-                allowNull: false,
+                allowNull: true,
             },
             requestedDeletion: {
                 type: Sequelize.BOOLEAN,

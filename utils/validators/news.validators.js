@@ -4,7 +4,7 @@ const { ApplicationError } = require("../errors");
 
 module.exports = {
     createNews: [
-        body(["title", "text", "categoryId", "visibility"])
+        body(["title", "text", "visibility"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
 

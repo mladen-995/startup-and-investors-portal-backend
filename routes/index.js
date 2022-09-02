@@ -50,6 +50,7 @@ router.post("/discussions-reply/:parentId", userMiddleware.checkUser, discussion
 router.post("/discussions/delete-request/:discussionId", userMiddleware.checkUser, discussionsValidators.discussionDeleteRequest, discussions.discussionDeleteRequest);
 router.delete("/discussions/:discussionId", userMiddleware.checkUser, discussionsValidators.deleteDiscussion, discussions.deleteDiscussion);
 router.get("/discussions", userMiddleware.addUserIdToReqIfExists, addPagination, discussions.getDiscussions);
+router.get("/discussions/:discussionId", discussionsValidators.getDiscussion, discussions.getDiscussion);
 router.get("/discussions-for-author", userMiddleware.checkUser, addPagination, discussions.getDiscussionsForAuthor);
 router.get("/discussions-replies/:parentId", userMiddleware.checkUser, discussionsValidators.getDiscussionReplies, discussions.getDiscussionReplies);
 router.post("/surveys", userMiddleware.checkUser, surveysValidators.createSurvey, surveys.createSurvey);
@@ -57,7 +58,7 @@ router.post("/surveys/reject/:surveyId", userMiddleware.checkUser, surveysValida
 router.get("/surveys-questions/:surveyId", userMiddleware.checkUser, surveysValidators.getSurveyQuestions, surveys.getSurveyQuestions);
 router.post("/surveys/answer/:surveyId", userMiddleware.checkUser, surveysValidators.answerSurvey, surveys.answerSurvey);
 router.get("/surveys", userMiddleware.checkUser, addPagination, surveys.getSurveys);
-router.get("/surveys/:surveyId", userMiddleware.checkUser, surveysValidators.getSurvey, surveys.getSurvey);
+router.get("/surveys/:surveyId", surveysValidators.getSurvey, surveys.getSurvey);
 router.get("/surveys/question-answers/:questionId", userMiddleware.checkUser, surveysValidators.getSurveyQuestionAnswers, surveys.getSurveyQuestionAnswers);
 router.post("/categories", userMiddleware.checkUser, categoriesValidators.createCategory, categories.createCategory);
 router.get("/categories/", userMiddleware.checkUser, addPagination, categoriesValidators.getCategories, categories.getCategories);

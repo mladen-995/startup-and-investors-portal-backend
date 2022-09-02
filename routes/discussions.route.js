@@ -111,6 +111,25 @@ async function getDiscussions(req, res, next) {
     }
 }
 
+async function getDiscussion(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        // add log
+        const discussionId = req.params.discussionId;
+        // check if admin
+        const discussion = await discussionsController.getDiscussion(discussionId);
+        res.status(200).json({
+            success: true,
+            data: discussion,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function getDiscussionReplies(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -136,4 +155,5 @@ module.exports = {
     getDiscussions,
     getDiscussionsForAuthor,
     getDiscussionReplies,
+    getDiscussion,
 };

@@ -1,10 +1,18 @@
 const discussionsService = require("../services/discussions.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
-const { DISCUSSIONVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
+const categoriesService = require("../services/categories.service");
+const { DISCUSSIONVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
 
 async function createDiscussion(userId, title, text, categoryId, visibility, visibilityPairObject, transaction) {
+    const existingCategory = await categoriesService.getCategoryById(categoryId);
+    if (!existingCategory) {
+        throw new ApplicationError("Category not found!", 422);
+    }
+    if (existingCategory.entityName !== CATEGORYENTITITES.DISCUSSIONS) {
+        throw new ApplicationError("This category is for a diffrenet entity!", 422);
+    }
     const discussion = await discussionsService.createDiscussion(userId, title, text, categoryId, visibility, transaction);
     for (const type of Object.keys(DISCUSSIONVISIBILITYTYPES)) {
         if (DISCUSSIONVISIBILITYTYPES[type].name === visibility && DISCUSSIONVISIBILITYTYPES[type].hasPair) {
@@ -44,6 +52,10 @@ async function getDiscussionsForAuthor(id, filter, pagination) {
     return discussionsService.getDiscussionsForAuthor(id, filter, pagination);
 }
 
+async function getDiscussion(discussionId) {
+    return discussionsService.findDiscussionById(discussionId);
+}
+
 async function getDiscussions(userId, filter, pagination) {
     if (!userId) {
         return discussionsService.getDiscussionsForGuest(filter, pagination);
@@ -70,6 +82,7 @@ module.exports = {
     discussionDeleteRequest,
     getDiscussionsForAuthor,
     getDiscussionReplies,
+    getDiscussion,
     deleteDiscussion,
     getDiscussions,
 };

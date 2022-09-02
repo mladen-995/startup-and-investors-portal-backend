@@ -4,14 +4,13 @@ const { ApplicationError } = require("../errors");
 
 module.exports = {
     createDiscussion: [
-        body(["title", "text", "categoryId", "visibility"])
+        body(["title", "text", "visibility"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
 
     function(req, res, next) {
         // @TODO
         // add validators if pairValues exist
-        // categoryId exists!
         let discussionsVisibilityType;
         Object.keys(DISCUSSIONVISIBILITYTYPES).forEach((type) => {
             if (DISCUSSIONVISIBILITYTYPES[type].name === req.body.visibility) {
@@ -57,6 +56,11 @@ module.exports = {
     ],
     getDiscussionReplies: [
         param("parentId")
+            .notEmpty()
+            .withMessage("Please make sure you filled out all the fields."),
+    ],
+    getDiscussion: [
+        param("discussionId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
     ],

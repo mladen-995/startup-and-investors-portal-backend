@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
             },
             categoryId: {
                 type: Sequelize.UUID,
-                allowNull: false,
+                allowNull: true,
             },
             createdAt: {
                 type: Sequelize.DATE,
