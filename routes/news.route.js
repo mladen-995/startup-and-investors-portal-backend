@@ -82,7 +82,7 @@ async function getNews(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const { pagination } = req.params;
-        const filterParams = ["title", "categoryId"];
+        const filterParams = ["title", "categoryId", "requestedDeletion", "isArchived"];
         const filter = lodash.pick(req.query, filterParams);
         const news = await newsController.getNews(req.userId, filter, pagination);
         res.status(200).json({
@@ -111,31 +111,11 @@ async function getSingleNews(req, res, next) {
     }
 }
 
-async function getNewsForAuthor(req, res, next) {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errorCode: 422, errors: errors.array() });
-        }
-        const { pagination } = req.params;
-        const filterParams = ["title", "categoryId"];
-        const filter = lodash.pick(req.query, filterParams);
-        const news = await newsController.getNewsForAuthor(req.userId, filter, pagination);
-        res.status(200).json({
-            success: true,
-            data: news
-        });
-    } catch(err) {
-        next(err);
-    }
-}
-
 module.exports = {
     createNews,
     archiveNews,
     newsDeleteRequest,
     deleteNews,
     getNews,
-    getNewsForAuthor,
     getSingleNews,
 };

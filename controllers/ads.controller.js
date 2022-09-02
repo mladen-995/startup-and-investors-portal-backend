@@ -37,6 +37,8 @@ async function deleteAd(id) {
 
 async function getAds(userId, filter, pagination) {
     if (!userId) {
+        delete filter.requestedDeletion;
+        delete filter.isArchived;
         return adsService.getAdsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);

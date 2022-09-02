@@ -78,13 +78,20 @@ async function getNewsForStartup(startupId, filter, pagination) {
             pairId: startupId,
         },
     });
-    filter.isArchived = false;
     filter[Op.or] = [{
-        visibility: NEWSVISIBILITYTYPES.ALL.name,
+        createdBy: startupId,
     }, {
-        visibility: NEWSVISIBILITYTYPES.STARTUPSONLY.name,
-    }, {
-        id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
+        [Op.and]: [{
+            isArchived: false,
+            }, {
+                [Op.or]: [{
+                    visibility: NEWSVISIBILITYTYPES.ALL.name,
+                }, {
+                    visibility: NEWSVISIBILITYTYPES.STARTUPSONLY.name,
+                }, {
+                    id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
+                }]
+            }],
     }];
     return db.News.findAll({
         where: filter,
@@ -100,13 +107,20 @@ async function getNewsForInvestor(investorId, filter, pagination) {
             pairId: investorId,
         },
     });
-    filter.isArchived = false;
     filter[Op.or] = [{
-        visibility: NEWSVISIBILITYTYPES.ALL.name,
+        createdBy: investorId,
     }, {
-        visibility: NEWSVISIBILITYTYPES.INVESTORSONLY.name,
-    }, {
-        id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
+        [Op.and]: [{
+            isArchived: false,
+            }, {
+                [Op.or]: [{
+                    visibility: NEWSVISIBILITYTYPES.ALL.name,
+                }, {
+                    visibility: NEWSVISIBILITYTYPES.INVESTORSONLY.name,
+                }, {
+                    id: newsIdsFromVisibilityPairs.map(pair => pair.dataValues.newsId),
+                }]
+            }],
     }];
     return db.News.findAll({
         where: filter,
@@ -116,22 +130,7 @@ async function getNewsForInvestor(investorId, filter, pagination) {
     });
 }
 
-async function getNewsForDeletion(filter, pagination) {
-    filter.requestedDeletion = true;
-    return db.News.findAll({
-        where: filter,
-        limit: pagination.limit,
-        offset: pagination.offset,
-        order: [[pagination.orderBy, pagination.direction]],
-        include: {
-            model: db.NewsVisibilityPairs,
-            as: "newsPairs",
-        },
-    });
-}
-
-async function getNewsForAuthor(authorId, filter, pagination) {
-    filter.createdBy = authorId;
+async function getAllNews(filter, pagination) {
     return db.News.findAll({
         where: filter,
         limit: pagination.limit,
@@ -154,7 +153,6 @@ module.exports = {
     getNewsForGuest,
     getNewsForInvestor,
     getNewsForStartup,
-    getNewsForDeletion,
-    getNewsForAuthor,
+    getAllNews,
     getNewsByCategoryId,
 };

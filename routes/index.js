@@ -37,7 +37,6 @@ router.post("/news/delete-request/:newsId", userMiddleware.checkUser, newsValida
 router.delete("/news/:newsId", userMiddleware.checkUser, newsValidators.deleteNews, news.deleteNews);
 router.get("/news", userMiddleware.addUserIdToReqIfExists, addPagination, news.getNews);
 router.get("/news/:newsId", newsValidators.getSingleNews, news.getSingleNews);
-router.get("/news-for-author", userMiddleware.checkUser, addPagination, news.getNewsForAuthor);
 // check if user is investor
 router.post("/notifications", userMiddleware.checkUser, notifValidators.createNotif, notifs.createNotification);
 // check if user is admin

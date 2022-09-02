@@ -52,6 +52,8 @@ async function deleteNews(id) {
 
 async function getNews(userId, filter, pagination) {
     if (!userId) {
+        delete filter.requestedDeletion;
+        delete filter.isArchived;
         return newsService.getNewsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);
@@ -64,7 +66,7 @@ async function getNews(userId, filter, pagination) {
             return newsService.getNewsForStartup(userId, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return newsService.getNewsForDeletion(filter, pagination);
+            return newsService.getAllNews(filter, pagination);
         }
     }
 }
@@ -73,15 +75,11 @@ async function getSingleNews(newsId) {
     return newsService.findNewsById(newsId);
 }
 
-async function getNewsForAuthor(authorId, filter, pagination) {
-    return newsService.getNewsForAuthor(authorId, filter, pagination);
-}
-
 module.exports = {
     createNews,
     archiveNews,
     newsDeleteRequest,
+    getSingleNews,
     deleteNews,
     getNews,
-    getNewsForAuthor,
 };
