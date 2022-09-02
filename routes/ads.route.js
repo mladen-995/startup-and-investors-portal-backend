@@ -63,7 +63,7 @@ async function getAds(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const { pagination } = req.params;
-        const filterParams = ["title"];
+        const filterParams = ["title", "requestedDeletion", "isArchived"];
         const filter = lodash.pick(req.query, filterParams);
         const ads = await adsController.getAds(req.userId, filter, pagination);
         res.status(200).json({

@@ -43,14 +43,16 @@ async function getAds(userId, filter, pagination) {
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return adsService.getAdsForAuthor(userId, filter, pagination);
+            return adsService.getAdsForInvestor(userId, filter, pagination);
         }
         case ROLENAMES.STARTUP: {
+            delete filter.requestedDeletion;
+            delete filter.isArchived;
             const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
             return adsService.getAdsForStartup(userId, startupProfile.businessType, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return adsService.getAdsForDeletion(filter, pagination);
+            return adsService.getAllAds(filter, pagination);
         }
     }
 }

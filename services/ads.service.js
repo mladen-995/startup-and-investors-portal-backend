@@ -38,11 +38,7 @@ async function adDeleteRequest(id) {
     );
 }
 
-async function getAdsForDeletion(filter, pagination) {
-    filter.requestedDeletion = true;
-    filter.expiryDate = {
-        [Op.gte]: new Date(),
-    };
+async function getAllAds(filter, pagination) {
     return db.Ads.findAll({
         where: filter,
         limit: pagination.limit,
@@ -63,11 +59,18 @@ async function deleteAd(id) {
     });
 }
 
-async function getAdsForAuthor(authorId, filter, pagination) {
-    filter.createdBy = authorId;
-    filter.expiryDate = {
-        [Op.gte]: new Date(),
-    };
+async function getAdsForInvestor(authorId, filter, pagination) {
+    filter[Op.or] = [{
+        createdBy: authorId,
+    }, {
+        [Op.and]: [{
+                visibility: NOTIFADVISIBILITYTYPES.ALL.name,
+            }, {
+                expiryDate: {
+                    [Op.gte]: new Date(),
+                },
+            }],
+    }];
     return db.Ads.findAll({
         where: filter,
         limit: pagination.limit,
@@ -132,9 +135,9 @@ module.exports = {
     createAdVisibilityPair,
     findAdById,
     adDeleteRequest,
-    getAdsForDeletion,
+    getAllAds,
     deleteAd,
-    getAdsForAuthor,
+    getAdsForInvestor,
     getAdsForGuest,
     getAdsForStartup,
 };
