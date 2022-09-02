@@ -10,8 +10,8 @@ async function createNews(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-        const { title, text, newsCategory, visibility, visibilityPairObject } = req.body;
-        await newsController.createNews(req.userId, title, text, newsCategory, visibility, visibilityPairObject, t);
+        const { title, text, categoryId, visibility, visibilityPairObject } = req.body;
+        await newsController.createNews(req.userId, title, text, categoryId, visibility, visibilityPairObject, t);
         await t.commit();
         res.status(200).json({
             success: true,
@@ -82,9 +82,26 @@ async function getNews(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const { pagination } = req.params;
-        const filterParams = ["title", "newsCategory"];
+        const filterParams = ["title", "categoryId"];
         const filter = lodash.pick(req.query, filterParams);
         const news = await newsController.getNews(req.userId, filter, pagination);
+        res.status(200).json({
+            success: true,
+            data: news
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getSingleNews(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const newsId = req.params.newsId;
+        const news = await newsController.getSingleNews(newsId);
         res.status(200).json({
             success: true,
             data: news
@@ -101,7 +118,7 @@ async function getNewsForAuthor(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const { pagination } = req.params;
-        const filterParams = ["title", "newsCategory"];
+        const filterParams = ["title", "categoryId"];
         const filter = lodash.pick(req.query, filterParams);
         const news = await newsController.getNewsForAuthor(req.userId, filter, pagination);
         res.status(200).json({
@@ -120,4 +137,5 @@ module.exports = {
     deleteNews,
     getNews,
     getNewsForAuthor,
+    getSingleNews,
 };

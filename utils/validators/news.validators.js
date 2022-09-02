@@ -4,7 +4,7 @@ const { ApplicationError } = require("../errors");
 
 module.exports = {
     createNews: [
-        body(["title", "text", "newsCategory", "visibility"])
+        body(["title", "text", "categoryId", "visibility"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
 
@@ -40,6 +40,11 @@ module.exports = {
             .withMessage("Please make sure you filled out all the fields."),
     ],
     newsDeleteRequest: [
+        param("newsId")
+            .notEmpty()
+            .withMessage("Please make sure you filled out all the fields."),
+    ],
+    getSingleNews: [
         param("newsId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),

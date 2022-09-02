@@ -2,11 +2,11 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const { NEWSVISIBILITYTYPES } = require("../utils/consts");
 
-async function createNews(userId, title, text, newsCategory, visibility, transaction) {
+async function createNews(userId, title, text, categoryId, visibility, transaction) {
     return db.News.create({
         title,
         text,
-        newsCategory,
+        categoryId,
         visibility,
         createdBy: userId,
     }, { 

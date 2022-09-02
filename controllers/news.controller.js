@@ -1,11 +1,19 @@
 const newsService = require("../services/news.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
-const { NEWSVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
+const categoriesService = require("../services/categories.service");
+const { NEWSVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
 
-async function createNews(userId, title, text, newsCategory, visibility, visibilityPairObject, transaction) {
-    const news = await newsService.createNews(userId, title, text, newsCategory, visibility, transaction);
+async function createNews(userId, title, text, categoryId, visibility, visibilityPairObject, transaction) {
+    const existingCategory = await categoriesService.getCategoryById(categoryId);
+    if (!existingCategory) {
+        throw new ApplicationError("Category not found!", 422);
+    }
+    if (existingCategory.entityName !== CATEGORYENTITITES.NEWS) {
+        throw new ApplicationError("This category is for a diffrenet entity!", 422);
+    }
+    const news = await newsService.createNews(userId, title, text, categoryId, visibility, transaction);
     for (const type of Object.keys(NEWSVISIBILITYTYPES)) {
         if (NEWSVISIBILITYTYPES[type].name === visibility && NEWSVISIBILITYTYPES[type].hasPair) {
             visibilityPairObject.forEach(async (pairId) => {
@@ -53,6 +61,10 @@ async function getNews(userId, filter, pagination) {
             return newsService.getNewsForDeletion(filter, pagination);
         }
     }
+}
+
+async function getSingleNews(newsId) {
+    return newsService.findNewsById(newsId);
 }
 
 async function getNewsForAuthor(authorId, filter, pagination) {
