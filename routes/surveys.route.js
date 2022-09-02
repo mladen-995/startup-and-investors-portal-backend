@@ -82,7 +82,7 @@ async function getSurveys(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const { pagination } = req.params;
-        const filterParams = ["title", "public"];
+        const filterParams = ["title", "public", "requestedDeletion", "isArchived"];
         const filter = lodash.pick(req.query, filterParams);
         const { showAnswered, showUnanswered } = req.body;
         const surveys = await surveysController.getSurveys(req.userId, filter, pagination, showAnswered, showUnanswered);
