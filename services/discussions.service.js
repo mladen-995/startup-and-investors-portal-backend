@@ -63,8 +63,7 @@ async function discussionDeleteRequest(id) {
     );
 }
 
-async function getDiscussionsForDeletion(filter, pagination) {
-    filter.requestedDeletion = true;
+async function getAllDiscussions(filter, pagination) {
     return db.Discussions.findAll({
         where: filter,
         limit: pagination.limit,
@@ -116,13 +115,20 @@ async function getDiscussionsForStartup(startupId, filter, pagination) {
             pairId: startupId,
         },
     });
-    filter.isArchived = false;
     filter[Op.or] = [{
-                visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
+        createdBy: startupId,
+    }, {
+        [Op.and]: [{
+                isArchived: false,
             }, {
-                visibility: DISCUSSIONVISIBILITYTYPES.STARTUPSONLY.name,
-            }, {
-                id: discussionIdsFromVisibilityPairs.map(pair => pair.dataValues.discussionId),
+                [Op.or]: [{
+                    visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
+                }, {
+                    visibility: DISCUSSIONVISIBILITYTYPES.STARTUPSONLY.name,
+                }, {
+                    id: discussionIdsFromVisibilityPairs.map(pair => pair.dataValues.discussionId),
+        }],
+            }],
     }];
     // mutedInvestorIds get
     // createdBy: {[Op.notIn]: mutedInvestorIds }
@@ -140,11 +146,18 @@ async function getDiscussionsForInvestor(investorId, filter, pagination) {
             pairId: investorId,
         },
     });
-    filter.isArchived = false;
     filter[Op.or] = [{
-        visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
+        createdBy: investorId,
     }, {
-        id: discussionIdsFromVisibilityPairs.map(pair => pair.dataValues.discussionId),
+        [Op.and]: [{
+                isArchived: false,
+            }, {
+                [Op.or]: [{
+                    visibility: DISCUSSIONVISIBILITYTYPES.ALL.name,
+                }, {
+                    id: discussionIdsFromVisibilityPairs.map(pair => pair.dataValues.discussionId),
+                }],
+            }],
     }];
     return db.Discussions.findAll({
         where: filter,
@@ -160,7 +173,7 @@ module.exports = {
     createDiscussionReply,
     findDiscussionById,
     discussionDeleteRequest,
-    getDiscussionsForDeletion,
+    getAllDiscussions,
     deleteDiscussion,
     getDiscussionsForAuthor,
     getDiscussionsForGuest,

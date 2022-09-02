@@ -86,6 +86,7 @@ async function getNotificationsForInvestor(investorId, filter, pagination) {
 async function getNotificationsForGuest(filter, pagination) {
     filter.visibility = NOTIFADVISIBILITYTYPES.ALL.name;
     filter.isEmailNotification = false;
+    filter.isArchived = false;
     return db.Notifications.findAll({
         where: filter,
         limit: pagination.limit,

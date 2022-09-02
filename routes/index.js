@@ -52,7 +52,6 @@ router.post("/discussions/delete-request/:discussionId", userMiddleware.checkUse
 router.delete("/discussions/:discussionId", userMiddleware.checkUser, discussionsValidators.deleteDiscussion, discussions.deleteDiscussion);
 router.get("/discussions", userMiddleware.addUserIdToReqIfExists, addPagination, discussions.getDiscussions);
 router.get("/discussions/:discussionId", discussionsValidators.getDiscussion, discussions.getDiscussion);
-router.get("/discussions-for-author", userMiddleware.checkUser, addPagination, discussions.getDiscussionsForAuthor);
 router.get("/discussions-replies/:parentId", userMiddleware.checkUser, discussionsValidators.getDiscussionReplies, discussions.getDiscussionReplies);
 router.post("/surveys", userMiddleware.checkUser, surveysValidators.createSurvey, surveys.createSurvey);
 router.post("/surveys/reject/:surveyId", userMiddleware.checkUser, surveysValidators.rejectSurvey, surveys.rejectSurvey);

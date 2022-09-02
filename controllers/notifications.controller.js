@@ -38,6 +38,8 @@ async function deleteNotification(id) {
 
 async function getNotifications(userId, filter, pagination) {
     if (!userId) {
+        delete filter.requestedDeletion;
+        delete filter.isArchived;
         return notifsService.getNotificationsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);

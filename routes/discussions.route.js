@@ -99,7 +99,7 @@ async function getDiscussions(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const { pagination } = req.params;
-        const filterParams = ["title", "categoryId"];
+        const filterParams = ["title", "categoryId", "requestedDeletion", "isArchived"];
         const filter = lodash.pick(req.query, filterParams);
         const discussions = await discussionsController.getDiscussions(req.userId, filter, pagination);
         res.status(200).json({

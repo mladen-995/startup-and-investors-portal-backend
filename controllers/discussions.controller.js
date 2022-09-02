@@ -64,6 +64,8 @@ async function getDiscussion(discussionId) {
 
 async function getDiscussions(userId, filter, pagination) {
     if (!userId) {
+        delete filter.requestedDeletion;
+        delete filter.isArchived;
         return discussionsService.getDiscussionsForGuest(filter, pagination);
     }
     const user = await usersService.getUserById(userId);
@@ -77,7 +79,7 @@ async function getDiscussions(userId, filter, pagination) {
             return discussionsService.getDiscussionsForStartup(userId, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return discussionsService.getDiscussionsForDeletion(filter, pagination);
+            return discussionsService.getAllDiscussions(filter, pagination);
         }
     }
 }
