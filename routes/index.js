@@ -61,7 +61,7 @@ router.get("/surveys", userMiddleware.checkUser, addPagination, surveys.getSurve
 router.get("/surveys/:surveyId", surveysValidators.getSurvey, surveys.getSurvey);
 router.get("/surveys/question-answers/:questionId", userMiddleware.checkUser, surveysValidators.getSurveyQuestionAnswers, surveys.getSurveyQuestionAnswers);
 router.post("/categories", userMiddleware.checkUser, categoriesValidators.createCategory, categories.createCategory);
-router.get("/categories/", userMiddleware.checkUser, addPagination, categoriesValidators.getCategories, categories.getCategories);
+router.get("/categories", userMiddleware.checkUser, addPagination, categoriesValidators.getCategories, categories.getCategories);
 router.get("/categories/:categoryId", userMiddleware.checkUser, categoriesValidators.getCategory, categories.getCategory);
 router.delete("/categories/:categoryId", userMiddleware.checkUser, categoriesValidators.deleteCategory, categories.deleteCategory);
 router.post("/login", users.login);

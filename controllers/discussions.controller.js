@@ -6,14 +6,20 @@ const { DISCUSSIONVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../
 const { ApplicationError } = require("../utils/errors");
 
 async function createDiscussion(userId, title, text, categoryId, visibility, visibilityPairObject, transaction) {
-    const existingCategory = await categoriesService.getCategoryById(categoryId);
-    if (!existingCategory) {
-        throw new ApplicationError("Category not found!", 422);
+    if (categoryId) {
+        const existingCategory = await categoriesService.getCategoryById(categoryId);
+        if (!existingCategory) {
+            throw new ApplicationError("Category not found!", 422);
+        }
+        if (existingCategory.entityName !== CATEGORYENTITITES.DISCUSSIONS) {
+            throw new ApplicationError("This category is for a diffrenet entity!", 422);
+        }
+        const currentDateTime = new Date().getTime();
+        if (new Date(existingCategory.dateFrom).getTime() > currentDateTime || new Date(existingCategory.dateTo).getTime() < currentDateTime) {
+            throw new ApplicationError("This category is not currently active!", 422);
+        }
     }
-    if (existingCategory.entityName !== CATEGORYENTITITES.DISCUSSIONS) {
-        throw new ApplicationError("This category is for a diffrenet entity!", 422);
-    }
-    const discussion = await discussionsService.createDiscussion(userId, title, text, categoryId, visibility, transaction);
+    const discussion = await discussionsService.createDiscussion(userId, title, text, visibility, categoryId, transaction);
     for (const type of Object.keys(DISCUSSIONVISIBILITYTYPES)) {
         if (DISCUSSIONVISIBILITYTYPES[type].name === visibility && DISCUSSIONVISIBILITYTYPES[type].hasPair) {
             for (const pairId of visibilityPairObject) {

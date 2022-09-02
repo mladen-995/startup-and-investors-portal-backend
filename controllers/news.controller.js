@@ -6,14 +6,20 @@ const { NEWSVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../utils/
 const { ApplicationError } = require("../utils/errors");
 
 async function createNews(userId, title, text, categoryId, visibility, visibilityPairObject, transaction) {
-    const existingCategory = await categoriesService.getCategoryById(categoryId);
-    if (!existingCategory) {
-        throw new ApplicationError("Category not found!", 422);
-    }
-    if (existingCategory.entityName !== CATEGORYENTITITES.NEWS) {
-        throw new ApplicationError("This category is for a diffrenet entity!", 422);
-    }
-    const news = await newsService.createNews(userId, title, text, categoryId, visibility, transaction);
+    if (categoryId) {
+        const existingCategory = await categoriesService.getCategoryById(categoryId);
+        if (!existingCategory) {
+            throw new ApplicationError("Category not found!", 422);
+        }
+        if (existingCategory.entityName !== CATEGORYENTITITES.NEWS) {
+            throw new ApplicationError("This category is for a diffrenet entity!", 422);
+        }
+        const currentDateTime = new Date().getTime();
+        if (new Date(existingCategory.dateFrom).getTime() > currentDateTime || new Date(existingCategory.dateTo).getTime() < currentDateTime) {
+            throw new ApplicationError("This category is not currently active!", 422);
+        }
+    }   
+    const news = await newsService.createNews(userId, title, text, visibility, categoryId, transaction);
     for (const type of Object.keys(NEWSVISIBILITYTYPES)) {
         if (NEWSVISIBILITYTYPES[type].name === visibility && NEWSVISIBILITYTYPES[type].hasPair) {
             visibilityPairObject.forEach(async (pairId) => {
