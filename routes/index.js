@@ -44,6 +44,7 @@ router.post("/notifications", userMiddleware.checkUser, notifValidators.createNo
 router.post("/notifications/delete-request/:notificationId", userMiddleware.checkUser, notifValidators.notifDeleteRequest, notifs.notificationDeleteRequest);
 router.delete("/notifications/:notificationId", userMiddleware.checkUser, notifValidators.deleteNotif, notifs.deleteNotification);
 router.get("/notifications", userMiddleware.addUserIdToReqIfExists, addPagination, notifs.getNotifications);
+router.get("/notifications/:notificationId", notifValidators.getNotification, notifs.getNotification);
 // check if user is investor
 router.post("/discussions", userMiddleware.checkUser, discussionsValidators.createDiscussion, discussions.createDiscussion);
 router.post("/discussions-reply/:parentId", userMiddleware.checkUser, discussionsValidators.createDiscussionReply, discussions.createDiscussionReply);

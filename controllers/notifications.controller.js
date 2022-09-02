@@ -56,10 +56,15 @@ async function getNotifications(userId, filter, pagination) {
     }
 }
 
+async function getNotification(notificationId) {
+    return notifsService.findNotificationById(notificationId);
+}
+
 module.exports = {
     createNotification,
     notificationDeleteRequest,
     getNotificationsForDeletion,
     deleteNotification,
     getNotifications,
+    getNotification,
 };

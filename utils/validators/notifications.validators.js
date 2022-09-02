@@ -46,5 +46,10 @@ module.exports = {
         param("notificationId")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
-    ]
+    ],
+    getNotification: [
+        param("notificationId")
+            .notEmpty()
+            .withMessage("Please make sure you filled out all the fields."),
+    ],
 };

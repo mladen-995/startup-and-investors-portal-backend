@@ -65,10 +65,27 @@ async function getNotifications(req, res, next) {
         const { pagination } = req.params;
         const filterParams = ["title"];
         const filter = lodash.pick(req.query, filterParams);
-        const ads = await notifsController.getNotifications(req.userId, filter, pagination);
+        const notifications = await notifsController.getNotifications(req.userId, filter, pagination);
         res.status(200).json({
             success: true,
-            data: ads
+            data: notifications,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getNotification(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const notificationId = req.params.notificationId;
+        const notification = await notifsController.getNotification(notificationId);
+        res.status(200).json({
+            success: true,
+            data: notification
         });
     } catch(err) {
         next(err);
@@ -80,4 +97,5 @@ module.exports = {
     notificationDeleteRequest,
     deleteNotification,
     getNotifications,
+    getNotification,
 };
