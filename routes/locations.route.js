@@ -145,8 +145,11 @@ async function getMunicipalities(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
+        const { pagination } = req.params;
+        const filterParams = ["name"];
+        const filter = lodash.pick(req.query, filterParams);
         const cityId = req.params.cityId;
-        const result = await locationsController.getMunicipalities(cityId);
+        const result = await locationsController.getMunicipalities(cityId, filter, pagination);
         res.status(200).json({
             success: true,
             data: result,
