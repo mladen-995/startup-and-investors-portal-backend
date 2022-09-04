@@ -1,3 +1,4 @@
+const lodash = require("lodash");
 const usersController = require("../controllers/users.controller");
 const { validationResult } = require("express-validator");
 const db = require("../models");
@@ -23,8 +24,8 @@ async function registerInvestor(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
 
-        const user = getUserFromRequestBody(req, true);
-        const userProfile = getInvestorUserProfileFromRequestBody(req);
+        const user = getUserFromRequestObject(req.body, true);
+        const userProfile = getInvestorUserProfileFromRequestObject(req.body);
         await usersController.registerInvestor(user, userProfile, t);
         await t.commit();
         res.status(200).json({
@@ -44,8 +45,8 @@ async function registerStartup(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
 
-        const user = getUserFromRequestBody(req, true);
-        const userProfile = getStartupUserProfileFromRequestBody(req);
+        const user = getUserFromRequestObject(req.body, true);
+        const userProfile = getStartupUserProfileFromRequestObj(req.body);
         await usersController.registerStartup(user, userProfile, t);
         await t.commit();
         res.status(200).json({
@@ -67,10 +68,12 @@ async function updateInvestor(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
 
-        const user = getUserFromRequestBody(req);
+        const user = getUserFromRequestObject(req.body);
         user.id = userId;
-        const userProfile = getInvestorUserProfileFromRequestBody(req);
+        let userProfile = getInvestorUserProfileFromRequestObject(req.body);
         userProfile.userId = userId;
+        const userProfileFields = ["tin", "businessTypeId", "website", "legalEntityName", "phone"];
+        userProfile = lodash.pick(userProfile, userProfileFields);
         await usersController.updateInvestor(user, userProfile, t);
         await t.commit();
         res.status(200).json({
@@ -92,9 +95,9 @@ async function updateStartup(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
 
-        const user = getUserFromRequestBody(req);
+        const user = getUserFromRequestObject(req.body);
         user.id = userId;
-        const userProfile = getStartupUserProfileFromRequestBody(req);
+        const userProfile = getStartupUserProfileFromRequestObj(req.body);
         userProfile.userId = userId;
         await usersController.updateStartup(user, userProfile, t);
         await t.commit();
@@ -116,7 +119,7 @@ async function updateAdministrator(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
 
-        const user = getUserFromRequestBody(req);
+        const user = getUserFromRequestObject(req.body);
         user.id = userId;
         await usersController.updateAdministrator(user);
         res.status(200).json({
@@ -127,87 +130,53 @@ async function updateAdministrator(req, res, next) {
     }
 }
 
-function getUserFromRequestBody(req, includePassword = false) {
-    const { username, email, password, firstName, lastName, middleName } = req.body;
-    const res = { 
-        username,
-        email, 
-        firstName, 
-        lastName, 
-        middleName
-    };
-    if (includePassword) {
-        res.password = password;
+async function getInvestors(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { pagination } = req.params;
+        const userFilter = getUserFromRequestObject(req.query);
+        const profileFilter = getStartupUserProfileFromRequestObj(req.query, false, false);
+        const investors = await usersController.getInvestors(req.role, userFilter, profileFilter, pagination);
+        // obrisi username u pretrazi(osim adminu)
+        res.status(200).json({
+            success: true,
+            data: investors,
+        });
+    } catch(err) {
+        next(err);
     }
+}
+
+function getUserFromRequestObject(obj, includePassword = false) {
+    const userFields = ["username", "email", "firstName", "lastName", "middleName"];
+    if (includePassword) {
+        userFields.push("password");
+    }
+    const res = lodash.pick(obj, userFields);
     return res;
 }
 
-function getStartupUserProfileFromRequestBody(req) {
-    const { tin, legalEntityName, website, establishmentDate, registrationNumber,
-        address, municipality, city, country, phone, facebookLink, twitterLink,
-        linkedInLink, instagramLink, businessType, employeeNumber, currentCompanyPhase, 
-        lastThreeYearIncome, lastThreeYearProfit, projectProposal, requiredAmountOfMoney, 
-        intellectualPropertyStatus, patentInfo, logo } = req.body;
-    return {
-        tin, 
-        legalEntityName, 
-        website, 
-        establishmentDate, 
-        registrationNumber,
-        address, 
-        municipality, 
-        city, 
-        country, 
-        phone, 
-        facebookLink, 
-        twitterLink,
-        linkedInLink, 
-        instagramLink, 
-        businessType, 
-        employeeNumber, 
-        currentCompanyPhase, 
-        lastThreeYearIncome, 
-        lastThreeYearProfit, 
-        projectProposal, 
-        requiredAmountOfMoney, 
-        intellectualPropertyStatus, 
-        patentInfo, 
-        logo,
-    };
+function getStartupUserProfileFromRequestObj(obj) {
+    const userProfileFields = ["tin", "legalEntityName", "website", "establishmentDate", "registrationNumber",
+        "streetId", "streetNumberId", "municipalityId", "cityId", "countryId", "phone", "facebookLink", "twitterLink",
+        "linkedInLink", "instagramLink", "businessTypeId", "employeeNumber", "currentCompanyPhase", 
+        "lastThreeYearIncome", "lastThreeYearProfit", "projectProposal", "requiredAmountOfMoney", 
+        "intellectualPropertyStatus", "patentInfo", "logo", "areasOfInterestId", "profesionalSkillsId"];
+    const res = lodash.pick(obj, userProfileFields);
+    return res;
 }
 
-function getInvestorUserProfileFromRequestBody(req) {
-    const { tin, legalEntityName, website, establishmentDate, registrationNumber,
-        address, municipality, city, country, phone, facebookLink, twitterLink,
-        linkedInLink, instagramLink, businessType, employeeNumber, currentCompanyPhase, 
-        lastThreeYearIncome, lastThreeYearProfit, investorType, providedServiceTypes, 
-        minAmountOfMoney, maxAmountOfMoney, logo } = req.body;
-    return {
-        tin, 
-        legalEntityName, 
-        website, 
-        establishmentDate, 
-        registrationNumber,
-        address, 
-        municipality, 
-        city, 
-        country, 
-        phone, 
-        facebookLink, 
-        twitterLink,
-        linkedInLink, 
-        instagramLink, 
-        businessType, 
-        employeeNumber, 
-        currentCompanyPhase, 
-        lastThreeYearIncome, 
-        lastThreeYearProfit, 
-        investorType, 
-        providedServiceTypes, 
-        minAmountOfMoney, 
-        maxAmountOfMoney, 
-        logo,
-    };
+function getInvestorUserProfileFromRequestObject(obj) {
+    const userProfileFields = ["tin", "legalEntityName", "website", "establishmentDate", "registrationNumber",
+        "streetId", "streetNumberId", "municipalityId", "cityId", "countryId", "phone", "facebookLink", "twitterLink",
+        "linkedInLink", "instagramLink", "businessTypeId", "employeeNumber", "currentCompanyPhase", 
+        "lastThreeYearIncome", "lastThreeYearProfit", "investorType", "providedServiceTypes", 
+        "minAmountOfMoney", "maxAmountOfMoney", "logo"];
+    const res = lodash.pick(obj, userProfileFields);
+    return res;
 }
 
 module.exports = {
@@ -217,4 +186,5 @@ module.exports = {
     updateInvestor,
     updateStartup,
     updateAdministrator,
+    getInvestors,
 };

@@ -51,7 +51,7 @@ async function getAds(userId, filter, pagination) {
             delete filter.requestedDeletion;
             delete filter.isArchived;
             const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
-            return adsService.getAdsForStartup(userId, startupProfile.businessType, filter, pagination);
+            return adsService.getAdsForStartup(userId, startupProfile.businessTypeId, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
             return adsService.getAllAds(filter, pagination);

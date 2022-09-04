@@ -7,6 +7,8 @@ const discussions = require("./discussions.route");
 const surveys = require("./surveys.route");
 const categories = require("./categories.route");
 const startupGroups = require("./startup-groups.route");
+const locations = require("./locations.route");
+const ciphers = require("./ciphers.route");
 const userValidators = require("../utils/validators/users.validators");
 const adValidators = require("../utils/validators/ads.validators");
 const notifValidators = require("../utils/validators/notifications.validators");
@@ -15,6 +17,8 @@ const discussionsValidators = require("../utils/validators/discussions.validator
 const surveysValidators = require("../utils/validators/surveys.validators");
 const categoriesValidators = require("../utils/validators/categories.validators");
 const startupGroupsValidators = require("../utils/validators/startup-groups.validators");
+const locationsValidators = require("../utils/validators/locations.validators");
+const ciphersValidators = require("../utils/validators/ciphers.validators");
 const errorHandleUtil = require("../utils/error-handle-util");
 const userMiddleware = require("../middlewares/users.middleware");
 const { addPagination } = require("../middlewares/search.middleware");
@@ -22,6 +26,9 @@ const router = express.Router();
 
 router.post("/register-investor", userValidators.registerInvestor, users.registerInvestor);
 router.post("/register-startup", userValidators.registerStartup, users.registerStartup);
+
+// router.get("/startups");
+router.get("/investors", userMiddleware.checkUser, addPagination, users.getInvestors);
 
 router.put("/update-investor/:userId",userMiddleware.checkUser, userValidators.updateInvestor, users.updateInvestor);
 router.put("/update-startup/:userId", userMiddleware.checkUser, userValidators.updateStartup, users.updateStartup);
@@ -74,10 +81,40 @@ router.get("/categories", userMiddleware.checkUser, addPagination, categoriesVal
 router.get("/categories/:categoryId", userMiddleware.checkUser, categoriesValidators.getCategory, categories.getCategory);
 router.delete("/categories/:categoryId", userMiddleware.checkUser, categoriesValidators.deleteCategory, categories.deleteCategory);
 
-router.get("/startup-groups", userMiddleware.checkUser, startupGroups.getStartupGroups);
+router.get("/startup-groups", userMiddleware.checkUser, addPagination, startupGroups.getStartupGroups);
 router.get("/startup-groups/:groupId", userMiddleware.checkUser, startupGroupsValidators.getStartupGroup, startupGroups.getStartupGroup);
 router.post("/startup-groups", userMiddleware.checkUser, startupGroupsValidators.createStartupGroup, startupGroups.createStartupGroup);
 router.delete("/startup-groups/:groupId", userMiddleware.checkUser, startupGroupsValidators.deleteStartupGroup, startupGroups.deleteStartupGroup);
+
+router.get("/countries", userMiddleware.checkUser, addPagination, locations.getCountries);
+router.get("/countries/id/:countryId", userMiddleware.checkUser, locationsValidators.getCountry, locations.getCountry);
+router.post("/countries", userMiddleware.checkUser, locationsValidators.createCountry, locations.createCountry);
+router.delete("/countries/:countryId", userMiddleware.checkUser, locationsValidators.deleteCountry, locations.deleteCountry);
+
+router.get("/cities/:countryId", userMiddleware.checkUser, addPagination, locationsValidators.getCities, locations.getCities);
+router.get("/cities/id/:cityId", userMiddleware.checkUser, locationsValidators.getCity, locations.getCity);
+router.post("/cities", userMiddleware.checkUser, locationsValidators.createCity, locations.createCity);
+router.delete("/cities/:cityId", userMiddleware.checkUser, locationsValidators.deleteCity, locations.deleteCity);
+
+router.get("/municipalities/:cityId", userMiddleware.checkUser, addPagination, locationsValidators.getMunicipalities, locations.getMunicipalities);
+router.get("/municipalities/id/:municipalityId", userMiddleware.checkUser, locationsValidators.getMunicipality, locations.getMunicipality);
+router.post("/municipalities", userMiddleware.checkUser, locationsValidators.createMunicipality, locations.createMunicipality);
+router.delete("/municipalities/:municipalityId", userMiddleware.checkUser, locationsValidators.deleteMunicipality, locations.deleteMunicipality);
+
+router.get("/streets/:municipalityId", userMiddleware.checkUser, addPagination, locationsValidators.getStreets, locations.getStreets);
+router.get("/streets/id/:streetId", userMiddleware.checkUser, locationsValidators.getStreet, locations.getStreet);
+router.post("/streets", userMiddleware.checkUser, locationsValidators.createStreet, locations.createStreet);
+router.delete("/streets/:streetId", userMiddleware.checkUser, locationsValidators.deleteStreet, locations.deleteStreet);
+
+router.get("/street-numbers/:streetId", userMiddleware.checkUser, addPagination, locationsValidators.getStreetNumbers, locations.getStreetNumbers);
+router.get("/street-numbers/id/:streetNumberId", userMiddleware.checkUser, locationsValidators.getStreetNumber, locations.getStreetNumber);
+router.post("/street-numbers", userMiddleware.checkUser, locationsValidators.createStreetNumber, locations.createStreetNumber);
+router.delete("/street-numbers/:streetNumberId", userMiddleware.checkUser, locationsValidators.deleteStreetNumber, locations.deleteStreetNumber);
+
+router.get("/ciphers/:cipherTypeName", userMiddleware.checkUser, addPagination, ciphersValidators.getCiphers, ciphers.getCiphers);
+router.get("/ciphers/id/:cipherId", userMiddleware.checkUser, ciphersValidators.getCipher, ciphers.getCipher);
+router.post("/ciphers", userMiddleware.checkUser, ciphersValidators.createCipher, ciphers.createCipher);
+router.delete("/ciphers/:cipherId", userMiddleware.checkUser, ciphersValidators.deleteCipher, ciphers.deleteCipher);
 
 router.post("/login", users.login);
 

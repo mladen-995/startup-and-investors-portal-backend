@@ -55,6 +55,17 @@ async function registerStartup(user, userProfile, transaction = null) {
     await usersService.createStartupUserProfile(userProfile, transaction);
 }
 
+async function getInvestors(role, userFilter, profileFilter, pagination) {
+    let attributes;
+    if (role !== ROLENAMES.ADMINISTARTOR) {
+        delete userFilter.username;
+        attributes = {
+            exclude: ["username"],
+        };
+    }
+    return usersService.getInvestors(userFilter, profileFilter, pagination, attributes);
+}
+
 async function updateInvestor(user, userProfile, transaction = null) {
     await usersService.updateUser(user, transaction);
     await usersService.updateInvestorUserProfile(userProfile, transaction);
@@ -77,4 +88,5 @@ module.exports = {
     updateAdministrator,
     updateInvestor,
     updateStartup,
+    getInvestors,
 };

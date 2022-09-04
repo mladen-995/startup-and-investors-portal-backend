@@ -12,6 +12,25 @@ async function getUserByEmail(email) {
     });
 }
 
+async function getInvestors(userFilter, profileFilter, pagination, attributes) {
+    userFilter.roleId = 3;
+    const searchObject = {
+        where: userFilter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.InvestorUserProfiles,
+            as: "investorProfile",
+            where: profileFilter,
+        },
+    };
+    if (attributes) {
+        searchObject.attributes = attributes;
+    }
+    return db.Users.findAll(searchObject);
+}
+
 async function getUserByUsername(username) {
     return db.Users.findOne({
         where: {
@@ -106,6 +125,117 @@ async function updateInvestorUserProfile(userProfile, transaction = null) {
         );
 }
 
+async function getInvestorUserProfileByBusinessTypeId(businessTypeId) {
+    return db.InvestorUserProfiles.findOne({
+        where: {
+            businessTypeId: businessTypeId,
+        }
+    });
+}
+
+async function getInvestorUserProfileByCountryId(countryId) {
+    return db.InvestorUserProfiles.findOne({
+        where: {
+            countryId: countryId,
+        }
+    });
+}
+
+async function getInvestorUserProfileByCityId(cityId) {
+    return db.InvestorUserProfiles.findOne({
+        where: {
+            cityId: cityId,
+        }
+    });
+}
+
+async function getInvestorUserProfileByMunicipalityId(municipalityId) {
+    return db.InvestorUserProfiles.findOne({
+        where: {
+            municipalityId: municipalityId,
+        }
+    });
+}
+
+async function getInvestorUserProfileByStreetId(streetId) {
+    return db.InvestorUserProfiles.findOne({
+        where: {
+            streetId: streetId,
+        }
+    });
+}
+
+async function getInvestorUserProfileByStreetNumberId(streetNumberId) {
+    return db.InvestorUserProfiles.findOne({
+        where: {
+            streetNumberId: streetNumberId,
+        }
+    });
+}
+
+async function getStartupUserProfileByBusinessTypeId(businessTypeId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            businessTypeId: businessTypeId,
+        }
+    });
+}
+
+async function getStartupUserProfileByAreaOfInterestId(areasOfInterestId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            areasOfInterestId: areasOfInterestId,
+        }
+    });
+}
+
+async function getStartupUserProfileByProfesionalSkillId(profesionalSkillsId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            profesionalSkillsId: profesionalSkillsId,
+        }
+    });
+}
+
+async function getStartupUserProfileByCountryId(countryId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            countryId: countryId,
+        }
+    });
+}
+
+async function getStartupUserProfileByCityId(cityId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            cityId: cityId,
+        }
+    });
+}
+
+async function getStartupUserProfileByMunicipalityId(municipalityId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            municipalityId: municipalityId,
+        }
+    });
+}
+
+async function getStartupUserProfileByStreetId(streetId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            streetId: streetId,
+        }
+    });
+}
+
+async function getStartupUserProfileByStreetNumberId(streetNumberId) {
+    return db.StartupUserProfiles.findOne({
+        where: {
+            streetNumberId: streetNumberId,
+        }
+    });
+}
 
 function createUserJWTToken(id, username) {
     try {
@@ -135,6 +265,7 @@ module.exports = {
     getUserById,
     getInvestorUserProfilByUserId,
     getStartupUserProfilByUserId,
+    getInvestors,
     createUser,
     createUserJWTToken,
     decodeUserJWTToken,
@@ -144,4 +275,18 @@ module.exports = {
     updateStartupUserProfile,
     updateInvestorUserProfile,
     getUserAndProfile,
+    getInvestorUserProfileByBusinessTypeId,
+    getInvestorUserProfileByCountryId,
+    getInvestorUserProfileByCityId,
+    getInvestorUserProfileByMunicipalityId,
+    getInvestorUserProfileByStreetId,
+    getInvestorUserProfileByStreetNumberId,
+    getStartupUserProfileByAreaOfInterestId,
+    getStartupUserProfileByProfesionalSkillId,
+    getStartupUserProfileByBusinessTypeId,
+    getStartupUserProfileByCountryId,
+    getStartupUserProfileByCityId,
+    getStartupUserProfileByMunicipalityId,
+    getStartupUserProfileByStreetId,
+    getStartupUserProfileByStreetNumberId,
 };

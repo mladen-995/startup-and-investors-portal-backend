@@ -96,19 +96,17 @@ async function getNotificationsForGuest(filter, pagination) {
     });
 }
 
-async function getNotificationsForStartup(startupId, startupBusinessType, filter, pagination) {
+async function getNotificationsForStartup(startupId, startupBusinessTypeId, filter, pagination) {
     const startupGroupPairs = startupGroupsService.getStartupGroupPairsByStartupId(startupId);
     const notifIdsFromVisibilityPairs = await db.NotificationVisibilityPairs.findAll({
         where: {
             [Op.or]: [{
                 pairId: startupId,
-            }
-            // , {
-            //     pairId: startupBusinessType,
-            // } 
-            , {
+            }, {
+                pairId: startupBusinessTypeId,
+            }, {
                 pairId: startupGroupPairs.map(startupGroupPair => startupGroupPair.dataValues.startupId),
-            }
+            },
         ]
         },
     });

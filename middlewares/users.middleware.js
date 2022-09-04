@@ -1,7 +1,9 @@
 const usersService = require("../services/users.service");
+const rolesService = require("../services/roles.service");
+const { ROLENAMES } = require("../utils/consts")
 const { ApplicationError } = require("../utils/errors");
 
-function checkUser(req, res, next) {    
+async function checkUser(req, res, next) {    
     try {
         const token = req.headers.authorization;
         if (!token) {
@@ -9,18 +11,68 @@ function checkUser(req, res, next) {
         }
         const decodedToken = usersService.decodeUserJWTToken(token);
         req.userId = decodedToken.userId;
+        const user = await usersService.getUserById(req.userId);
+        const role = await rolesService.getRoleById(user.roleId);
+        req.role = role.name;
         next();
     } catch (err) {
         next(err);
     }
 }
 
-function addUserIdToReqIfExists(req, res, next) {    
+async function addUserIdToReqIfExists(req, res, next) {    
     try {
         const token = req.headers.authorization;
         if (token) {
             const decodedToken = usersService.decodeUserJWTToken(token);
             req.userId = decodedToken.userId;
+            const user = await usersService.getUserById(req.userId);
+            const role = await rolesService.getRoleById(user.roleId);
+            req.role = role.name;
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function checkIfAdministrator(req, res, next) {    
+    try {
+        if (req.role !== ROLENAMES.ADMINISTARTOR) {
+            throw new ApplicationError("Endpoint not permitted!", 401);
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function checkIfStartup(req, res, next) {    
+    try {
+        if (req.role !== ROLENAMES.STARTUP) {
+            throw new ApplicationError("Endpoint not permitted!", 401);
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function checkIfInvestor(req, res, next) {    
+    try {
+        if (req.role !== ROLENAMES.INVESTOR) {
+            throw new ApplicationError("Endpoint not permitted!", 401);
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function checkIfInvestorOrAdministrator(req, res, next) {    
+    try {
+        if (req.role !== ROLENAMES.INVESTOR && req.role !== ROLENAMES.ADMINISTARTOR) {
+            throw new ApplicationError("Endpoint not permitted!", 401);
         }
         next();
     } catch (err) {
@@ -31,4 +83,8 @@ function addUserIdToReqIfExists(req, res, next) {
 module.exports = {
     checkUser,
     addUserIdToReqIfExists,
+    checkIfAdministrator,
+    checkIfInvestor,
+    checkIfStartup,
+    checkIfInvestorOrAdministrator,
 };

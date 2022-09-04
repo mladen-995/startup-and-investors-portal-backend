@@ -97,17 +97,15 @@ async function getAdsForGuest(filter, pagination) {
     });
 }
 
-async function getAdsForStartup(startupId, startupBusinessType, filter, pagination) {
+async function getAdsForStartup(startupId, startupBusinessTypeId, filter, pagination) {
     const startupGroupPairs = startupGroupsService.getStartupGroupPairsByStartupId(startupId);
     const adIdsFromVisibilityPairs = await db.AdVisibilityPairs.findAll({
         where: {
             [Op.or]: [{
                 pairId: startupId,
-            }
-            // , {
-            //     pairId: startupBusinessType,
-            // }, 
-            , {
+            }, {
+                pairId: startupBusinessTypeId,
+            }, {
                 pairId: startupGroupPairs.map(startupGroupPair => startupGroupPair.dataValues.startupId),
             }
         ]

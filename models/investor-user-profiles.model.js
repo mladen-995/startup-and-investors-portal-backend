@@ -27,20 +27,24 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            address: {
-                type: Sequelize.STRING,
+            streetNumberId: {
+                type: Sequelize.UUID,
                 allowNull: false,
             },
-            municipality: {
-                type: Sequelize.STRING,
+            streetId: {
+                type: Sequelize.UUID,
                 allowNull: false,
             },
-            city: {
-                type: Sequelize.STRING,
+            municipalityId: {
+                type: Sequelize.UUID,
                 allowNull: false,
             },
-            country: {
-                type: Sequelize.STRING,
+            cityId: {
+                type: Sequelize.UUID,
+                allowNull: false,
+            },
+            countryId: {
+                type: Sequelize.UUID,
                 allowNull: false,
             },
             phone: {
@@ -49,22 +53,26 @@ module.exports = (sequelize, Sequelize) => {
             },
             facebookLink: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
+                defaultValue: null,
             },
             twitterLink: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
+                defaultValue: null,
             },
             linkedInLink: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
+                defaultValue: null,
             },
             instagramLink: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
+                defaultValue: null,
             },
-            businessType: {
-                type: Sequelize.STRING,
+            businessTypeId: {
+                type: Sequelize.UUID,
                 allowNull: false,
             },
             employeeNumber: {
@@ -101,8 +109,14 @@ module.exports = (sequelize, Sequelize) => {
             },
             logo: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
+                defaultValue: null,
             },
+            canSearchStartups: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            }
         }, {
             underscored: true,
             timestamps: true,
@@ -113,7 +127,37 @@ module.exports = (sequelize, Sequelize) => {
             models.InvestorUserProfiles.belongsTo(models.Users, {
                 foreignKey: "userId",
                 targetKey: "id",
-                as: "user",
+                as: "investorProfile",
+            });
+            models.InvestorUserProfiles.belongsTo(models.StreetNumbers, {
+                foreignKey: "streetNumberId",
+                targetKey: "id",
+                as: "streetNumberInvestorUserProfiles",
+            });
+            models.InvestorUserProfiles.belongsTo(models.Streets, {
+                foreignKey: "streetId",
+                targetKey: "id",
+                as: "streetInvestorUserProfiles",
+            });
+            models.InvestorUserProfiles.belongsTo(models.Municipalities, {
+                foreignKey: "municipalityId",
+                targetKey: "id",
+                as: "municipalityInvestorUserProfiles",
+            });
+            models.InvestorUserProfiles.belongsTo(models.Cities, {
+                foreignKey: "cityId",
+                targetKey: "id",
+                as: "cityInvestorUserProfiles",
+            });
+            models.InvestorUserProfiles.belongsTo(models.Countries, {
+                foreignKey: "countryId",
+                targetKey: "id",
+                as: "countryInvestorUserProfiles",
+            });
+            models.InvestorUserProfiles.belongsTo(models.Ciphers, {
+                foreignKey: "businessTypeId",
+                targetKey: "id",
+                as: "businessTypesInvestors",
             });
         };
 

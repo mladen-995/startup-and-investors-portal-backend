@@ -39,6 +39,16 @@ module.exports = (sequelize, Sequelize) => {
             roleId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+            },
+            lastLoginAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
+            },
+            approved: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
             }
         }, {
             underscored: true,

@@ -77,10 +77,17 @@ const CATEGORYENTITITES = {
     DISCUSSIONS: "discussions",
 };
 
+const CYPHERTYPES = {
+    BUSINESSTYPES: "businessTypes",
+    AREASOFINTEREST: "areasOfInterest",
+    PROFESSIONALSKILLS: "profesionalSkills",
+};
+
 module.exports = {
     ROLENAMES,
     NOTIFADVISIBILITYTYPES,
     NEWSVISIBILITYTYPES,
     DISCUSSIONVISIBILITYTYPES,
     CATEGORYENTITITES,
+    CYPHERTYPES,
 };

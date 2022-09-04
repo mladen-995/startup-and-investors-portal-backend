@@ -50,7 +50,7 @@ async function getNotifications(userId, filter, pagination) {
         }
         case ROLENAMES.STARTUP: {
             const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
-            return notifsService.getNotificationsForStartup(userId, startupProfile.businessType, filter, pagination);
+            return notifsService.getNotificationsForStartup(userId, startupProfile.businessTypeId, filter, pagination);
         }
         case ROLENAMES.ADMINISTARTOR: {
             return notifsService.getAllNotifications(filter, pagination);
