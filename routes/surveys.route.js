@@ -102,7 +102,7 @@ async function getSurvey(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const surveyId = req.params.surveyId;
-        const survey = await surveysController.getSurvey(req.userId, surveyId);
+        const survey = await surveysController.getSurvey(surveyId);
         res.status(200).json({
             success: true,
             data: survey,
