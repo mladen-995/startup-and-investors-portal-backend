@@ -52,5 +52,20 @@ module.exports = {
         param("investorId")
         .notEmpty()
         .withMessage("Please make sure you filled out all the fields."),
+    ],
+    getStartupPublicFields: [
+        param("startupId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    updateStartupPublicFields: [
+        param("startupId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    getStartup: [
+        param("startupId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
     ]
 };

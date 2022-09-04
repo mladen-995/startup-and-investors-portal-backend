@@ -30,6 +30,12 @@ const NOTIFADVISIBILITYTYPES = {
     },
 };
 
+const STARTUPPOENTIALYPRIVATEFIELDS = {
+    USER: ["firstName", "middleName", "lastName", "email"],
+    USERPROFILE: ["tin", "legalEntityName", "website", "establishmentDate", "registrationNumber", "streetNumberId", "streetId", 
+        "municipalityId", "cityId", "countryId", "phone", "businessTypeId"],
+};
+
 const NEWSVISIBILITYTYPES = {
     INVESTORIDS: {
         name: 'investorIds',
@@ -90,4 +96,5 @@ module.exports = {
     DISCUSSIONVISIBILITYTYPES,
     CATEGORYENTITITES,
     CYPHERTYPES,
+    STARTUPPOENTIALYPRIVATEFIELDS,
 };

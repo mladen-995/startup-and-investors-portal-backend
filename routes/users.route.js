@@ -2,6 +2,7 @@ const lodash = require("lodash");
 const usersController = require("../controllers/users.controller");
 const { validationResult } = require("express-validator");
 const db = require("../models");
+const { STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts");
 
 async function login(req, res, next) {
     try {
@@ -138,7 +139,7 @@ async function getInvestors(req, res, next) {
         }
         const { pagination } = req.params;
         const userFilter = getUserFromRequestObject(req.query);
-        const profileFilter = getStartupUserProfileFromRequestObj(req.query, false, false);
+        const profileFilter = getInvestorUserProfileFromRequestObject(req.query, false, false);
         const investors = await usersController.getInvestors(req.role, userFilter, profileFilter, pagination);
         // obrisi username u pretrazi(osim adminu)
         res.status(200).json({
@@ -161,6 +162,77 @@ async function getInvestor(req, res, next) {
         res.status(200).json({
             success: true,
             data: investor,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getStartups(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { pagination } = req.params;
+        const userFilter = getUserFromRequestObject(req.query);
+        const profileFilter = getStartupUserProfileFromRequestObj(req.query, false, false);
+        const startups = await usersController.getStartups(req.role, userFilter, profileFilter, pagination);
+        // obrisi username u pretrazi(osim adminu)
+        res.status(200).json({
+            success: true,
+            data: startups,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getStartup(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const startupId = req.params.startupId;
+        const startup = await usersController.getStartup(req.role, startupId);
+        res.status(200).json({
+            success: true,
+            data: startup,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getStartupPublicFields(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const startupId = req.params.startupId;
+        const startupPublicFields = await usersController.getStartupPublicFields(startupId);
+        res.status(200).json({
+            success: true,
+            data: startupPublicFields,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function updateStartupPublicFields(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const startupPublicFields = lodash.pick(req.body, STARTUPPOENTIALYPRIVATEFIELDS.USER.concat(STARTUPPOENTIALYPRIVATEFIELDS.USERPROFILE));
+        const startupId = req.params.startupId;
+        await usersController.updateStartupPublicFields(startupId, startupPublicFields);
+        res.status(200).json({
+            success: true,
         });
     } catch(err) {
         next(err);
@@ -205,4 +277,8 @@ module.exports = {
     updateAdministrator,
     getInvestors,
     getInvestor,
+    getStartupPublicFields,
+    updateStartupPublicFields,
+    getStartups,
+    getStartup,
 };

@@ -134,6 +134,10 @@ module.exports = (sequelize, Sequelize) => {
                 targetKey: "id",
                 as: "startupProfile",
             });
+            models.StartupUserProfiles.hasOne(models.StartupPublicFields, {
+                foreignKey: "userId",
+                as: "startupPublicFields",
+            });
             models.StartupUserProfiles.hasMany(models.StartupGroupPairs, {
                 foreignKey: "startupId",
                 as: "startupGroupPairs",

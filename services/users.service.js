@@ -41,11 +41,67 @@ async function getInvestor(id, isAdmin) {
             model: db.InvestorUserProfiles,
             as: "investorProfile",
         },
+        attributes: {
+            exclude: ["password"],
+        }
     };
     if (!isAdmin) {
-        searchObject.attributes = {
-            exclude: ["username"],
-        };
+        searchObject.attributes.exclude.push("username");
+    }
+    return db.Users.findOne(searchObject);
+}
+
+async function getStartups(userFilter, profileFilter, startupFieldsFilter, pagination, attributes) {
+    userFilter.roleId = 2;
+    
+    const searchObject = {
+        where: userFilter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.StartupUserProfiles,
+            as: "startupProfile",
+            where: profileFilter,
+            include: {
+                model: db.StartupPublicFields,
+                as: "startupPublicFields",
+                where: startupFieldsFilter,
+                attributes: {
+                    exclude: ["userId", "createdAt", "updatedAt", "deletedAt"]
+                }
+            }
+        },
+    };
+    if (attributes) {
+        searchObject.attributes = attributes;
+    }
+    return db.Users.findAll(searchObject);
+}
+
+async function getStartup(id, isAdmin) {
+    const searchObject = {
+        where: {
+            roleId: 2,
+            id
+        },
+        include: {
+            model: db.StartupUserProfiles,
+            as: "startupProfile",
+            include: {
+                model: db.StartupPublicFields,
+                as: "startupPublicFields",
+                attributes: {
+                    exclude: ["userId", "createdAt", "updatedAt", "deletedAt"]
+                }
+            }
+        },
+        attributes: {
+            exclude: ["password"],
+        }
+    };
+    if (!isAdmin) {
+        searchObject.attributes.exclude.push("username");
     }
     return db.Users.findOne(searchObject);
 }
@@ -123,11 +179,25 @@ async function createStartupUserProfile(userProfile, transaction = null) {
         );
 }
 
+async function createStartupUserPublicFields(userId, transaction = null) {
+    return db.StartupPublicFields.create(
+        { userId },
+        { transaction: transaction },
+        );
+}
+
 async function updateUser(user, transaction = null) {
     return db.Users.update(
         user,
         { where: { id: user.id }, transaction: transaction }
         );
+}
+
+async function setUserLastLoginAt(id) {
+    return db.Users.update(
+        { lastLoginAt: new Date() },
+        { where: { id: id }, }
+    );
 }
 
 async function updateStartupUserProfile(userProfile, transaction = null) {
@@ -256,6 +326,21 @@ async function getStartupUserProfileByStreetNumberId(streetNumberId) {
     });
 }
 
+async function getStartupPublicFields(userId) {
+    return db.StartupPublicFields.findOne({
+        where: {
+            userId,
+        }
+    });
+}
+
+async function updateStartupPublicFields(startupId, startupPublicFields) {
+    return db.StartupPublicFields.update(
+        startupPublicFields,
+        { where: { userId: startupId }}
+        );
+}
+
 function createUserJWTToken(id, username) {
     try {
         return jwt.sign(
@@ -279,6 +364,8 @@ function decodeUserJWTToken(token) {
 }
 
 module.exports = {
+    getStartupPublicFields,
+    createStartupUserPublicFields,
     getUserByUsername,
     getUserByEmail,
     getUserById,
@@ -291,6 +378,7 @@ module.exports = {
     decodeUserJWTToken,
     createInvestorUserProfile,
     createStartupUserProfile,
+    setUserLastLoginAt,
     updateUser,
     updateStartupUserProfile,
     updateInvestorUserProfile,
@@ -309,4 +397,7 @@ module.exports = {
     getStartupUserProfileByMunicipalityId,
     getStartupUserProfileByStreetId,
     getStartupUserProfileByStreetNumberId,
+    updateStartupPublicFields,
+    getStartups,
+    getStartup,
 };

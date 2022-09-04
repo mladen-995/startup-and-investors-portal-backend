@@ -27,9 +27,15 @@ const router = express.Router();
 router.post("/register-investor", userValidators.registerInvestor, users.registerInvestor);
 router.post("/register-startup", userValidators.registerStartup, users.registerStartup);
 
-// router.get("/startups");
 router.get("/investors", userMiddleware.checkUser, addPagination, users.getInvestors);
 router.get("/investors/:investorId", userMiddleware.checkUser, userValidators.getInvestor, users.getInvestor);
+
+router.get("/startups", userMiddleware.checkUser, addPagination, users.getStartups);
+router.get("/startups/:startupId", userMiddleware.checkUser, userValidators.getStartup, users.getStartup);
+
+router.get("/startup-public-fields/:startupId", userMiddleware.checkUser, userValidators.getStartupPublicFields, users.getStartupPublicFields);
+// check if self call
+router.put("/startup-public-fields/:startupId", userMiddleware.checkUser, userValidators.updateStartupPublicFields, users.updateStartupPublicFields);
 
 router.put("/update-investor/:userId",userMiddleware.checkUser, userValidators.updateInvestor, users.updateInvestor);
 router.put("/update-startup/:userId", userMiddleware.checkUser, userValidators.updateStartup, users.updateStartup);
