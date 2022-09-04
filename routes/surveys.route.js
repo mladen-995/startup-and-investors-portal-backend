@@ -75,6 +75,14 @@ async function answerSurvey(req, res, next) {
     }
 }
 
+const castToBoolean = (value) => {
+    if (!value) {
+        return false;
+    }
+
+    return value.toLowerCase() === 'true';
+};
+
 async function getSurveys(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -85,7 +93,14 @@ async function getSurveys(req, res, next) {
         const filterParams = ["title", "public", "requestedDeletion", "isArchived"];
         const filter = lodash.pick(req.query, filterParams);
         const { showAnswered, showUnanswered } = req.query;
-        const surveys = await surveysController.getSurveys(req.userId, filter, pagination, showAnswered, showUnanswered);
+
+        const surveys = await surveysController.getSurveys(
+          req.userId,
+          filter,
+          pagination,
+          castToBoolean(showAnswered),
+          castToBoolean(showUnanswered)
+        );
         res.status(200).json({
             success: true,
             data: surveys,
