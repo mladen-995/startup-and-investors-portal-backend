@@ -29,6 +29,7 @@ router.post("/register-startup", userValidators.registerStartup, users.registerS
 
 // router.get("/startups");
 router.get("/investors", userMiddleware.checkUser, addPagination, users.getInvestors);
+router.get("/investors/:investorId", userMiddleware.checkUser, userValidators.getInvestor, users.getInvestor);
 
 router.put("/update-investor/:userId",userMiddleware.checkUser, userValidators.updateInvestor, users.updateInvestor);
 router.put("/update-startup/:userId", userMiddleware.checkUser, userValidators.updateStartup, users.updateStartup);

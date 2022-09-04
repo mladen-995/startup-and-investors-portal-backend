@@ -150,6 +150,23 @@ async function getInvestors(req, res, next) {
     }
 }
 
+async function getInvestor(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const investorId = req.params.investorId;
+        const investor = await usersController.getInvestor(req.role, investorId);
+        res.status(200).json({
+            success: true,
+            data: investor,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 function getUserFromRequestObject(obj, includePassword = false) {
     const userFields = ["username", "email", "firstName", "lastName", "middleName"];
     if (includePassword) {
@@ -187,4 +204,5 @@ module.exports = {
     updateStartup,
     updateAdministrator,
     getInvestors,
+    getInvestor,
 };

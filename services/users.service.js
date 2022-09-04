@@ -31,6 +31,25 @@ async function getInvestors(userFilter, profileFilter, pagination, attributes) {
     return db.Users.findAll(searchObject);
 }
 
+async function getInvestor(id, isAdmin) {
+    const searchObject = {
+        where: {
+            roleId: 3,
+            id
+        },
+        include: {
+            model: db.InvestorUserProfiles,
+            as: "investorProfile",
+        },
+    };
+    if (!isAdmin) {
+        searchObject.attributes = {
+            exclude: ["username"],
+        };
+    }
+    return db.Users.findOne(searchObject);
+}
+
 async function getUserByUsername(username) {
     return db.Users.findOne({
         where: {
@@ -266,6 +285,7 @@ module.exports = {
     getInvestorUserProfilByUserId,
     getStartupUserProfilByUserId,
     getInvestors,
+    getInvestor,
     createUser,
     createUserJWTToken,
     decodeUserJWTToken,

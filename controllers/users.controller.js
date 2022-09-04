@@ -66,6 +66,11 @@ async function getInvestors(role, userFilter, profileFilter, pagination) {
     return usersService.getInvestors(userFilter, profileFilter, pagination, attributes);
 }
 
+async function getInvestor(role, investorId) {
+    const isAdmin = role === ROLENAMES.ADMINISTARTOR;
+    return usersService.getInvestor(investorId, isAdmin);
+}
+
 async function updateInvestor(user, userProfile, transaction = null) {
     await usersService.updateUser(user, transaction);
     await usersService.updateInvestorUserProfile(userProfile, transaction);
@@ -89,4 +94,5 @@ module.exports = {
     updateInvestor,
     updateStartup,
     getInvestors,
+    getInvestor,
 };

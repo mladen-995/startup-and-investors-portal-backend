@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 
 module.exports = {
     registerInvestor: [
@@ -48,4 +48,9 @@ module.exports = {
         body("middleName")
             .optional(),
     ],
+    getInvestor: [
+        param("investorId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ]
 };
