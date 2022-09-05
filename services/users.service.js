@@ -77,14 +77,38 @@ async function getStartups(userFilter, profileFilter, startupFieldsFilter, pagin
             model: db.StartupUserProfiles,
             as: "startupProfile",
             where: profileFilter,
-            include: {
+            include: [{
                 model: db.StartupPublicFields,
                 as: "startupPublicFields",
                 where: startupFieldsFilter,
                 attributes: {
                     exclude: ["userId", "createdAt", "updatedAt", "deletedAt"]
                 }
-            }
+            }, {
+                model: db.StreetNumbers,
+                as: "streetNumberStartupUserProfiles"
+            }, {
+                model: db.Streets,
+                as: "streetStartupUserProfiles",
+            }, {
+                model: db.Municipalities,
+                as: "municipalityStartupUserProfiles",
+            }, {
+                model: db.Cities,
+                as: "cityStartupUserProfiles",
+            }, {
+                model: db.Countries,
+                as: "countryStartupUserProfiles",
+            }, {
+                model: db.Ciphers,
+                as: "businessTypesStartups",
+            }, {
+                model: db.Ciphers,
+                as: "areasOfInterestsStartups",
+            }, {
+                model: db.Ciphers,
+                as: "profesionalSkillsStartups",
+            }]
         },
     };
     if (attributes) {

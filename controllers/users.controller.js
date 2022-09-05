@@ -152,6 +152,7 @@ async function getStartups(userId, role, userFilter, profileFilter, pagination) 
     const startups = await usersService.getStartups(userFilter, profileFilter, startupFieldsFilter, pagination, attributes);
     for (let i = 0; i < startups.length; i++) {
         removePrivateFieldsFromStartup(startups[i]);
+        formatUserProfile(startups[i].dataValues.startupProfile);
     }
     return startups;
 }
@@ -269,6 +270,42 @@ async function _canSearchStartups(investorId, role) {
         return investor.investorProfile.canSearchStartups;
     }
     return true;
+}
+
+
+function formatUserProfile(userProfile) {
+    if (userProfile.streetNumberStartupUserProfiles) {
+        userProfile.dataValues.streetNumber = userProfile.streetNumberStartupUserProfiles.name;
+        delete userProfile.dataValues.streetNumberStartupUserProfiles;
+    }
+    if (userProfile.streetStartupUserProfiles) {
+        userProfile.dataValues.street = userProfile.streetStartupUserProfiles.name;
+        delete userProfile.dataValues.streetStartupUserProfiles;
+    }
+    if (userProfile.municipalityStartupUserProfiles) {
+        userProfile.dataValues.municipality = userProfile.municipalityStartupUserProfiles.name;
+        delete userProfile.dataValues.municipalityStartupUserProfiles;
+    }
+    if (userProfile.cityStartupUserProfiles) {
+        userProfile.dataValues.city = userProfile.cityStartupUserProfiles.name;
+        delete userProfile.dataValues.cityStartupUserProfiles;
+    }
+    if (userProfile.countryStartupUserProfiles) {
+        userProfile.dataValues.country = userProfile.countryStartupUserProfiles.name;
+        delete userProfile.dataValues.countryStartupUserProfiles;
+    }
+    if (userProfile.businessTypesStartups) {
+        userProfile.dataValues.businessType = userProfile.businessTypesStartups.name;
+        delete userProfile.dataValues.businessTypesStartups;
+    }
+    if (userProfile.areasOfInterestsStartups) {
+        userProfile.dataValues.areasOfInterest = userProfile.areasOfInterestsStartups.name;
+        delete userProfile.dataValues.areasOfInterestsStartups;
+    }
+    if (userProfile.profesionalSkillsStartups) {
+        userProfile.dataValues.profesionalSkills = userProfile.profesionalSkillsStartups.name;
+        delete userProfile.dataValues.profesionalSkillsStartups;
+    }
 }
 
 module.exports = {
