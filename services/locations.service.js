@@ -24,7 +24,12 @@ async function createCountry(userId, name) {
     });
 }
 
-async function deleteCountry(id) {
+async function deleteCountry(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Country",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Countries.destroy({
         where: {
             id,
@@ -58,7 +63,12 @@ async function createCity(userId, name, countryId) {
     });
 }
 
-async function deleteCity(id) {
+async function deleteCity(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "City",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Cities.destroy({
         where: {
             id,
@@ -92,7 +102,12 @@ async function createMunicipality(userId, name, cityId) {
     });
 }
 
-async function deleteMunicipality(id) {
+async function deleteMunicipality(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Municipality",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Municipalities.destroy({
         where: {
             id,
@@ -126,7 +141,12 @@ async function createStreet(userId, name, municipalityId) {
     });
 }
 
-async function deleteStreet(id) {
+async function deleteStreet(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Street",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Streets.destroy({
         where: {
             id,
@@ -160,7 +180,12 @@ async function createStreetNumber(userId, name, streetId) {
     });
 }
 
-async function deleteStreetNumber(id) {
+async function deleteStreetNumber(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "StreetNumber",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.StreetNumbers.destroy({
         where: {
             id,

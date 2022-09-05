@@ -12,6 +12,20 @@ async function getUserByEmail(email) {
     });
 }
 
+async function createResetPasswordToken(userId, token) {
+    return db.Tokens.create({
+        token,
+        userId,
+    });
+}
+
+async function getTokenByToken(token) {
+    return db.Tokens.findOne({
+            where: { token }, 
+        }, 
+    );
+}
+
 async function getInvestors(userFilter, profileFilter, pagination, attributes) {
     userFilter.roleId = 3;
     const searchObject = {
@@ -341,6 +355,111 @@ async function updateStartupPublicFields(startupId, startupPublicFields) {
         );
 }
 
+function findOrCreateUserCreationRequest(userId, transaction = null) {
+    return db.UserCreationRequests.findOrCreate({
+        where: { userId },
+        transaction: transaction,
+    });
+}
+
+function getUserCreationRequests() {
+    return db.UserCreationRequests.findAll({
+        include: {
+            model: db.Users,
+            as: "userCreationRequest",
+        },
+    });
+}
+
+async function getUserCreationRequestById(id){
+    return db.UserCreationRequests.findOne({
+        where: {
+            id,
+        }
+    });
+}
+
+async function approveUser(id, transaction){
+    return db.Users.update({
+        approved: true,
+        approvedDate: new Date()
+    },
+    { where: { id: id }, transaction: transaction },
+    );
+}
+
+async function deleteUserCreationRequest(id, transaction){
+    return db.UserCreationRequests.destroy({
+        where: {
+            id,
+        },
+        transaction: transaction,
+    });
+}
+
+function findOrCreateInvestorSearchRequest(userId, transaction = null) {
+    return db.InvestorSearchStartupRequest.findOrCreate({
+        where: { userId },
+        transaction: transaction,
+    });
+}
+
+
+function getInvestorSearchRequests() {
+    return db.InvestorSearchStartupRequest.findAll();
+}
+
+async function getInvestorSearchRequestById(id){
+    return db.InvestorSearchStartupRequest.findOne({
+        where: {
+            id,
+        }
+    });
+}
+
+async function approveInvestorSearchRequest(id, transaction){
+    return db.InvestorUserProfiles.update({
+        canSearchStartups: true,
+    },
+    { where: { userId: id }, transaction: transaction },
+    );
+}
+
+async function deleteInvestorSearchRequest(id, transaction){
+    return db.InvestorSearchStartupRequest.destroy({
+        where: {
+            id,
+        },
+        transaction: transaction,
+    });
+}
+
+async function findOrCreateInvestorMutePair(userId, investorId){
+    return db.InvestorMutePairs.findOrCreate({
+        where: { 
+            userId,
+            investorId,
+         },
+    });
+}
+
+async function deleteInvestorMutePair(userId, investorId){
+    return db.InvestorMutePairs.destroy({
+        where: {
+            userId,
+            investorId,
+        },
+    });
+}
+
+async function getInvestorMutePairs(userId){
+    return db.InvestorMutePairs.findAll({
+        where: {
+            userId,
+        },
+    });
+}
+
 function createUserJWTToken(id, username) {
     try {
         return jwt.sign(
@@ -400,4 +519,19 @@ module.exports = {
     updateStartupPublicFields,
     getStartups,
     getStartup,
+    findOrCreateUserCreationRequest,
+    getUserCreationRequests,
+    getUserCreationRequestById,
+    approveUser,
+    deleteUserCreationRequest,
+    findOrCreateInvestorSearchRequest,
+    getInvestorSearchRequests,
+    getInvestorSearchRequestById,
+    approveInvestorSearchRequest,
+    deleteInvestorSearchRequest,
+    findOrCreateInvestorMutePair,
+    deleteInvestorMutePair,
+    getInvestorMutePairs,
+    createResetPasswordToken,
+    getTokenByToken,
 };

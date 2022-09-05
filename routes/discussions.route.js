@@ -64,7 +64,7 @@ async function deleteDiscussion(req, res, next) {
         // add log
         const discussionId = req.params.discussionId;
         // check if admin
-        await discussionsController.deleteDiscussion(discussionId);
+        await discussionsController.deleteDiscussion(req.userId, discussionId);
         res.status(200).json({
             success: true,
         });

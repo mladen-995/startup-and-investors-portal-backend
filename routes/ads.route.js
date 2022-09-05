@@ -47,7 +47,7 @@ async function deleteAd(req, res, next) {
         // add log
         const adId = req.params.adId;
         // check if admin
-        await adsController.deleteAd(adId);
+        await adsController.deleteAd(req.userId, adId);
         res.status(200).json({
             success: true,
         });

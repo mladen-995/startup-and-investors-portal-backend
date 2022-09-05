@@ -50,8 +50,12 @@ async function discussionDeleteRequest(userId, discussionId) {
     await discussionsService.discussionDeleteRequest(discussionId);
 }
 
-async function deleteDiscussion(id) {
-    return discussionsService.deleteDiscussion(id);
+async function deleteDiscussion(userId, id) {
+    const discussionReplies = await discussionsService.getDiscussionReplies(id);
+    await discussionsService.deleteDiscussion(userId, id);
+    for (let discussionReply of discussionReplies) {
+        await discussionReply.destroy();
+    }
 }
 
 async function getDiscussionsForAuthor(id, filter, pagination) {

@@ -2,6 +2,7 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const { NOTIFADVISIBILITYTYPES } = require("../utils/consts");
 const startupGroupsService = require("../services/startup-groups.service");
+const usersService = require("../services/users.service");
 
 async function createAd(userId, title, text, expiryDate, visibility, transaction) {
     return db.Ads.create({
@@ -52,7 +53,12 @@ async function getAllAds(filter, pagination) {
     });
 }
 
-async function deleteAd(id) {
+async function deleteAd(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Ad",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Ads.destroy({
         where: {
             id,
@@ -61,6 +67,8 @@ async function deleteAd(id) {
 }
 
 async function getAdsForInvestor(authorId, filter, pagination) {
+    const mutedInvestorPairs = await usersService.getInvestorMutePairs(authorId);
+    filter.createdBy = {[Op.notIn]: mutedInvestorPairs.map(mutedInvestorPair => mutedInvestorPair.dataValues.investorId) };
     filter[Op.or] = [{
         createdBy: authorId,
     }, {
@@ -98,7 +106,8 @@ async function getAdsForGuest(filter, pagination) {
 }
 
 async function getAdsForStartup(startupId, startupBusinessTypeId, filter, pagination) {
-    const startupGroupPairs = startupGroupsService.getStartupGroupPairsByStartupId(startupId);
+    const mutedInvestorPairs = await usersService.getInvestorMutePairs(startupId);
+    const startupGroupPairs = await startupGroupsService.getStartupGroupPairsByStartupId(startupId);
     const adIdsFromVisibilityPairs = await db.AdVisibilityPairs.findAll({
         where: {
             [Op.or]: [{
@@ -114,6 +123,7 @@ async function getAdsForStartup(startupId, startupBusinessTypeId, filter, pagina
     filter.expiryDate = {
         [Op.gte]: new Date(),
     },
+    filter.createdBy = {[Op.notIn]: mutedInvestorPairs.map(mutedInvestorPair => mutedInvestorPair.dataValues.investorId) };
     filter[Op.or] = [{
         visibility: NOTIFADVISIBILITYTYPES.ALL.name,
     }, {

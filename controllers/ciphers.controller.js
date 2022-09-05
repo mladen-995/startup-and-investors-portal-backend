@@ -26,7 +26,7 @@ async function createCipher(userId, role, name, cipherTypeName) {
     return ciphersService.createCipher(userId, name, cipherType.id);
 }
 
-async function deleteCipher(role, cipherId) {
+async function deleteCipher(userId, role, cipherId) {
     let userProfile = await usersService.getInvestorUserProfileByBusinessTypeId(cipherId);
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
@@ -48,7 +48,7 @@ async function deleteCipher(role, cipherId) {
     if (!cipherType.editableByAll && role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("Only administrators can change this cipher type!", 401);
     }
-    return ciphersService.deleteCipher(cipherId);
+    return ciphersService.deleteCipher(userId, cipherId);
 }
 
 module.exports = {

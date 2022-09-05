@@ -1,6 +1,6 @@
 const usersService = require("../services/users.service");
 const rolesService = require("../services/roles.service");
-const { ROLENAMES } = require("../utils/consts")
+const { ROLENAMES } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
 
 async function checkUser(req, res, next) {    
@@ -80,6 +80,17 @@ async function checkIfInvestorOrAdministrator(req, res, next) {
     }
 }
 
+async function checkIfInvestorOrStartup(req, res, next) {    
+    try {
+        if (req.role !== ROLENAMES.INVESTOR && req.role !== ROLENAMES.STARTUP) {
+            throw new ApplicationError("Endpoint not permitted!", 401);
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
     checkUser,
     addUserIdToReqIfExists,
@@ -87,4 +98,5 @@ module.exports = {
     checkIfInvestor,
     checkIfStartup,
     checkIfInvestorOrAdministrator,
+    checkIfInvestorOrStartup,
 };

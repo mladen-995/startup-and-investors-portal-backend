@@ -14,7 +14,7 @@ async function createCountry(userId, name) {
     return locationsService.createCountry(userId, name);
 }
 
-async function deleteCountry(countryId) {
+async function deleteCountry(userId, countryId) {
     let userProfile = await usersService.getInvestorUserProfileByCountryId(countryId);
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
@@ -23,7 +23,7 @@ async function deleteCountry(countryId) {
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
     }
-    return locationsService.deleteCountry(countryId);
+    return locationsService.deleteCountry(userId, countryId);
 }
 
 async function getCities(countryId, filter, pagination) {
@@ -42,7 +42,7 @@ async function createCity(userId, name, countryId) {
     return locationsService.createCity(userId, name, countryId);
 }
 
-async function deleteCity(cityId) {
+async function deleteCity(userId, cityId) {
     let userProfile = await usersService.getInvestorUserProfileByCityId(cityId);
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
@@ -51,7 +51,7 @@ async function deleteCity(cityId) {
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
     }
-    return locationsService.deleteCity(cityId);
+    return locationsService.deleteCity(userId, cityId);
 }
 
 async function getMunicipalities(cityId, filter, pagination) {
@@ -70,7 +70,7 @@ async function createMunicipality(userId, name, cityId) {
     return locationsService.createMunicipality(userId, name, cityId);
 }
 
-async function deleteMunicipality(municipalityId) {
+async function deleteMunicipality(userId, municipalityId) {
     let userProfile = await usersService.getInvestorUserProfileByMunicipalityId(municipalityId);
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
@@ -79,7 +79,7 @@ async function deleteMunicipality(municipalityId) {
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
     }
-    return locationsService.deleteMunicipality(municipalityId);
+    return locationsService.deleteMunicipality(userId, municipalityId);
 }
 
 async function getStreets(municipalityId, filter, pagination) {
@@ -98,7 +98,7 @@ async function createStreet(userId, name, municipalityId) {
     return locationsService.createStreet(userId, name, municipalityId);
 }
 
-async function deleteStreet(streetId) {
+async function deleteStreet(userId, streetId) {
     let userProfile = await usersService.getInvestorUserProfileByStreetId(streetId);
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
@@ -107,7 +107,7 @@ async function deleteStreet(streetId) {
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
     }
-    return locationsService.deleteStreet(streetId);
+    return locationsService.deleteStreet(userId, streetId);
 }
 
 async function getStreetNumbers(streetId, filter, pagination) {
@@ -126,7 +126,7 @@ async function createStreetNumber(userId, name, streetId) {
     return locationsService.createStreetNumber(userId, name, streetId);
 }
 
-async function deleteStreetNumber(streetNumberId) {
+async function deleteStreetNumber(userId, streetNumberId) {
     let userProfile = await usersService.getInvestorUserProfileByStreetNumberId(streetNumberId);
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
@@ -135,7 +135,7 @@ async function deleteStreetNumber(streetNumberId) {
     if (userProfile) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
     }
-    return locationsService.deleteStreetNumber(streetNumberId);
+    return locationsService.deleteStreetNumber(userId, streetNumberId);
 }
 
 module.exports = {

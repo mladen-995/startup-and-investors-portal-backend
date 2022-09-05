@@ -62,7 +62,7 @@ async function deleteCipher(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const cipherId = req.params.cipherId;
-        await ciphersController.deleteCipher(req.role, cipherId);
+        await ciphersController.deleteCipher(req.userId, req.role, cipherId);
         res.status(200).json({
             success: true,
         });

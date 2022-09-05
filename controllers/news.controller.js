@@ -46,8 +46,8 @@ async function newsDeleteRequest(userId, newsId) {
 }
 
 
-async function deleteNews(id) {
-    return newsService.deleteNews(id);
+async function deleteNews(userId, id) {
+    return newsService.deleteNews(userId, id);
 }
 
 async function getNews(userId, filter, pagination) {

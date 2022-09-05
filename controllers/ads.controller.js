@@ -31,8 +31,8 @@ async function getAdsForDeletion() {
     return adsService.findAdsForDeletion();
 }
 
-async function deleteAd(id) {
-    return adsService.deleteAd(id);
+async function deleteAd(userId, id) {
+    return adsService.deleteAd(userId, id);
 }
 
 async function getAds(userId, filter, pagination) {

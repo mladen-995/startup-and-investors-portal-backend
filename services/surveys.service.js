@@ -30,6 +30,14 @@ async function getUserSurveyByUserIdAndSurveyId(userId, surveyId) {
     }); 
 }
 
+async function getUserSurveysBySurveyId(surveyId) {
+    return db.UserSurveys.findAll({
+        where: {
+            surveyId,
+        },
+    }); 
+}
+
 async function createUserSurvey(userId, surveyId, rejectsToAnswer) {
     return db.UserSurveys.create({
         surveyId,
@@ -117,6 +125,14 @@ async function getSurveyQuestionAnswers(surveyQuestionId) {
     }); 
 }
 
+async function getUserSurveyAnswersByUserSurveyId(userSurveyId) {
+    return db.UserSurveyAnswers.findAll({
+        where: {
+            userSurveyId,
+        },
+    }); 
+}
+
 async function getAllSurveys(filter, pagination) {
     return db.Surveys.findAll({
         where: filter,
@@ -144,4 +160,6 @@ module.exports = {
     getSurveysWithIdInArray,
     getAllSurveys,
     getSurveyById,
+    getUserSurveyAnswersByUserSurveyId,
+    getUserSurveysBySurveyId,
 };

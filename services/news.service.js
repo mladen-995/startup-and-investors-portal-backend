@@ -53,7 +53,12 @@ async function newsDeleteRequest(id) {
     );
 }
 
-async function deleteNews(id) {
+async function deleteNews(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "News",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.News.destroy({
         where: {
             id,

@@ -71,4 +71,9 @@ module.exports = {
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
     ],
+    deleteSurvey: [
+        param("surveyId")
+            .notEmpty()
+            .withMessage("Please make sure you filled out all the fields."),
+    ],
 };

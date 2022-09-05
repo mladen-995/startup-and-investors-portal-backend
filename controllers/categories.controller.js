@@ -19,13 +19,13 @@ async function getCategoryById(id) {
     return categoriesService.getCategoryById(id);
 }
 
-async function deleteCategory(id) {
+async function deleteCategory(userId, id) {
     const existingNews = await newsService.getNewsByCategoryId(id);
     const existingDiscussion = await discussionsService.getDiscussionByCategoryId(id);
     if (existingDiscussion || existingNews) {
         throw new ApplicationError("Cannot delete category because it is inside an entity!", 422);
     }
-    return categoriesService.deleteCategory(id);
+    return categoriesService.deleteCategory(userId, id);
 }
 
 module.exports = {

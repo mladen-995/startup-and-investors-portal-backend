@@ -27,8 +27,23 @@ const router = express.Router();
 router.post("/register-investor", userValidators.registerInvestor, users.registerInvestor);
 router.post("/register-startup", userValidators.registerStartup, users.registerStartup);
 
+router.post("/password-change", userMiddleware.checkUser, userValidators.changePassword, users.changePassword);
+router.post("/password-reset", userValidators.requestPasswordReset, users.requestPasswordReset);
+router.post("/password-reset/:token", userValidators.resetPassword, users.resetPassword);
+
+router.get("/user-creation-requests", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, users.getUserCreationRequests);
+router.post("/user-creation-requests/approve/:requestId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.approveUserCreationRequest, users.approveUserCreationRequest);
+
+router.post("/investor-search-requests", userMiddleware.checkUser, userMiddleware.checkIfInvestor, users.createInvestorSearchRequest);
+router.get("/investor-search-requests", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, users.getInvestorSearchRequests);
+router.post("/investor-search-requests/approve/:requestId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.approveInvestorSearchRequest, users.approveInvestorSearchRequest);
+
 router.get("/investors", userMiddleware.checkUser, addPagination, users.getInvestors);
 router.get("/investors/:investorId", userMiddleware.checkUser, userValidators.getInvestor, users.getInvestor);
+
+router.get("/muted-investors", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, users.getInvestorMutePairs);
+router.post("/mute-investor/:investorId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, userValidators.muteInvestor, users.muteInvestor);
+router.post("/unmute-investor/:investorId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, userValidators.unmuteInvestor, users.unmuteInvestor);
 
 router.get("/startups", userMiddleware.checkUser, addPagination, users.getStartups);
 router.get("/startups/:startupId", userMiddleware.checkUser, userValidators.getStartup, users.getStartup);
@@ -82,6 +97,7 @@ router.post("/surveys/answer/:surveyId", userMiddleware.checkUser, surveysValida
 router.get("/surveys", userMiddleware.checkUser, addPagination, surveys.getSurveys);
 router.get("/surveys/:surveyId", surveysValidators.getSurvey, surveys.getSurvey);
 router.get("/surveys/question-answers/:questionId", userMiddleware.checkUser, surveysValidators.getSurveyQuestionAnswers, surveys.getSurveyQuestionAnswers);
+router.delete("/surveys/:surveyId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, surveysValidators.deleteSurvey, surveys.deleteSurvey);
 
 router.post("/categories", userMiddleware.checkUser, categoriesValidators.createCategory, categories.createCategory);
 router.get("/categories", userMiddleware.checkUser, addPagination, categoriesValidators.getCategories, categories.getCategories);

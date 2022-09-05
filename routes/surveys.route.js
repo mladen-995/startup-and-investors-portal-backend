@@ -144,6 +144,22 @@ async function getSurveyQuestionAnswers(req, res, next) {
     }
 }
 
+async function deleteSurvey(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const surveyId = req.params.surveyId;
+        await surveysController.deleteSurvey(req.userId, surveyId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 module.exports = {
     createSurvey,
     rejectSurvey,
@@ -152,4 +168,5 @@ module.exports = {
     getSurveys,
     getSurvey,
     getSurveyQuestionAnswers,
+    deleteSurvey,
 };

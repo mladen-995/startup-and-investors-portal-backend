@@ -1,8 +1,10 @@
 const usersService = require("../services/users.service");
 const rolesService = require("../services/roles.service");
 const lodash = require("lodash");
+const crypto = require("crypto");
 const { ROLENAMES, STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
+const db = require("../models");
 
 async function login(username, password) {
     const databaseUser = await usersService.getUserByUsername(username);
@@ -13,6 +15,26 @@ async function login(username, password) {
     if (!checkUserPassword) {
         throw new ApplicationError("Username or Password not valid!", 401);
     }
+    // startup
+    let startupNotLoggedInAYear;
+    if (databaseUser.roleId === 2) {
+        let userDateForComparison;
+        if (databaseUser.lastLoginAt && databaseUser.approvedDate) {
+            userDateForComparison = new Date(databaseUser.lastLoginAt).getTime() > new Date(databaseUser.approvedDate).getTime() ?
+                databaseUser.lastLoginAt : databaseUser.approvedDate;
+        } else {
+            userDateForComparison = databaseUser.lastLoginAt ? databaseUser.lastLoginAt : databaseUser.approvedDate;
+        }
+        if (userDateForComparison) {
+            startupNotLoggedInAYear = new Date() - new Date(userDateForComparison) > (1000 * 3600 * 24*365);
+        }
+    }
+    if (!databaseUser.approved || startupNotLoggedInAYear) {
+        await usersService.findOrCreateUserCreationRequest(databaseUser.id);
+        const errorMessage = startupNotLoggedInAYear ? "Startup has not logged in for over a year! A request to reenable your account has been sent to the administrator." :
+            "User is not approved! A request has been sent to the administrator.";
+        throw new ApplicationError(errorMessage, 401);
+    }
     // check if lastLogin is 1+y before, and if it is set approved to false and send a request to admin
     const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.username);
     await usersService.setUserLastLoginAt(databaseUser.id);
@@ -22,6 +44,38 @@ async function login(username, password) {
         user,
     };
     return result;
+}
+
+async function changePassword(userId, oldPassword, newPassword) {
+    const databaseUser = await usersService.getUserById(userId);
+    const checkUserPassword = await databaseUser.validPassword(oldPassword, databaseUser.password);
+    if (!checkUserPassword) {
+        throw new ApplicationError("Password not valid!", 401);
+    }
+    await databaseUser.update({ password: newPassword });
+}
+
+async function requestPasswordReset(username) {
+    const databaseUser = await usersService.getUserByUsername(username);
+    const token = crypto.randomBytes(32).toString("hex");
+    await usersService.createResetPasswordToken(databaseUser.id, token);
+    return process.env.CLIENT_URL + '/set-password?token=' + token;
+    // await send email
+}
+
+async function resetPassword(token, newPassword) {
+    const tokenObject = await usersService.getTokenByToken(token);
+    if (!tokenObject) {
+        throw new ApplicationError("Invalid token!", 409);
+    }
+    const tokenTTL = process.env.PASSWORD_TOKEN_TTL;
+    console.log(new Date(tokenObject.createdAt + tokenTTL * 1000)); 
+    if(new Date(tokenObject.createdAt.getTime() + tokenTTL * 1000).getTime() < new Date().getTime()) {
+        throw new ApplicationError("Restart password token expired!", 409);
+    }
+    const databaseUser = await usersService.getUserById(tokenObject.userId);
+    await databaseUser.update({ password: newPassword });
+    await tokenObject.destroy();
 }
 
 async function registerInvestor(user, userProfile, transaction = null) {
@@ -35,9 +89,9 @@ async function registerInvestor(user, userProfile, transaction = null) {
     }
     const investorRole = await rolesService.getRoleByName(ROLENAMES.INVESTOR);
     user.roleId = investorRole.id;
-    // @TODO disable user until an administrator approves it
     const databaseUser = await usersService.createUser(user, transaction);
     userProfile.userId = databaseUser.id;
+    await usersService.findOrCreateUserCreationRequest(databaseUser.id, transaction);
     await usersService.createInvestorUserProfile(userProfile, transaction);
 }
 
@@ -56,6 +110,7 @@ async function registerStartup(user, userProfile, transaction = null) {
     const databaseUser = await usersService.createUser(user, transaction);
     userProfile.userId = databaseUser.id;
     await usersService.createStartupUserProfile(userProfile, transaction);
+    await usersService.findOrCreateUserCreationRequest(databaseUser.id, transaction);
     await usersService.createStartupUserPublicFields(databaseUser.id, transaction);
 }
 
@@ -75,7 +130,10 @@ async function getInvestor(role, investorId) {
     return usersService.getInvestor(investorId, isAdmin);
 }
 
-async function getStartups(role, userFilter, profileFilter, pagination) {
+async function getStartups(userId, role, userFilter, profileFilter, pagination) {
+    if (!await _canSearchStartups(userId, role)) {
+        throw new ApplicationError("You don't have permission to search startups! Please create a request to the administrators.", 401);
+    }
     const attributes = {
         exclude: ["password"],
     };
@@ -98,7 +156,10 @@ async function getStartups(role, userFilter, profileFilter, pagination) {
     return startups;
 }
 
-async function getStartup(role, startupId) {
+async function getStartup(userId, role, startupId) {
+    if (!await _canSearchStartups(userId, role)) {
+        throw new ApplicationError("You don't have permission to search startups! Please create a request to the administrators.", 401);
+    }
     const isAdmin = role === ROLENAMES.ADMINISTARTOR;
     const startup = await usersService.getStartup(startupId, isAdmin);
     removePrivateFieldsFromStartup(startup);
@@ -146,6 +207,69 @@ function removePrivateFieldsFromStartup(startup) {
     return startup;
 }
 
+async function getUserCreationRequests(userId) {
+    let userCreationRequests = await usersService.getUserCreationRequests();
+    for (let req of userCreationRequests) {
+        if (req.userCreationRequest.roleId === 2) {
+            req.dataValues.user = await getStartup(userId, ROLENAMES.ADMINISTARTOR, req.userId);
+        } else if (req.userCreationRequest.roleId === 3) {
+            req.dataValues.user = await getInvestor(ROLENAMES.ADMINISTARTOR, req.userId);
+        }
+        delete req.dataValues.userCreationRequest;
+    }
+    return userCreationRequests;
+}
+
+async function approveUserCreationRequest(requestId, t) {
+    const request = await usersService.getUserCreationRequestById(requestId);
+    await usersService.approveUser(request.userId, t);
+    return usersService.deleteUserCreationRequest(requestId, t);
+}
+
+async function getInvestorSearchRequests() {
+    let userCreationRequests = await usersService.getInvestorSearchRequests();
+    for (let req of userCreationRequests) {
+        req.dataValues.user = await getInvestor(ROLENAMES.ADMINISTARTOR, req.userId);
+    }
+    return userCreationRequests;
+}
+
+async function approveInvestorSearchRequest(requestId, t) {
+    const request = await usersService.getInvestorSearchRequestById(requestId);
+    await usersService.approveInvestorSearchRequest(request.userId, t);
+    return usersService.deleteInvestorSearchRequest(requestId, t);
+}
+
+async function createInvestorSearchRequest(investorId) {
+    return usersService.findOrCreateInvestorSearchRequest(investorId);
+}
+
+async function muteInvestor(userId, investorId) {
+    if (userId === investorId) {
+        throw new ApplicationError("You can't mute yourself!", 422);
+    }
+    return usersService.findOrCreateInvestorMutePair(userId, investorId);
+}
+
+async function unmuteInvestor(userId, investorId) {
+    return usersService.deleteInvestorMutePair(userId, investorId);
+}
+
+async function getInvestorMutePairs(userId) {
+     let pairs = await usersService.getInvestorMutePairs(userId);
+     for (let pair of pairs) {
+        pair.dataValues.user = await getInvestor(ROLENAMES.STARTUP, pair.investorId);
+     }
+     return pairs;
+}
+
+async function _canSearchStartups(investorId, role) {
+    if (role === ROLENAMES.INVESTOR) {
+        const investor = await getInvestor(role, investorId);
+        return investor.investorProfile.canSearchStartups;
+    }
+    return true;
+}
 
 module.exports = {
     login,
@@ -160,4 +284,15 @@ module.exports = {
     getStartupPublicFields,
     getStartups,
     getStartup,
+    getUserCreationRequests,
+    approveUserCreationRequest,
+    getInvestorSearchRequests,
+    approveInvestorSearchRequest,
+    createInvestorSearchRequest,
+    muteInvestor,
+    unmuteInvestor,
+    getInvestorMutePairs,
+    changePassword,
+    requestPasswordReset,
+    resetPassword,
 };

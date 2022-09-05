@@ -2,6 +2,7 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const { NOTIFADVISIBILITYTYPES } = require("../utils/consts");
 const startupGroupsService = require("./startup-groups.service");
+const usersService = require("./users.service");
 
 async function createNotification(userId, title, text, isEmailNotification, visibility, transaction) {
     return db.Notifications.create({
@@ -53,7 +54,12 @@ async function getAllNotifications(filter, pagination) {
     });
 }
 
-async function deleteNotification(id) {
+async function deleteNotification(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Notification",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Notifications.destroy({
         where: {
             id,
@@ -62,6 +68,8 @@ async function deleteNotification(id) {
 }
 
 async function getNotificationsForInvestor(investorId, filter, pagination) {
+    const mutedInvestorPairs = await usersService.getInvestorMutePairs(investorId);
+    filter.createdBy = {[Op.notIn]: mutedInvestorPairs.map(mutedInvestorPair => mutedInvestorPair.dataValues.investorId) };
     filter.isEmailNotification = false;
     filter[Op.or] = [{
         createdBy: investorId,
@@ -97,7 +105,8 @@ async function getNotificationsForGuest(filter, pagination) {
 }
 
 async function getNotificationsForStartup(startupId, startupBusinessTypeId, filter, pagination) {
-    const startupGroupPairs = startupGroupsService.getStartupGroupPairsByStartupId(startupId);
+    const mutedInvestorPairs = await usersService.getInvestorMutePairs(startupId);
+    const startupGroupPairs = await startupGroupsService.getStartupGroupPairsByStartupId(startupId);
     const notifIdsFromVisibilityPairs = await db.NotificationVisibilityPairs.findAll({
         where: {
             [Op.or]: [{
@@ -111,6 +120,7 @@ async function getNotificationsForStartup(startupId, startupBusinessTypeId, filt
         },
     });
     filter.isEmailNotification = false;
+    filter.createdBy = {[Op.notIn]: mutedInvestorPairs.map(mutedInvestorPair => mutedInvestorPair.dataValues.investorId) };
     filter[Op.or] = [{
         createdBy: startupId,
     }, {

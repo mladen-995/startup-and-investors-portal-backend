@@ -159,6 +159,10 @@ module.exports = (sequelize, Sequelize) => {
                 targetKey: "id",
                 as: "businessTypesInvestors",
             });
+            models.InvestorUserProfiles.hasMany(models.InvestorMutePairs, {
+                foreignKey: "investorId",
+                as: "investorUserMutePairs",
+            });
         };
 
         return InvestorUserProfiles;

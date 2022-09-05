@@ -17,6 +17,40 @@ async function login(req, res, next) {
     }
 }
 
+async function requestPasswordReset(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { username } = req.body;
+        const url = await usersController.requestPasswordReset(username);
+        res.status(200).json({
+            success: true,
+            data: url,
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function resetPassword(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { newPassword } = req.body;
+        const token = req.params.token;
+        await usersController.resetPassword(token, newPassword);
+        res.status(200).json({
+            success: true,
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 async function registerInvestor(req, res, next) {
     const t = await db.sequelize.transaction();
     try {
@@ -24,7 +58,6 @@ async function registerInvestor(req, res, next) {
         if (!errors.isEmpty()) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
-
         const user = getUserFromRequestObject(req.body, true);
         const userProfile = getInvestorUserProfileFromRequestObject(req.body);
         await usersController.registerInvestor(user, userProfile, t);
@@ -177,7 +210,7 @@ async function getStartups(req, res, next) {
         const { pagination } = req.params;
         const userFilter = getUserFromRequestObject(req.query);
         const profileFilter = getStartupUserProfileFromRequestObj(req.query, false, false);
-        const startups = await usersController.getStartups(req.role, userFilter, profileFilter, pagination);
+        const startups = await usersController.getStartups(req.userId, req.role, userFilter, profileFilter, pagination);
         // obrisi username u pretrazi(osim adminu)
         res.status(200).json({
             success: true,
@@ -195,7 +228,7 @@ async function getStartup(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const startupId = req.params.startupId;
-        const startup = await usersController.getStartup(req.role, startupId);
+        const startup = await usersController.getStartup(req.userId, req.role, startupId);
         res.status(200).json({
             success: true,
             data: startup,
@@ -233,6 +266,156 @@ async function updateStartupPublicFields(req, res, next) {
         await usersController.updateStartupPublicFields(startupId, startupPublicFields);
         res.status(200).json({
             success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function changePassword(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { oldPassword, newPassword } = req.body;
+        const startupPublicFields = await usersController.changePassword(req.userId, oldPassword, newPassword);
+        res.status(200).json({
+            success: true,
+            data: startupPublicFields,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getUserCreationRequests(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const requests = await usersController.getUserCreationRequests(req.userId);
+        res.status(200).json({
+            success: true,
+            data: requests
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function approveUserCreationRequest(req, res, next) {
+    const t = await db.sequelize.transaction();
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const requestId = req.params.requestId;
+        await usersController.approveUserCreationRequest(requestId, t);
+        await t.commit();
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        await t.rollback();
+        next(err);
+    }
+}
+
+async function getInvestorSearchRequests(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const requests = await usersController.getInvestorSearchRequests();
+        res.status(200).json({
+            success: true,
+            data: requests
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function approveInvestorSearchRequest(req, res, next) {
+    const t = await db.sequelize.transaction();
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const requestId = req.params.requestId;
+        await usersController.approveInvestorSearchRequest(requestId, t);
+        await t.commit();
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        await t.rollback();
+        next(err);
+    }
+}
+
+async function createInvestorSearchRequest(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        await usersController.createInvestorSearchRequest(req.userId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function muteInvestor(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const investorId = req.params.investorId;
+        await usersController.muteInvestor(req.userId, investorId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function unmuteInvestor(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const investorId = req.params.investorId;
+        await usersController.unmuteInvestor(req.userId, investorId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getInvestorMutePairs(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const investors = await usersController.getInvestorMutePairs(req.userId);
+        res.status(200).json({
+            success: true,
+            data: investors,
         });
     } catch(err) {
         next(err);
@@ -281,4 +464,15 @@ module.exports = {
     updateStartupPublicFields,
     getStartups,
     getStartup,
+    getUserCreationRequests,
+    approveUserCreationRequest,
+    getInvestorSearchRequests,
+    approveInvestorSearchRequest,
+    createInvestorSearchRequest,
+    muteInvestor,
+    unmuteInvestor,
+    getInvestorMutePairs,
+    changePassword,
+    requestPasswordReset,
+    resetPassword,
 };

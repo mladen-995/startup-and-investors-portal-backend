@@ -61,7 +61,7 @@ async function deleteCountry(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const countryId = req.params.countryId;
-        await locationsController.deleteCountry(countryId);
+        await locationsController.deleteCountry(req.userId, countryId);
         res.status(200).json({
             success: true,
         });
@@ -130,7 +130,7 @@ async function deleteCity(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const cityId = req.params.cityId;
-        await locationsController.deleteCity(cityId);
+        await locationsController.deleteCity(req.userId, cityId);
         res.status(200).json({
             success: true,
         });
@@ -222,7 +222,7 @@ async function deleteMunicipality(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const municipalityId = req.params.municipalityId;
-        await locationsController.deleteMunicipality(municipalityId);
+        await locationsController.deleteMunicipality(req.userId, municipalityId);
         res.status(200).json({
             success: true,
         });
@@ -271,7 +271,7 @@ async function deleteStreet(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const streetId = req.params.streetId;
-        await locationsController.deleteStreet(streetId);
+        await locationsController.deleteStreet(req.userId, streetId);
         res.status(200).json({
             success: true,
         });
@@ -340,7 +340,7 @@ async function deleteStreetNumber(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const streetNumberId = req.params.streetNumberId;
-        await locationsController.deleteStreetNumber(streetNumberId);
+        await locationsController.deleteStreetNumber(req.userId, streetNumberId);
         res.status(200).json({
             success: true,
         });

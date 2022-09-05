@@ -49,7 +49,12 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
                 defaultValue: false,
-            }
+            },
+            approvedDate: {
+                type: Sequelize.DATE,
+                allowNull: true,
+                defaultValue: null,
+            },
         }, {
             underscored: true,
             timestamps: true,
@@ -78,6 +83,22 @@ module.exports = (sequelize, Sequelize) => {
         models.Users.hasOne(models.InvestorUserProfiles, {
             foreignKey: "userId",
             as: "investorProfile",
+        });
+        models.Users.hasOne(models.UserCreationRequests, {
+            foreignKey: "userId",
+            as: "userCreationRequest",
+        });
+        models.Users.hasOne(models.InvestorSearchStartupRequest, {
+            foreignKey: "userId",
+            as: "investorSearchRequest",
+        });
+        models.Users.hasMany(models.InvestorMutePairs, {
+            foreignKey: "userId",
+            as: "userInvestorMutePairs",
+        });
+        models.Users.hasMany(models.Tokens, {
+            foreignKey: "userId",
+            as: "passwordTokens",
         });
     };
 

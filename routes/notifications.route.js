@@ -47,7 +47,7 @@ async function deleteNotification(req, res, next) {
         // add log
         const notificationId = req.params.notificationId;
         // check if admin
-        await notifsController.deleteNotification(notificationId);
+        await notifsController.deleteNotification(req.userId, notificationId);
         res.status(200).json({
             success: true,
         });

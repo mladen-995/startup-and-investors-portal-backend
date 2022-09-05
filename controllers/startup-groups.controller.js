@@ -20,8 +20,8 @@ async function getStartupGroup(groupId) {
     return startupGroupsService.getStartupGroupById(groupId);
 }
 
-async function deleteStartupGroup(groupId) {
-    return startupGroupsService.deleteStartupGroup(groupId);
+async function deleteStartupGroup(userId, groupId) {
+    return startupGroupsService.deleteStartupGroup(userId, groupId);
 }
 
 module.exports = {

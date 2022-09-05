@@ -17,7 +17,7 @@ async function createNotification(userId, title, text, isEmailNotification, visi
             }
         }
     }
-    // send email!
+    // send email! ukoliko nije mutiran
 }
 
 async function notificationDeleteRequest(userId, notifId) {
@@ -32,8 +32,8 @@ async function getNotificationsForDeletion() {
     return notifsService.getNotificationsForDeletion();
 }
 
-async function deleteNotification(id) {
-    return notifsService.deleteNotification(id);
+async function deleteNotification(userId, id) {
+    return notifsService.deleteNotification(userId, id);
 }
 
 async function getNotifications(userId, filter, pagination) {

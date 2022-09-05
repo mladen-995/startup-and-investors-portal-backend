@@ -26,7 +26,12 @@ async function createCipher(userId, name, cipherTypeId) {
     });
 }
 
-async function deleteCipher(id) {
+async function deleteCipher(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Cipher",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Ciphers.destroy({
         where: {
             id,

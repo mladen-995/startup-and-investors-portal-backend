@@ -55,7 +55,12 @@ async function getCategoryById(id) {
     }); 
 }
 
-async function deleteCategory(id) {
+async function deleteCategory(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Category",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Categories.destroy({
         where: {
             id,

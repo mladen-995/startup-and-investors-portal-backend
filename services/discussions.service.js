@@ -76,7 +76,12 @@ async function getAllDiscussions(filter, pagination) {
     }); 
 }
 
-async function deleteDiscussion(id) {
+async function deleteDiscussion(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "Discussion",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.Discussions.destroy({
         where: {
             id,
@@ -130,8 +135,6 @@ async function getDiscussionsForStartup(startupId, filter, pagination) {
         }],
             }],
     }];
-    // mutedInvestorIds get
-    // createdBy: {[Op.notIn]: mutedInvestorIds }
     return db.Discussions.findAll({
         where: filter,
         limit: pagination.limit,

@@ -65,7 +65,7 @@ async function deleteStartupGroup(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const groupId = req.params.groupId;
-        await startupGroupsController.deleteStartupGroup(groupId);
+        await startupGroupsController.deleteStartupGroup(req.userId, groupId);
         res.status(200).json({
             success: true,
         });

@@ -61,7 +61,12 @@ async function getStartupGroupByName(name) {
     }); 
 }
 
-async function deleteStartupGroup(id) {
+async function deleteStartupGroup(userId, id) {
+    await db.EntityDeleteLogs.create({
+        entityName: "StartupGroup",
+        entityId: id,
+        createdBy: userId,
+    });
     return db.StartupGroups.destroy({
         where: {
             id,

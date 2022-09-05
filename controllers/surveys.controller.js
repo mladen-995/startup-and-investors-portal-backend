@@ -2,6 +2,7 @@ const surveysService = require("../services/surveys.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
 const utilHelper = require("../utils/helper");
+const db = require("../models");
 const { ApplicationError } = require("../utils/errors");
 const { ROLENAMES } = require("../utils/consts");
 
@@ -104,6 +105,31 @@ async function getSurveyQuestionAnswers(userId, surveyQuestionId) {
     return surveyQuestionAnswers.map(surveyQuestionAnswer => surveyQuestionAnswer.answer);
 }
 
+async function deleteSurvey(userId, surveyId) {
+    const survey = await surveysService.getSurveyById(surveyId);
+    const surveyQuestions = await surveysService.getSurveyQuestions(surveyId);
+    const userSurveys = await surveysService.getUserSurveysBySurveyId(surveyId);
+    for (let userSurvey of userSurveys) {
+        const userSurveysAnswers = await surveysService.getUserSurveyAnswersByUserSurveyId(userSurvey.id);
+        await userSurvey.destroy();
+        for (let userSurveysAnswer of userSurveysAnswers) {
+            await userSurveysAnswer.destroy();
+        }
+    }
+    for (let surveyQuestion of surveyQuestions) {
+        await surveyQuestion.destroy();
+    }
+    for (let userSurvey of userSurveys) {
+        await userSurvey.destroy();
+    }
+    await survey.destroy();
+    await db.EntityDeleteLogs.create({
+        entityName: "Survey",
+        entityId: surveyId,
+        createdBy: userId,
+    });
+}
+
 module.exports = {
     createSurvey,
     rejectSurvey,
@@ -112,4 +138,5 @@ module.exports = {
     getSurveyQuestionAnswers,
     getSurveys,
     getSurvey,
+    deleteSurvey,
 };

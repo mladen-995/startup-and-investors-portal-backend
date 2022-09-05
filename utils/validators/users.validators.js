@@ -8,7 +8,7 @@ module.exports = {
             "providedServiceTypes", "minAmountOfMoney", "maxAmountOfMoney", "logo"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
-        body("middleName", "facebookLink", "twitterLink", "linkedInLink", "areasOfInterestId", "profesionalSkillsId")
+        body("middleName", "facebookLink", "twitterLink", "linkedInLink")
             .optional(),
     ],
     registerStartup: [
@@ -18,7 +18,7 @@ module.exports = {
             "requiredAmountOfMoney", "intellectualPropertyStatus", "patentInfo", "logo"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
-        body("middleName", "facebookLink", "twitterLink", "linkedInLink")
+        body("middleName", "facebookLink", "twitterLink", "linkedInLink", "areasOfInterestId", "profesionalSkillsId")
             .optional(),
     ],
     updateInvestor: [
@@ -65,6 +65,44 @@ module.exports = {
     ],
     getStartup: [
         param("startupId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    approveUserCreationRequest: [
+        param("requestId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    approveInvestorSearchRequest: [
+        param("requestId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    muteInvestor: [
+        param("investorId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    unmuteInvestor: [
+        param("investorId")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    changePassword: [
+        body(["oldPassword", "newPassword"])
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    requestPasswordReset: [
+        body("username")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+    ],
+    resetPassword: [
+        param("token")
+        .notEmpty()
+        .withMessage("Please make sure you filled out all the fields."),
+        body("newPassword")
         .notEmpty()
         .withMessage("Please make sure you filled out all the fields."),
     ]

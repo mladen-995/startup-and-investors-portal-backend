@@ -63,7 +63,7 @@ async function deleteCategory(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const categoryId = req.params.categoryId;
-        await categoriesController.deleteCategory(categoryId);
+        await categoriesController.deleteCategory(req.userId, categoryId);
         res.status(200).json({
             success: true,
         });

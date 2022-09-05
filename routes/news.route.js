@@ -66,7 +66,7 @@ async function deleteNews(req, res, next) {
         // add log
         const newsId = req.params.newsId;
         // check if admin
-        await newsController.deleteNews(newsId);
+        await newsController.deleteNews(req.userId, newsId);
         res.status(200).json({
             success: true,
         });
