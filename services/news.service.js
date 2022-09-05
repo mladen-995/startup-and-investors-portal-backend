@@ -28,6 +28,10 @@ async function findNewsById(id) {
         where: {
             id,
         },
+        include: {
+            model: db.Categories,
+            as: "newsCategory",
+        },
     }); 
 }
 
@@ -74,6 +78,10 @@ async function getNewsForGuest(filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Categories,
+            as: "newsCategory",
+        },
     });
 }
 
@@ -103,6 +111,10 @@ async function getNewsForStartup(startupId, filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Categories,
+            as: "newsCategory",
+        },
     });
 }
 
@@ -132,6 +144,10 @@ async function getNewsForInvestor(investorId, filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Categories,
+            as: "newsCategory",
+        },
     });
 }
 
@@ -141,10 +157,13 @@ async function getAllNews(filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
-        include: {
+        include: [{
             model: db.NewsVisibilityPairs,
             as: "newsPairs",
-        },
+        }, {
+            model: db.Categories,
+            as: "newsCategory",
+        }],
     });
 }
 

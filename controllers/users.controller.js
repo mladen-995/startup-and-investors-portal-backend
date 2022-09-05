@@ -39,6 +39,7 @@ async function login(username, password) {
     const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.username);
     await usersService.setUserLastLoginAt(databaseUser.id);
     const user = await usersService.getUserAndProfile(databaseUser.id);
+    formatUserProfile(user.profile);
     const result = {
         token,
         user,
@@ -69,7 +70,6 @@ async function resetPassword(token, newPassword) {
         throw new ApplicationError("Invalid token!", 409);
     }
     const tokenTTL = process.env.PASSWORD_TOKEN_TTL;
-    console.log(new Date(tokenObject.createdAt + tokenTTL * 1000)); 
     if(new Date(tokenObject.createdAt.getTime() + tokenTTL * 1000).getTime() < new Date().getTime()) {
         throw new ApplicationError("Restart password token expired!", 409);
     }
@@ -122,12 +122,18 @@ async function getInvestors(role, userFilter, profileFilter, pagination) {
         delete userFilter.username;
         attributes.exclude.push("username");
     }
-    return usersService.getInvestors(userFilter, profileFilter, pagination, attributes);
+    const investors = await usersService.getInvestors(userFilter, profileFilter, pagination, attributes);
+    for (let investor of investors) {
+        formatUserProfile(investor.dataValues.investorProfile);
+    }
+    return investors;
 }
 
 async function getInvestor(role, investorId) {
     const isAdmin = role === ROLENAMES.ADMINISTARTOR;
-    return usersService.getInvestor(investorId, isAdmin);
+    const investor = await usersService.getInvestor(investorId, isAdmin);
+    formatUserProfile(investor.dataValues.investorProfile);
+    return investor;
 }
 
 async function getStartups(userId, role, userFilter, profileFilter, pagination) {
@@ -164,6 +170,7 @@ async function getStartup(userId, role, startupId) {
     const isAdmin = role === ROLENAMES.ADMINISTARTOR;
     const startup = await usersService.getStartup(startupId, isAdmin);
     removePrivateFieldsFromStartup(startup);
+    formatUserProfile(startup.dataValues.startupProfile);
     return startup;
 }
 
@@ -305,6 +312,30 @@ function formatUserProfile(userProfile) {
     if (userProfile.profesionalSkillsStartups) {
         userProfile.dataValues.profesionalSkills = userProfile.profesionalSkillsStartups.name;
         delete userProfile.dataValues.profesionalSkillsStartups;
+    }
+    if (userProfile.streetNumberInvestorUserProfiles) {
+        userProfile.dataValues.streetNumber = userProfile.streetNumberInvestorUserProfiles.name;
+        delete userProfile.dataValues.streetNumberInvestorUserProfiles;
+    }
+    if (userProfile.streetInvestorUserProfiles) {
+        userProfile.dataValues.street = userProfile.streetInvestorUserProfiles.name;
+        delete userProfile.dataValues.streetInvestorUserProfiles;
+    }
+    if (userProfile.municipalityInvestorUserProfiles) {
+        userProfile.dataValues.municipality = userProfile.municipalityInvestorUserProfiles.name;
+        delete userProfile.dataValues.municipalityInvestorUserProfiles;
+    }
+    if (userProfile.cityInvestorUserProfiles) {
+        userProfile.dataValues.city = userProfile.cityInvestorUserProfiles.name;
+        delete userProfile.dataValues.cityInvestorUserProfiles;
+    }
+    if (userProfile.countryInvestorUserProfiles) {
+        userProfile.dataValues.country = userProfile.countryInvestorUserProfiles.name;
+        delete userProfile.dataValues.countryInvestorUserProfiles;
+    }
+    if (userProfile.businessTypesInvestors) {
+        userProfile.dataValues.businessType = userProfile.businessTypesInvestors.name;
+        delete userProfile.dataValues.businessTypesInvestors;
     }
 }
 

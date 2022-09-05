@@ -58,41 +58,58 @@ async function deleteDiscussion(userId, id) {
     }
 }
 
-async function getDiscussionsForAuthor(id, filter, pagination) {
-    return discussionsService.getDiscussionsForAuthor(id, filter, pagination);
-}
-
 async function getDiscussion(discussionId) {
-    return discussionsService.findDiscussionById(discussionId);
+    const discussion = await discussionsService.findDiscussionById(discussionId);
+    formatDiscussion(discussion);
+    return discussion;
 }
 
 async function getDiscussions(userId, filter, pagination) {
     if (!userId) {
         delete filter.requestedDeletion;
         delete filter.isArchived;
-        return discussionsService.getDiscussionsForGuest(filter, pagination);
+        const discussions = await discussionsService.getDiscussionsForGuest(filter, pagination);
+        for (const discussion of discussions) {
+            formatDiscussion(discussion);
+        }
+        return discussions;
     }
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return discussionsService.getDiscussionsForInvestor(userId, filter, pagination);
+            const discussions = await discussionsService.getDiscussionsForInvestor(userId, filter, pagination);
+            for (const discussion of discussions) {
+                formatDiscussion(discussion);
+            }
+            return discussions;
         }
         case ROLENAMES.STARTUP: {
-            const startupProfile = await usersService.getStartupUserProfilByUserId(userId);
-            return discussionsService.getDiscussionsForStartup(userId, filter, pagination);
+            const discussions = await discussionsService.getDiscussionsForStartup(userId, filter, pagination);
+            for (const discussion of discussions) {
+                formatDiscussion(discussion);
+            }
+            return discussions;
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return discussionsService.getAllDiscussions(filter, pagination);
+            const discussions = await discussionsService.getAllDiscussions(filter, pagination);
+            for (const discussion of discussions) {
+                formatDiscussion(discussion);
+            }
+            return discussions;
         }
     }
+}
+
+function formatDiscussion(discussion) {
+    discussion.dataValues.category = discussion.dataValues.discussionCategory.name;
+    delete discussion.dataValues.discussionCategory;
 }
 
 module.exports = {
     createDiscussion,
     createDiscussionReply,
     discussionDeleteRequest,
-    getDiscussionsForAuthor,
     getDiscussionReplies,
     getDiscussion,
     deleteDiscussion,

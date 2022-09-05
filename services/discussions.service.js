@@ -69,10 +69,13 @@ async function getAllDiscussions(filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
-        include: {
+        include: [{
             model: db.DiscussionVisibilityPairs,
             as: "discussionPairs",
-        },
+        }, {
+            model: db.Categories,
+            as: "discussionCategory",
+        },],
     }); 
 }
 
@@ -89,20 +92,6 @@ async function deleteDiscussion(userId, id) {
     });
 }
 
-async function getDiscussionsForAuthor(authorId, filter, pagination) {
-    filter.createdBy = authorId;
-    return db.Discussions.findAll({
-        where: filter,
-        limit: pagination.limit,
-        offset: pagination.offset,
-        order: [[pagination.orderBy, pagination.direction]],
-        include: {
-            model: db.DiscussionVisibilityPairs,
-            as: "discussionPairs",
-        },
-    }); 
-}
-
 async function getDiscussionsForGuest(filter, pagination) {
     filter.visibility = DISCUSSIONVISIBILITYTYPES.ALL.name;
     filter.isArchived = false;
@@ -111,6 +100,10 @@ async function getDiscussionsForGuest(filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Categories,
+            as: "discussionCategory",
+        },
     }); 
 }
 
@@ -140,6 +133,10 @@ async function getDiscussionsForStartup(startupId, filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Categories,
+            as: "discussionCategory",
+        },
     });
 }
 
@@ -167,6 +164,10 @@ async function getDiscussionsForInvestor(investorId, filter, pagination) {
         limit: pagination.limit,
         offset: pagination.offset,
         order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Categories,
+            as: "discussionCategory",
+        },
     }); 
 }
 
@@ -178,7 +179,6 @@ module.exports = {
     discussionDeleteRequest,
     getAllDiscussions,
     deleteDiscussion,
-    getDiscussionsForAuthor,
     getDiscussionsForGuest,
     getDiscussionsForStartup,
     getDiscussionsForInvestor,

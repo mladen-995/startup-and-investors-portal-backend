@@ -37,6 +37,25 @@ async function getInvestors(userFilter, profileFilter, pagination, attributes) {
             model: db.InvestorUserProfiles,
             as: "investorProfile",
             where: profileFilter,
+            include: [{
+                model: db.StreetNumbers,
+                as: "streetNumberInvestorUserProfiles"
+            }, {
+                model: db.Streets,
+                as: "streetInvestorUserProfiles",
+            }, {
+                model: db.Municipalities,
+                as: "municipalityInvestorUserProfiles",
+            }, {
+                model: db.Cities,
+                as: "cityInvestorUserProfiles",
+            }, {
+                model: db.Countries,
+                as: "countryInvestorUserProfiles",
+            }, {
+                model: db.Ciphers,
+                as: "businessTypesInvestors",
+            }]
         },
     };
     if (attributes) {
@@ -54,6 +73,25 @@ async function getInvestor(id, isAdmin) {
         include: {
             model: db.InvestorUserProfiles,
             as: "investorProfile",
+            include: [{
+                model: db.StreetNumbers,
+                as: "streetNumberInvestorUserProfiles"
+            }, {
+                model: db.Streets,
+                as: "streetInvestorUserProfiles",
+            }, {
+                model: db.Municipalities,
+                as: "municipalityInvestorUserProfiles",
+            }, {
+                model: db.Cities,
+                as: "cityInvestorUserProfiles",
+            }, {
+                model: db.Countries,
+                as: "countryInvestorUserProfiles",
+            }, {
+                model: db.Ciphers,
+                as: "businessTypesInvestors",
+            }]
         },
         attributes: {
             exclude: ["password"],
@@ -126,13 +164,37 @@ async function getStartup(id, isAdmin) {
         include: {
             model: db.StartupUserProfiles,
             as: "startupProfile",
-            include: {
+            include: [{
                 model: db.StartupPublicFields,
                 as: "startupPublicFields",
                 attributes: {
                     exclude: ["userId", "createdAt", "updatedAt", "deletedAt"]
                 }
-            }
+            }, {
+                model: db.StreetNumbers,
+                as: "streetNumberStartupUserProfiles"
+            }, {
+                model: db.Streets,
+                as: "streetStartupUserProfiles",
+            }, {
+                model: db.Municipalities,
+                as: "municipalityStartupUserProfiles",
+            }, {
+                model: db.Cities,
+                as: "cityStartupUserProfiles",
+            }, {
+                model: db.Countries,
+                as: "countryStartupUserProfiles",
+            }, {
+                model: db.Ciphers,
+                as: "businessTypesStartups",
+            }, {
+                model: db.Ciphers,
+                as: "areasOfInterestsStartups",
+            }, {
+                model: db.Ciphers,
+                as: "profesionalSkillsStartups",
+            }]
         },
         attributes: {
             exclude: ["password"],
@@ -164,7 +226,26 @@ async function getInvestorUserProfilByUserId(userId){
     return db.InvestorUserProfiles.findOne({
         where: {
             userId: userId,
-        }
+        },
+        include: [{
+            model: db.StreetNumbers,
+            as: "streetNumberInvestorUserProfiles"
+        }, {
+            model: db.Streets,
+            as: "streetInvestorUserProfiles",
+        }, {
+            model: db.Municipalities,
+            as: "municipalityInvestorUserProfiles",
+        }, {
+            model: db.Cities,
+            as: "cityInvestorUserProfiles",
+        }, {
+            model: db.Countries,
+            as: "countryInvestorUserProfiles",
+        }, {
+            model: db.Ciphers,
+            as: "businessTypesInvestors",
+        }]
     });
 }
 
@@ -172,7 +253,32 @@ async function getStartupUserProfilByUserId(userId){
     return db.StartupUserProfiles.findOne({
         where: {
             userId: userId,
-        }
+        },
+        include: [{
+            model: db.StreetNumbers,
+            as: "streetNumberStartupUserProfiles"
+        }, {
+            model: db.Streets,
+            as: "streetStartupUserProfiles",
+        }, {
+            model: db.Municipalities,
+            as: "municipalityStartupUserProfiles",
+        }, {
+            model: db.Cities,
+            as: "cityStartupUserProfiles",
+        }, {
+            model: db.Countries,
+            as: "countryStartupUserProfiles",
+        }, {
+            model: db.Ciphers,
+            as: "businessTypesStartups",
+        }, {
+            model: db.Ciphers,
+            as: "areasOfInterestsStartups",
+        }, {
+            model: db.Ciphers,
+            as: "profesionalSkillsStartups",
+        }]
     });
     
 }
@@ -189,7 +295,7 @@ async function getUserAndProfile(id){
         }
         case ROLENAMES.STARTUP: {
             const profile = await getStartupUserProfilByUserId(id);
-            user.dataValues.profile = profile.dataValues;
+            user.dataValues.profile = profile;
             break;
         }
         case ROLENAMES.ADMINISTARTOR: {

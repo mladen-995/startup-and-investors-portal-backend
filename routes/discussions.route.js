@@ -73,25 +73,6 @@ async function deleteDiscussion(req, res, next) {
     }
 }
 
-async function getDiscussionsForAuthor(req, res, next) {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errorCode: 422, errors: errors.array() });
-        }
-        const { pagination } = req.params;
-        const filterParams = ["title", "categoryId"];
-        const filter = lodash.pick(req.query, filterParams);
-        const discussions = await discussionsController.getDiscussionsForAuthor(req.userId, filter, pagination);
-        res.status(200).json({
-            success: true,
-            data: discussions
-        });
-    } catch(err) {
-        next(err);
-    }
-}
-
 async function getDiscussions(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -153,7 +134,6 @@ module.exports = {
     discussionDeleteRequest,
     deleteDiscussion,
     getDiscussions,
-    getDiscussionsForAuthor,
     getDiscussionReplies,
     getDiscussion,
 };

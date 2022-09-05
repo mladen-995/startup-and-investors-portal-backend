@@ -54,25 +54,48 @@ async function getNews(userId, filter, pagination) {
     if (!userId) {
         delete filter.requestedDeletion;
         delete filter.isArchived;
-        return newsService.getNewsForGuest(filter, pagination);
+        const news = await newsService.getNewsForGuest(filter, pagination);
+        for (const signleNews of news) {
+            formatNews(signleNews);
+        }
+        return news;
     }
     const user = await usersService.getUserById(userId);
     const role = await rolesService.getRoleById(user.roleId);
     switch (role.name) {
         case ROLENAMES.INVESTOR: {
-            return newsService.getNewsForInvestor(userId, filter, pagination);
+            const news = await  newsService.getNewsForInvestor(userId, filter, pagination);
+            for (const signleNews of news) {
+                formatNews(signleNews);
+            }
+            return news;
         }
         case ROLENAMES.STARTUP: {
-            return newsService.getNewsForStartup(userId, filter, pagination);
+            const news = await  newsService.getNewsForStartup(userId, filter, pagination);
+            for (const signleNews of news) {
+                formatNews(signleNews);
+            }
+            return news;
         }
         case ROLENAMES.ADMINISTARTOR: {
-            return newsService.getAllNews(filter, pagination);
+            const news = await  newsService.getAllNews(filter, pagination);
+            for (const signleNews of news) {
+                formatNews(signleNews);
+            }
+            return news;
         }
     }
 }
 
 async function getSingleNews(newsId) {
-    return newsService.findNewsById(newsId);
+    const news = await newsService.findNewsById(newsId);
+    formatNews(news);
+    return news;
+}
+
+function formatNews(news) {
+    news.dataValues.category = news.dataValues.newsCategory.name;
+    delete news.dataValues.newsCategory;
 }
 
 module.exports = {
