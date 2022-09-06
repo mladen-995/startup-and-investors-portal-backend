@@ -286,6 +286,15 @@ async function getInvestorMutePairs(userId) {
      return pairs;
 }
 
+async function getInvestorCanSearchStartups(userId) {
+    const canSearchStartups = await _canSearchStartups(userId, ROLENAMES.INVESTOR);
+    const requestExists = !!await usersService.getInvestorSearchRequestByUserId(userId);
+    return {
+        canSearchStartups,
+        requestExists,
+    };
+}
+
 async function _canSearchStartups(investorId, role) {
     if (role === ROLENAMES.INVESTOR) {
         const investor = await getInvestor(role, investorId);
@@ -293,7 +302,6 @@ async function _canSearchStartups(investorId, role) {
     }
     return true;
 }
-
 
 function formatUserProfile(userProfile) {
     if (userProfile.streetNumberStartupUserProfiles) {
@@ -378,4 +386,5 @@ module.exports = {
     changePassword,
     requestPasswordReset,
     resetPassword,
+    getInvestorCanSearchStartups,
 };

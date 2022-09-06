@@ -534,6 +534,12 @@ function findOrCreateInvestorSearchRequest(userId, transaction = null) {
     });
 }
 
+function getInvestorSearchRequestByUserId(userId) {
+    return db.InvestorSearchStartupRequest.findOne({
+        where: { userId },
+    });
+}
+
 
 function getInvestorSearchRequests() {
     return db.InvestorSearchStartupRequest.findAll();
@@ -664,4 +670,5 @@ module.exports = {
     getInvestorMutePairs,
     createResetPasswordToken,
     getTokenByToken,
+    getInvestorSearchRequestByUserId,
 };

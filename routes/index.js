@@ -40,6 +40,7 @@ router.post("/investor-search-requests/approve/:requestId", userMiddleware.check
 
 router.get("/investors", userMiddleware.checkUser, addPagination, users.getInvestors);
 router.get("/investors/:investorId", userMiddleware.checkUser, userValidators.getInvestor, users.getInvestor); // mozda svi da mogu da vide
+router.get("/investor/can-search-startups", userMiddleware.checkUser, userMiddleware.checkIfInvestor, users.getInvestorCanSearchStartups);
 
 router.get("/muted-investors", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, users.getInvestorMutePairs);
 router.post("/mute-investor/:investorId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, userValidators.muteInvestor, users.muteInvestor);
