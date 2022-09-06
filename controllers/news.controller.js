@@ -22,9 +22,9 @@ async function createNews(userId, title, text, categoryId, visibility, visibilit
     const news = await newsService.createNews(userId, title, text, visibility, categoryId, transaction);
     for (const type of Object.keys(NEWSVISIBILITYTYPES)) {
         if (NEWSVISIBILITYTYPES[type].name === visibility && NEWSVISIBILITYTYPES[type].hasPair) {
-            visibilityPairObject.forEach(async (pairId) => {
+            for (const pairId of visibilityPairObject) {
                 await newsService.createNewsVisibilityPair(news.id, pairId, transaction);
-            });
+            }
         }
     }
 }
