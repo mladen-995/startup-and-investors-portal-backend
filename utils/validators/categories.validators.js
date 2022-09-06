@@ -1,4 +1,4 @@
-const { body, param } = require("express-validator");
+const { body, param, query } = require("express-validator");
 const { CATEGORYENTITITES } = require("../consts");
 const { ApplicationError } = require("../errors");
 
@@ -20,13 +20,13 @@ module.exports = {
     }
     ],
     getCategories: [
-        body("entityName")
+        query("entityName")
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
         
         function(req, res, next) {
             const categoryEntities = Object.values(CATEGORYENTITITES);
-            if (!categoryEntities.includes(req.body.entityName)) {
+            if (!categoryEntities.includes(req.query.entityName)) {
                 throw new ApplicationError("Wrong entity!", 422);
             }
             return next();

@@ -28,7 +28,7 @@ async function getCategories(req, res, next) {
         const { pagination } = req.params;
         const filterParams = ["name"];
         const filter = lodash.pick(req.query, filterParams);
-        const { entityName, activeOnly } = req.body;
+        const { entityName, activeOnly } = req.query;
         const categories = await categoriesController.getCategories(entityName, activeOnly, filter, pagination);
         res.status(200).json({
             success: true,

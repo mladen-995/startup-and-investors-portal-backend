@@ -108,7 +108,7 @@ async function updateInvestor(req, res, next) {
         userProfile.userId = userId;
         const userProfileFields = ["tin", "businessTypeId", "website", "legalEntityName", "phone"];
         userProfile = lodash.pick(userProfile, userProfileFields);
-        await usersController.updateInvestor(user, userProfile, t);
+        await usersController.updateInvestor(req.userId, req.role, user, userProfile, t);
         await t.commit();
         res.status(200).json({
             success: true,
@@ -133,7 +133,7 @@ async function updateStartup(req, res, next) {
         user.id = userId;
         const userProfile = getStartupUserProfileFromRequestObj(req.body);
         userProfile.userId = userId;
-        await usersController.updateStartup(user, userProfile, t);
+        await usersController.updateStartup(req.userId, req.role, user, userProfile, t);
         await t.commit();
         res.status(200).json({
             success: true,
@@ -155,7 +155,7 @@ async function updateAdministrator(req, res, next) {
 
         const user = getUserFromRequestObject(req.body);
         user.id = userId;
-        await usersController.updateAdministrator(user);
+        await usersController.updateAdministrator(req.userId, req.role, user);
         res.status(200).json({
             success: true,
         });
@@ -245,7 +245,7 @@ async function getStartupPublicFields(req, res, next) {
             return res.status(422).json({ errorCode: 422, errors: errors.array() });
         }
         const startupId = req.params.startupId;
-        const startupPublicFields = await usersController.getStartupPublicFields(startupId);
+        const startupPublicFields = await usersController.getStartupPublicFields(req.userId, req.role, startupId);
         res.status(200).json({
             success: true,
             data: startupPublicFields,
@@ -263,7 +263,7 @@ async function updateStartupPublicFields(req, res, next) {
         }
         const startupPublicFields = lodash.pick(req.body, STARTUPPOENTIALYPRIVATEFIELDS.USER.concat(STARTUPPOENTIALYPRIVATEFIELDS.USERPROFILE));
         const startupId = req.params.startupId;
-        await usersController.updateStartupPublicFields(startupId, startupPublicFields);
+        await usersController.updateStartupPublicFields(req.userId, startupId, startupPublicFields);
         res.status(200).json({
             success: true,
         });

@@ -174,25 +174,40 @@ async function getStartup(userId, role, startupId) {
     return startup;
 }
 
-async function updateInvestor(user, userProfile, transaction = null) {
+async function updateInvestor(userId, role, user, userProfile, transaction = null) {
+    if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
+        throw new ApplicationError("Cannot update user!", 401);
+    }
     await usersService.updateUser(user, transaction);
     await usersService.updateInvestorUserProfile(userProfile, transaction);
 }
 
-async function updateStartup(user, userProfile, transaction = null) {
+async function updateStartup(userId, role, user, userProfile, transaction = null) {
+    if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
+        throw new ApplicationError("Cannot update user!", 401);
+    }
     await usersService.updateUser(user, transaction);
     await usersService.updateStartupUserProfile(userProfile, transaction);
 }
 
-async function updateAdministrator(user) {
+async function updateAdministrator(userId, role, user) {
+    if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
+        throw new ApplicationError("Cannot update user!", 401);
+    }
     await usersService.updateUser(user);
 }
 
-async function getStartupPublicFields(startupId) {
+async function getStartupPublicFields(userId, role, startupId) {
+    if (userId !== startupId || role !== ROLENAMES.ADMINISTARTOR) {
+        throw new ApplicationError("You can only get public fields for yourself!", 401);
+    }
     return usersService.getStartupPublicFields(startupId);
 }
 
-async function updateStartupPublicFields(startupId, startupPublicFields) {
+async function updateStartupPublicFields(userId, startupId, startupPublicFields) {
+    if (userId !== startupId) {
+        throw new ApplicationError("You can only update public fields for yourself!", 401);
+    }
     return usersService.updateStartupPublicFields(startupId, startupPublicFields);
 }
 

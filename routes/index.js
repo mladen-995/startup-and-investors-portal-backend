@@ -39,14 +39,14 @@ router.get("/investor-search-requests", userMiddleware.checkUser, userMiddleware
 router.post("/investor-search-requests/approve/:requestId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.approveInvestorSearchRequest, users.approveInvestorSearchRequest);
 
 router.get("/investors", userMiddleware.checkUser, addPagination, users.getInvestors);
-router.get("/investors/:investorId", userMiddleware.checkUser, userValidators.getInvestor, users.getInvestor);
+router.get("/investors/:investorId", userMiddleware.checkUser, userValidators.getInvestor, users.getInvestor); // mozda svi da mogu da vide
 
 router.get("/muted-investors", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, users.getInvestorMutePairs);
 router.post("/mute-investor/:investorId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, userValidators.muteInvestor, users.muteInvestor);
 router.post("/unmute-investor/:investorId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, userValidators.unmuteInvestor, users.unmuteInvestor);
 
 router.get("/startups", userMiddleware.checkUser, addPagination, users.getStartups);
-router.get("/startups/:startupId", userMiddleware.checkUser, userValidators.getStartup, users.getStartup);
+router.get("/startups/:startupId", userMiddleware.checkUser, userValidators.getStartup, users.getStartup);// mozda svi da mogu da vide
 
 router.get("/startup-public-fields/:startupId", userMiddleware.checkUser, userValidators.getStartupPublicFields, users.getStartupPublicFields);
 // check if self call
@@ -56,68 +56,65 @@ router.put("/update-investor/:userId",userMiddleware.checkUser, userValidators.u
 router.put("/update-startup/:userId", userMiddleware.checkUser, userValidators.updateStartup, users.updateStartup);
 router.put("/update-administrator/:userId", userMiddleware.checkUser, userValidators.updateAdministrator, users.updateAdministrator);
 
-// check if user is investor
-router.post("/ads", userMiddleware.checkUser, adValidators.createAd, ads.createAd);
+router.post("/ads", userMiddleware.checkUser, userMiddleware.checkIfInvestor, adValidators.createAd, ads.createAd);
 // check if user is admin
 router.post("/ads/delete-request/:adId", userMiddleware.checkUser, adValidators.adDeleteRequest, ads.adDeleteRequest);
-router.delete("/ads/:adId", userMiddleware.checkUser, adValidators.deleteAd, ads.deleteAd);
+router.delete("/ads/:adId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, adValidators.deleteAd, ads.deleteAd);
 router.get("/ads", userMiddleware.addUserIdToReqIfExists, addPagination, ads.getAds);
 router.get("/ads/:adId", adValidators.getAd, ads.getAd);
 
 // check if investor or startup
-router.post("/news", userMiddleware.checkUser, newsValidators.createNews, news.createNews);
-router.post("/news/archive/:newsId", userMiddleware.checkUser, newsValidators.archiveNews, news.archiveNews);
-router.post("/news/delete-request/:newsId", userMiddleware.checkUser, newsValidators.newsDeleteRequest, news.newsDeleteRequest);
-router.delete("/news/:newsId", userMiddleware.checkUser, newsValidators.deleteNews, news.deleteNews);
+router.post("/news", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, newsValidators.createNews, news.createNews);
+router.post("/news/archive/:newsId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, newsValidators.archiveNews, news.archiveNews);
+router.post("/news/delete-request/:newsId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, newsValidators.newsDeleteRequest, news.newsDeleteRequest);
+router.delete("/news/:newsId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, newsValidators.deleteNews, news.deleteNews);
 router.get("/news", userMiddleware.addUserIdToReqIfExists, addPagination, news.getNews);
 router.get("/news/:newsId", newsValidators.getSingleNews, news.getSingleNews);
 
 // check if user is investor
-router.post("/notifications", userMiddleware.checkUser, notifValidators.createNotif, notifs.createNotification);
+router.post("/notifications", userMiddleware.checkUser, userMiddleware.checkIfInvestor, notifValidators.createNotif, notifs.createNotification);
 // check if user is admin
-router.post("/notifications/delete-request/:notificationId", userMiddleware.checkUser, notifValidators.notifDeleteRequest, notifs.notificationDeleteRequest);
-router.delete("/notifications/:notificationId", userMiddleware.checkUser, notifValidators.deleteNotif, notifs.deleteNotification);
+router.post("/notifications/delete-request/:notificationId", userMiddleware.checkUser, userMiddleware.checkIfInvestor, notifValidators.notifDeleteRequest, notifs.notificationDeleteRequest);
+router.delete("/notifications/:notificationId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, notifValidators.deleteNotif, notifs.deleteNotification);
 router.get("/notifications", userMiddleware.addUserIdToReqIfExists, addPagination, notifs.getNotifications);
 router.get("/notifications/:notificationId", notifValidators.getNotification, notifs.getNotification);
 
-// check if user is investor
-router.post("/discussions", userMiddleware.checkUser, discussionsValidators.createDiscussion, discussions.createDiscussion);
-router.post("/discussions-reply/:parentId", userMiddleware.checkUser, discussionsValidators.createDiscussionReply, discussions.createDiscussionReply);
-// // check if user is admin
-router.post("/discussions/delete-request/:discussionId", userMiddleware.checkUser, discussionsValidators.discussionDeleteRequest, discussions.discussionDeleteRequest);
-router.delete("/discussions/:discussionId", userMiddleware.checkUser, discussionsValidators.deleteDiscussion, discussions.deleteDiscussion);
+router.post("/discussions", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, discussionsValidators.createDiscussion, discussions.createDiscussion);
+router.post("/discussions-reply/:parentId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, discussionsValidators.createDiscussionReply, discussions.createDiscussionReply);
+router.post("/discussions/delete-request/:discussionId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, discussionsValidators.discussionDeleteRequest, discussions.discussionDeleteRequest);
+router.delete("/discussions/:discussionId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, discussionsValidators.deleteDiscussion, discussions.deleteDiscussion);
 router.get("/discussions", userMiddleware.addUserIdToReqIfExists, addPagination, discussions.getDiscussions);
 router.get("/discussions/:discussionId", discussionsValidators.getDiscussion, discussions.getDiscussion);
 router.get("/discussions-replies/:parentId", userMiddleware.checkUser, discussionsValidators.getDiscussionReplies, discussions.getDiscussionReplies);
 
-router.post("/surveys", userMiddleware.checkUser, surveysValidators.createSurvey, surveys.createSurvey);
-router.post("/surveys/reject/:surveyId", userMiddleware.checkUser, surveysValidators.rejectSurvey, surveys.rejectSurvey);
+router.post("/surveys", userMiddleware.checkUser, userMiddleware.checkIfInvestor,surveysValidators.createSurvey, surveys.createSurvey);
+router.post("/surveys/reject/:surveyId", userMiddleware.checkUser, userMiddleware.checkIfStartup, surveysValidators.rejectSurvey, surveys.rejectSurvey);
 router.get("/surveys-questions/:surveyId", userMiddleware.checkUser, surveysValidators.getSurveyQuestions, surveys.getSurveyQuestions);
-router.post("/surveys/answer/:surveyId", userMiddleware.checkUser, surveysValidators.answerSurvey, surveys.answerSurvey);
+router.post("/surveys/answer/:surveyId", userMiddleware.checkUser, userMiddleware.checkIfStartup, surveysValidators.answerSurvey, surveys.answerSurvey);
 router.get("/surveys", userMiddleware.checkUser, addPagination, surveys.getSurveys);
 router.get("/surveys/:surveyId", surveysValidators.getSurvey, surveys.getSurvey);
 router.get("/surveys/question-answers/:questionId", userMiddleware.checkUser, surveysValidators.getSurveyQuestionAnswers, surveys.getSurveyQuestionAnswers);
 router.delete("/surveys/:surveyId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, surveysValidators.deleteSurvey, surveys.deleteSurvey);
 
 router.post("/categories", userMiddleware.checkUser, categoriesValidators.createCategory, categories.createCategory);
-router.get("/categories", userMiddleware.checkUser, addPagination, categoriesValidators.getCategories, categories.getCategories);
-router.get("/categories/:categoryId", userMiddleware.checkUser, categoriesValidators.getCategory, categories.getCategory);
+router.get("/categories", addPagination, categoriesValidators.getCategories, categories.getCategories);
+router.get("/categories/:categoryId", categoriesValidators.getCategory, categories.getCategory);
 router.delete("/categories/:categoryId", userMiddleware.checkUser, categoriesValidators.deleteCategory, categories.deleteCategory);
 
 router.get("/startup-groups", userMiddleware.checkUser, addPagination, startupGroups.getStartupGroups);
 router.get("/startup-groups/:groupId", userMiddleware.checkUser, startupGroupsValidators.getStartupGroup, startupGroups.getStartupGroup);
 router.post("/startup-groups", userMiddleware.checkUser, startupGroupsValidators.createStartupGroup, startupGroups.createStartupGroup);
-router.delete("/startup-groups/:groupId", userMiddleware.checkUser, startupGroupsValidators.deleteStartupGroup, startupGroups.deleteStartupGroup);
+router.delete("/startup-groups/:groupId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, startupGroupsValidators.deleteStartupGroup, startupGroups.deleteStartupGroup);
 
 router.get("/countries", addPagination, locations.getCountries);
-router.get("/countries/id/:countryId", userMiddleware.checkUser, locationsValidators.getCountry, locations.getCountry);
-router.post("/countries", userMiddleware.checkUser, locationsValidators.createCountry, locations.createCountry);
-router.delete("/countries/:countryId", userMiddleware.checkUser, locationsValidators.deleteCountry, locations.deleteCountry);
+router.get("/countries/id/:countryId", locationsValidators.getCountry, locations.getCountry);
+router.post("/countries", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createCountry, locations.createCountry);
+router.delete("/countries/:countryId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.deleteCountry, locations.deleteCountry);
 
 router.get("/cities/:countryId", addPagination, locationsValidators.getCities, locations.getCities);
-router.get("/cities/id/:cityId", userMiddleware.checkUser, locationsValidators.getCity, locations.getCity);
-router.post("/cities", userMiddleware.checkUser, locationsValidators.createCity, locations.createCity);
-router.delete("/cities/:cityId", userMiddleware.checkUser, locationsValidators.deleteCity, locations.deleteCity);
+router.get("/cities/id/:cityId", locationsValidators.getCity, locations.getCity);
+router.post("/cities", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createCity, locations.createCity);
+router.delete("/cities/:cityId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.deleteCity, locations.deleteCity);
 
 router.get("/municipalities/:cityId", addPagination, locationsValidators.getMunicipalities, locations.getMunicipalities);
 router.get("/municipalities/id/:municipalityId", userMiddleware.checkUser, locationsValidators.getMunicipality, locations.getMunicipality);
@@ -125,19 +122,19 @@ router.post("/municipalities", userMiddleware.checkUser, locationsValidators.cre
 router.delete("/municipalities/:municipalityId", userMiddleware.checkUser, locationsValidators.deleteMunicipality, locations.deleteMunicipality);
 
 router.get("/streets/:municipalityId", addPagination, locationsValidators.getStreets, locations.getStreets);
-router.get("/streets/id/:streetId", userMiddleware.checkUser, locationsValidators.getStreet, locations.getStreet);
-router.post("/streets", userMiddleware.checkUser, locationsValidators.createStreet, locations.createStreet);
-router.delete("/streets/:streetId", userMiddleware.checkUser, locationsValidators.deleteStreet, locations.deleteStreet);
+router.get("/streets/id/:streetId", locationsValidators.getStreet, locations.getStreet);
+router.post("/streets", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createStreet, locations.createStreet);
+router.delete("/streets/:streetId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.deleteStreet, locations.deleteStreet);
 
 router.get("/street-numbers/:streetId", addPagination, locationsValidators.getStreetNumbers, locations.getStreetNumbers);
-router.get("/street-numbers/id/:streetNumberId", userMiddleware.checkUser, locationsValidators.getStreetNumber, locations.getStreetNumber);
-router.post("/street-numbers", userMiddleware.checkUser, locationsValidators.createStreetNumber, locations.createStreetNumber);
-router.delete("/street-numbers/:streetNumberId", userMiddleware.checkUser, locationsValidators.deleteStreetNumber, locations.deleteStreetNumber);
+router.get("/street-numbers/id/:streetNumberId", locationsValidators.getStreetNumber, locations.getStreetNumber);
+router.post("/street-numbers", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createStreetNumber, locations.createStreetNumber);
+router.delete("/street-numbers/:streetNumberId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.deleteStreetNumber, locations.deleteStreetNumber);
 
 router.get("/ciphers/:cipherTypeName", addPagination, ciphersValidators.getCiphers, ciphers.getCiphers);
-router.get("/ciphers/id/:cipherId", userMiddleware.checkUser, ciphersValidators.getCipher, ciphers.getCipher);
+router.get("/ciphers/id/:cipherId", ciphersValidators.getCipher, ciphers.getCipher);
 router.post("/ciphers", userMiddleware.checkUser, ciphersValidators.createCipher, ciphers.createCipher);
-router.delete("/ciphers/:cipherId", userMiddleware.checkUser, ciphersValidators.deleteCipher, ciphers.deleteCipher);
+router.delete("/ciphers/:cipherId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, ciphersValidators.deleteCipher, ciphers.deleteCipher);
 
 router.post("/login", users.login);
 
