@@ -102,7 +102,9 @@ async function getDiscussions(userId, filter, pagination) {
 }
 
 function formatDiscussion(discussion) {
-    discussion.dataValues.category = discussion.dataValues.discussionCategory.name;
+    if (discussion.dataValues.discussionCategory) {
+        discussion.dataValues.category = discussion.dataValues.discussionCategory.name;
+    }
     delete discussion.dataValues.discussionCategory;
 }
 

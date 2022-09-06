@@ -94,7 +94,9 @@ async function getSingleNews(newsId) {
 }
 
 function formatNews(news) {
-    news.dataValues.category = news.dataValues.newsCategory.name;
+    if (news.dataValues.newsCategory) {
+        news.dataValues.category = news.dataValues.newsCategory.name;
+    }
     delete news.dataValues.newsCategory;
 }
 
