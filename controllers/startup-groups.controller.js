@@ -7,7 +7,7 @@ async function createStartupGroup(userId, name, description, startupIds, transac
         throw new ApplicationError("Startup group with this name already exists!", 422);
     }
     const startupGroup = await startupGroupsService.createStartupGroup(userId, name, description, transaction);
-    for (const startupId in startupIds) {
+    for (const startupId of startupIds) {
         await startupGroupsService.createStartupGroupPair(userId, startupGroup.id, startupId, transaction);
     }
 }
