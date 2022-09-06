@@ -15,9 +15,8 @@ async function login(username, password) {
     if (!checkUserPassword) {
         throw new ApplicationError("Username or Password not valid!", 401);
     }
-    // startup
-    let startupNotLoggedInAYear;
     if (databaseUser.roleId === 2) {
+        let startupNotLoggedInAYear;
         let userDateForComparison;
         if (databaseUser.lastLoginAt && databaseUser.approvedDate) {
             userDateForComparison = new Date(databaseUser.lastLoginAt).getTime() > new Date(databaseUser.approvedDate).getTime() ?
@@ -28,14 +27,14 @@ async function login(username, password) {
         if (userDateForComparison) {
             startupNotLoggedInAYear = new Date() - new Date(userDateForComparison) > (1000 * 3600 * 24*365);
         }
-    }
-    if (!databaseUser.approved || startupNotLoggedInAYear) {
         await usersService.findOrCreateUserCreationRequest(databaseUser.id);
-        const errorMessage = startupNotLoggedInAYear ? "Startup has not logged in for over a year! A request to reenable your account has been sent to the administrator." :
-            "User is not approved! A request has been sent to the administrator.";
-        throw new ApplicationError(errorMessage, 401);
+        if (startupNotLoggedInAYear) {
+            throw new ApplicationError("Startup has not logged in for over a year so the account is disabled!", 401);
+        }
+    } else if (databaseUser.roleId === 3 && !databaseUser.approved) {
+        await usersService.findOrCreateUserCreationRequest(databaseUser.id);
+        throw new ApplicationError("User is not approved! A request has been sent to the administrator.", 401);
     }
-    // check if lastLogin is 1+y before, and if it is set approved to false and send a request to admin
     const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.username);
     await usersService.setUserLastLoginAt(databaseUser.id);
     const user = await usersService.getUserAndProfile(databaseUser.id);
@@ -110,7 +109,7 @@ async function registerStartup(user, userProfile, transaction = null) {
     const databaseUser = await usersService.createUser(user, transaction);
     userProfile.userId = databaseUser.id;
     await usersService.createStartupUserProfile(userProfile, transaction);
-    await usersService.findOrCreateUserCreationRequest(databaseUser.id, transaction);
+    // await usersService.findOrCreateUserCreationRequest(databaseUser.id, transaction);
     await usersService.createStartupUserPublicFields(databaseUser.id, transaction);
 }
 
