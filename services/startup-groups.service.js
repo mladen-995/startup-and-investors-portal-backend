@@ -28,7 +28,7 @@ async function getAllStartupGroups(filter, pagination) {
         order: [[pagination.orderBy, pagination.direction]],
         include: {
             model: db.StartupGroupPairs,
-            as: "startupGroupPairs",
+            as: "groupStartupPairs",
         },
     });
 }
