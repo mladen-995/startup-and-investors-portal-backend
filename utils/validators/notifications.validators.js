@@ -25,7 +25,7 @@ module.exports = {
                 throw new ApplicationError("visibilityPairObject field is required for this visibility type!", 422);
             }
             if (notifVisibilityType.isPairArray) {
-                if (!Array.isArray(req.body.visibilityPairObject) && req.body.visibilityPairObject.length > 0) {
+                if (!Array.isArray(req.body.visibilityPairObject) || req.body.visibilityPairObject.length === 0) {
                     throw new ApplicationError("visibilityPairObject must be an array for this visibility type!", 422);
                 }
             } else {

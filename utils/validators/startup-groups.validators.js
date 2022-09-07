@@ -9,7 +9,7 @@ module.exports = {
             .withMessage("Please make sure you filled out all the fields."),
 
     function(req, res, next) {
-        if (!Array.isArray(req.body.startupIds) && req.body.visibilityPairObject.length > 0) {
+        if (!Array.isArray(req.body.startupIds) || req.body.visibilityPairObject.length === 0) {
             throw new ApplicationError("startupIds must be an array!", 422);
         }
         req.body.startupIds.forEach((startupId) => {
