@@ -13,7 +13,7 @@ async function createStartupGroup(userId, name, description, startupIds, transac
 }
 
 async function getStartupGroups(filter, pagination) {
-    await startupGroupsService.getAllStartupGroups(filter, pagination);
+    return await startupGroupsService.getAllStartupGroups(filter, pagination);
 }
 
 async function getStartupGroup(groupId) {
