@@ -8,7 +8,7 @@ const NOTIFADVISIBILITYTYPES = {
     STARTUPGROUP: {
         name: 'startupGroup',
         hasPair: true,
-        isPairArray: false,
+        isPairArray: true,
     },
     STRATUPIDS: {
         name: 'startupIds',
