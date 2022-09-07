@@ -18,7 +18,7 @@ const NOTIFADVISIBILITYTYPES = {
     BUSINESSTYPE: {
         name: 'businessType',
         hasPair: true,
-        isPairArray: false,
+        isPairArray: true,
     },
     STARTUPSONLY: {
         name: 'startupsOnly',
