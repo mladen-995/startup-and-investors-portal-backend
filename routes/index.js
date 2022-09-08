@@ -103,8 +103,11 @@ router.get("/categories/:categoryId", categoriesValidators.getCategory, categori
 router.delete("/categories/:categoryId", userMiddleware.checkUser, categoriesValidators.deleteCategory, categories.deleteCategory);
 
 router.get("/startup-groups", userMiddleware.checkUser, addPagination, startupGroups.getStartupGroups);
+router.get("/startup-groups-for-user", userMiddleware.checkUser, addPagination, startupGroups.getStartupGroupsForUser);
 router.get("/startup-groups/:groupId", userMiddleware.checkUser, startupGroupsValidators.getStartupGroup, startupGroups.getStartupGroup);
 router.post("/startup-groups", userMiddleware.checkUser, startupGroupsValidators.createStartupGroup, startupGroups.createStartupGroup);
+router.post("/startup-groups/join/:groupId", userMiddleware.checkUser, startupGroupsValidators.joinStartupGroup, startupGroups.joinStartupGroup);
+router.post("/startup-groups/leave/:groupId", userMiddleware.checkUser, startupGroupsValidators.leaveStartupGroup, startupGroups.leaveStartupGroup);
 router.delete("/startup-groups/:groupId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, startupGroupsValidators.deleteStartupGroup, startupGroups.deleteStartupGroup);
 
 router.get("/countries", addPagination, locations.getCountries);
