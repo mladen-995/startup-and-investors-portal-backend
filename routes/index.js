@@ -70,7 +70,7 @@ router.post("/news", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrS
 router.post("/news/archive/:newsId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, newsValidators.archiveNews, news.archiveNews);
 router.post("/news/delete-request/:newsId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, newsValidators.newsDeleteRequest, news.newsDeleteRequest);
 router.delete("/news/:newsId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, newsValidators.deleteNews, news.deleteNews);
-router.post("/news/decline-delete-request/:newsId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, adValidators.deleteNews, news.declineNewsDeleteRequest);
+router.post("/news/decline-delete-request/:newsId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, newsValidators.deleteNews, news.declineNewsDeleteRequest);
 router.get("/news", userMiddleware.addUserIdToReqIfExists, addPagination, news.getNews);
 router.get("/news/:newsId", newsValidators.getSingleNews, news.getSingleNews);
 
