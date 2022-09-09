@@ -38,7 +38,9 @@ async function login(username, password) {
     const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.username);
     await usersService.setUserLastLoginAt(databaseUser.id);
     const user = await usersService.getUserAndProfile(databaseUser.id);
-    formatUserProfile(user.profile);
+    if (user.profile) {
+        formatUserProfile(user.profile);
+    }
     const result = {
         token,
         user,
