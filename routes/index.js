@@ -61,6 +61,7 @@ router.post("/ads", userMiddleware.checkUser, userMiddleware.checkIfInvestor, ad
 // check if user is admin
 router.post("/ads/delete-request/:adId", userMiddleware.checkUser, adValidators.adDeleteRequest, ads.adDeleteRequest);
 router.delete("/ads/:adId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, adValidators.deleteAd, ads.deleteAd);
+router.post("/ads/decline-delete-request/:adId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, adValidators.deleteAd, ads.declineAdDeleteRequest);
 router.get("/ads", userMiddleware.addUserIdToReqIfExists, addPagination, ads.getAds);
 router.get("/ads/:adId", adValidators.getAd, ads.getAd);
 
@@ -69,6 +70,7 @@ router.post("/news", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrS
 router.post("/news/archive/:newsId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, newsValidators.archiveNews, news.archiveNews);
 router.post("/news/delete-request/:newsId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, newsValidators.newsDeleteRequest, news.newsDeleteRequest);
 router.delete("/news/:newsId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, newsValidators.deleteNews, news.deleteNews);
+router.post("/news/decline-delete-request/:newsId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, adValidators.deleteNews, news.declineNewsDeleteRequest);
 router.get("/news", userMiddleware.addUserIdToReqIfExists, addPagination, news.getNews);
 router.get("/news/:newsId", newsValidators.getSingleNews, news.getSingleNews);
 
@@ -77,6 +79,8 @@ router.post("/notifications", userMiddleware.checkUser, userMiddleware.checkIfIn
 // check if user is admin
 router.post("/notifications/delete-request/:notificationId", userMiddleware.checkUser, userMiddleware.checkIfInvestor, notifValidators.notifDeleteRequest, notifs.notificationDeleteRequest);
 router.delete("/notifications/:notificationId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, notifValidators.deleteNotif, notifs.deleteNotification);
+router.post("/notifications/archive/:notificationId", userMiddleware.checkUser, userMiddleware.checkIfInvestor, notifValidators.deleteNotif, notifs.archiveNotification);
+router.post("/notifications/decline-delete-request/:notificationId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, notifValidators.deleteNotif, notifs.declineNotificationDeleteRequest);
 router.get("/notifications", userMiddleware.addUserIdToReqIfExists, addPagination, notifs.getNotifications);
 router.get("/notifications/:notificationId", notifValidators.getNotification, notifs.getNotification);
 
@@ -84,8 +88,10 @@ router.post("/discussions", userMiddleware.checkUser, userMiddleware.checkIfInve
 router.post("/discussions-reply/:parentId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, discussionsValidators.createDiscussionReply, discussions.createDiscussionReply);
 router.post("/discussions/delete-request/:discussionId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, discussionsValidators.discussionDeleteRequest, discussions.discussionDeleteRequest);
 router.delete("/discussions/:discussionId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, discussionsValidators.deleteDiscussion, discussions.deleteDiscussion);
+router.post("/discussions/decline-delete-request/:discussionId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, discussionsValidators.deleteDiscussion, discussions.declineDiscussionDeleteRequest);
 router.get("/discussions", userMiddleware.addUserIdToReqIfExists, addPagination, discussions.getDiscussions);
 router.get("/discussions/:discussionId", discussionsValidators.getDiscussion, discussions.getDiscussion);
+router.post("/discussions/archive/:discussionId", userMiddleware.checkUser, userMiddleware.checkIfInvestorOrStartup, discussionsValidators.deleteDiscussion, discussions.archiveDiscussion);
 router.get("/discussions-replies/:parentId", userMiddleware.checkUser, discussionsValidators.getDiscussionReplies, discussions.getDiscussionReplies);
 
 router.post("/surveys", userMiddleware.checkUser, userMiddleware.checkIfInvestor,surveysValidators.createSurvey, surveys.createSurvey);

@@ -55,6 +55,38 @@ async function discussionDeleteRequest(req, res, next) {
     }
 }
 
+async function archiveDiscussion(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const discussionId = req.params.discussionId;
+        await discussionsController.archiveDiscussion(req.userId, discussionId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function declineDiscussionDeleteRequest(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const discussionId = req.params.discussionId;
+        await discussionsController.declineDiscussionDeleteRequest(discussionId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function deleteDiscussion(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -136,4 +168,6 @@ module.exports = {
     getDiscussions,
     getDiscussionReplies,
     getDiscussion,
+    declineDiscussionDeleteRequest,
+    archiveDiscussion,
 };

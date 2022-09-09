@@ -38,6 +38,38 @@ async function notificationDeleteRequest(req, res, next) {
     }
 }
 
+async function archiveNotification(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const notificationId = req.params.notificationId;
+        await notifsController.archiveNotification(req.userId, notificationId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function declineNotificationDeleteRequest(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const notificationId = req.params.notificationId;
+        await notifsController.declineNotificationDeleteRequest(notificationId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function deleteNotification(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -98,4 +130,6 @@ module.exports = {
     deleteNotification,
     getNotifications,
     getNotification,
+    declineNotificationDeleteRequest,
+    archiveNotification,
 };

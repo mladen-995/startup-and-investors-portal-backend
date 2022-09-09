@@ -57,6 +57,22 @@ async function newsDeleteRequest(req, res, next) {
     }
 }
 
+async function declineNewsDeleteRequest(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const newsId = req.params.newsId;
+        await newsController.declineNewsDeleteRequest(newsId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function deleteNews(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -118,4 +134,5 @@ module.exports = {
     deleteNews,
     getNews,
     getSingleNews,
+    declineNewsDeleteRequest,
 };

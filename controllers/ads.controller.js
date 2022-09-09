@@ -27,6 +27,10 @@ async function adDeleteRequest(userId, adId) {
     await adsService.adDeleteRequest(adId);
 }
 
+async function declineAdDeleteRequest(adId) {
+    await adsService.declineAdDeleteRequest(adId);
+}
+
 async function getAdsForDeletion() {
     return adsService.findAdsForDeletion();
 }
@@ -67,6 +71,7 @@ module.exports = {
     createAd,
     adDeleteRequest,
     getAdsForDeletion,
+    declineAdDeleteRequest,
     deleteAd,
     getAds,
     getAd,

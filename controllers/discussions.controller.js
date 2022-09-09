@@ -42,12 +42,24 @@ async function getDiscussionReplies(parentId) {
     return discussionsService.getDiscussionReplies(parentId);
 }
 
+async function declineDiscussionDeleteRequest(id) {
+    return discussionsService.declineDiscussionDeleteRequest(id);
+}
+
 async function discussionDeleteRequest(userId, discussionId) {
     const discussion = await discussionsService.findDiscussionById(discussionId);
     if (userId !== discussion.createdBy) {
         throw new ApplicationError("User is not the author of the discussion!", 401);
     }
     await discussionsService.discussionDeleteRequest(discussionId);
+}
+
+async function archiveDiscussion(userId, discussionId) {
+    const discussion = await discussionsService.findDiscussionById(discussionId);
+    if (userId !== discussion.createdBy) {
+        throw new ApplicationError("User is not the author of the discussion!", 401);
+    }
+    await discussionsService.archiveDiscussion(discussionId);
 }
 
 async function deleteDiscussion(userId, id) {
@@ -116,4 +128,6 @@ module.exports = {
     getDiscussion,
     deleteDiscussion,
     getDiscussions,
+    declineDiscussionDeleteRequest,
+    archiveDiscussion,
 };

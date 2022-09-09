@@ -57,6 +57,13 @@ async function newsDeleteRequest(id) {
     );
 }
 
+async function declineNewsDeleteRequest(id) {
+    return db.News.update(
+        { requestedDeletion: false },
+        { where: { id } },
+    );
+}
+
 async function deleteNews(userId, id) {
     await db.EntityDeleteLogs.create({
         entityName: "News",
@@ -179,4 +186,5 @@ module.exports = {
     getNewsForStartup,
     getAllNews,
     getNewsByCategoryId,
+    declineNewsDeleteRequest,
 };

@@ -38,6 +38,22 @@ async function adDeleteRequest(req, res, next) {
     }
 }
 
+async function declineAdDeleteRequest(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const adId = req.params.adId;
+        await adsController.declineAdDeleteRequest(req.userId, adId);
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function deleteAd(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -98,4 +114,5 @@ module.exports = {
     deleteAd,
     getAds,
     getAd,
+    declineAdDeleteRequest,
 };

@@ -45,6 +45,10 @@ async function newsDeleteRequest(userId, newsId) {
     await newsService.newsDeleteRequest(newsId);
 }
 
+async function declineNewsDeleteRequest(newsId) {
+    await newsService.declineNewsDeleteRequest(newsId);
+}
+
 
 async function deleteNews(userId, id) {
     return newsService.deleteNews(userId, id);
@@ -107,4 +111,5 @@ module.exports = {
     getSingleNews,
     deleteNews,
     getNews,
+    declineNewsDeleteRequest,
 };

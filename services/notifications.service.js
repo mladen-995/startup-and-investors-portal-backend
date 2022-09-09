@@ -40,6 +40,20 @@ async function notificationDeleteRequest(id) {
     );
 }
 
+async function declineNotificationDeleteRequest(id) {
+    return db.Notifications.update(
+        { requestedDeletion: false },
+        { where: { id } },
+    );
+}
+
+async function archiveNotification(id) {
+    return db.Notifications.update(
+        { isArchived: true },
+        { where: { id } },
+    );
+}
+
 async function getAllNotifications(filter, pagination) {
     filter.isEmailNotification = false;
     return db.Notifications.findAll({
@@ -154,4 +168,6 @@ module.exports = {
     getNotificationsForInvestor,
     getNotificationsForGuest,
     getNotificationsForStartup,
+    declineNotificationDeleteRequest,
+    archiveNotification,
 };

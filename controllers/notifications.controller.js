@@ -28,12 +28,24 @@ async function notificationDeleteRequest(userId, notifId) {
     await notifsService.notificationDeleteRequest(notifId);
 }
 
+async function archiveNotification(userId, notifId) {
+    const notif = await notifsService.findNotificationById(notifId);
+    if (userId !== notif.createdBy) {
+        throw new ApplicationError("User is not the author of the notification!", 401);
+    }
+    await notifsService.archiveNotification(notifId);
+}
+
 async function getNotificationsForDeletion() {
     return notifsService.getNotificationsForDeletion();
 }
 
 async function deleteNotification(userId, id) {
     return notifsService.deleteNotification(userId, id);
+}
+
+async function declineNotificationDeleteRequest(id) {
+    return notifsService.declineNotificationDeleteRequest(id);
 }
 
 async function getNotifications(userId, filter, pagination) {
@@ -69,4 +81,6 @@ module.exports = {
     deleteNotification,
     getNotifications,
     getNotification,
+    declineNotificationDeleteRequest,
+    archiveNotification,
 };

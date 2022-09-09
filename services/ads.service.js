@@ -40,6 +40,13 @@ async function adDeleteRequest(id) {
     );
 }
 
+async function declineAdDeleteRequest(id) {
+    return db.Ads.update(
+        { requestedDeletion: false },
+        { where: { id } },
+    );
+}
+
 async function getAllAds(filter, pagination) {
     return db.Ads.findAll({
         where: filter,
@@ -149,4 +156,5 @@ module.exports = {
     getAdsForInvestor,
     getAdsForGuest,
     getAdsForStartup,
+    declineAdDeleteRequest,
 };

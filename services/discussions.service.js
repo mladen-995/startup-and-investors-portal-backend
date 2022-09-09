@@ -63,6 +63,20 @@ async function discussionDeleteRequest(id) {
     );
 }
 
+async function declineDiscussionDeleteRequest(id) {
+    return db.Discussions.update(
+        { requestedDeletion: false },
+        { where: { id } },
+    );
+}
+
+async function archiveDiscussion(id) {
+    return db.Discussions.update(
+        { isArchived: true },
+        { where: { id } },
+    );
+}
+
 async function getAllDiscussions(filter, pagination) {
     return db.Discussions.findAll({
         where: filter,
@@ -172,6 +186,7 @@ async function getDiscussionsForInvestor(investorId, filter, pagination) {
 }
 
 module.exports = {
+    archiveDiscussion,
     createDiscussion,
     createDiscussionVisibilityPair,
     createDiscussionReply,
@@ -184,4 +199,5 @@ module.exports = {
     getDiscussionsForInvestor,
     getDiscussionReplies,
     getDiscussionByCategoryId,
+    declineDiscussionDeleteRequest,
 };
