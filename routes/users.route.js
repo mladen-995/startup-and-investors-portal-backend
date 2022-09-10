@@ -106,7 +106,7 @@ async function updateInvestor(req, res, next) {
         user.id = userId;
         let userProfile = getInvestorUserProfileFromRequestObject(req.body);
         userProfile.userId = userId;
-        const userProfileFields = ["tin", "businessTypeId", "website", "legalEntityName", "phone"];
+        const userProfileFields = ["tin", "businessTypeId", "website", "legalEntityName", "phone", "companyInfo"];
         userProfile = lodash.pick(userProfile, userProfileFields);
         await usersController.updateInvestor(req.userId, req.role, user, userProfile, t);
         await t.commit();
@@ -503,7 +503,7 @@ function getInvestorUserProfileFromRequestObject(obj) {
         "streetId", "streetNumberId", "municipalityId", "cityId", "countryId", "phone", "facebookLink", "twitterLink",
         "linkedInLink", "instagramLink", "businessTypeId", "employeeNumber", "currentCompanyPhase", 
         "lastThreeYearIncome", "lastThreeYearProfit", "investorType", "providedServiceTypes", 
-        "minAmountOfMoney", "maxAmountOfMoney", "logo"];
+        "minAmountOfMoney", "maxAmountOfMoney", "logo", "companyInfo"];
     const res = lodash.pick(obj, userProfileFields);
     return res;
 }

@@ -112,6 +112,11 @@ module.exports = (sequelize, Sequelize) => {
                 allowNull: true,
                 defaultValue: null,
             },
+            companyInfo: {
+                type: Sequelize.STRING,
+                allowNull: true,
+                defaultValue: null,
+            },
             canSearchStartups: {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,

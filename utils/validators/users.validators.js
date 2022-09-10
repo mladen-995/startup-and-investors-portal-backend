@@ -8,7 +8,7 @@ module.exports = {
             "providedServiceTypes", "minAmountOfMoney", "maxAmountOfMoney", "logo"])
             .notEmpty()
             .withMessage("Please make sure you filled out all the fields."),
-        body("middleName", "facebookLink", "twitterLink", "linkedInLink")
+        body("middleName", "facebookLink", "twitterLink", "linkedInLink", "companyInfo")
             .optional(),
     ],
     registerStartup: [

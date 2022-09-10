@@ -179,6 +179,19 @@ async function updateInvestor(userId, role, user, userProfile, transaction = nul
     if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("Cannot update user!", 401);
     }
+    const existingUser = await usersService.getUserById(userId);
+    if (user.username && user.username !== existingUser.username) {
+        const userWithUsername = await usersService.getUserByUsername(user.username);
+        if (userWithUsername) {
+            throw new ApplicationError("Username already in use!", 409);
+        }
+    }
+    if (user.email && user.email !== existingUser.email) {
+        const userWithEmail = await usersService.getUserByEmail(user.email);
+        if (userWithEmail) {
+            throw new ApplicationError("Email already in use!", 409);
+        }
+    }
     await usersService.updateUser(user, transaction);
     await usersService.updateInvestorUserProfile(userProfile, transaction);
 }
@@ -187,6 +200,19 @@ async function updateStartup(userId, role, user, userProfile, transaction = null
     if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("Cannot update user!", 401);
     }
+    const existingUser = await usersService.getUserById(userId);
+    if (user.username && user.username !== existingUser.username) {
+        const userWithUsername = await usersService.getUserByUsername(user.username);
+        if (userWithUsername) {
+            throw new ApplicationError("Username already in use!", 409);
+        }
+    }
+    if (user.email && user.email !== existingUser.email) {
+        const userWithEmail = await usersService.getUserByEmail(user.email);
+        if (userWithEmail) {
+            throw new ApplicationError("Email already in use!", 409);
+        }
+    }
     await usersService.updateUser(user, transaction);
     await usersService.updateStartupUserProfile(userProfile, transaction);
 }
@@ -194,6 +220,19 @@ async function updateStartup(userId, role, user, userProfile, transaction = null
 async function updateAdministrator(userId, role, user) {
     if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("Cannot update user!", 401);
+    }
+    const existingUser = await usersService.getUserById(userId);
+    if (user.username && user.username !== existingUser.username) {
+        const userWithUsername = await usersService.getUserByUsername(user.username);
+        if (userWithUsername) {
+            throw new ApplicationError("Username already in use!", 409);
+        }
+    }
+    if (user.email && user.email !== existingUser.email) {
+        const userWithEmail = await usersService.getUserByEmail(user.email);
+        if (userWithEmail) {
+            throw new ApplicationError("Email already in use!", 409);
+        }
     }
     await usersService.updateUser(user);
 }
