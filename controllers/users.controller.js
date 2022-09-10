@@ -250,6 +250,10 @@ async function approveUserCreationRequest(requestId, t) {
     return usersService.deleteUserCreationRequest(requestId, t);
 }
 
+async function rejectUserCreationRequest(requestId, t) {
+    return usersService.deleteUserCreationRequest(requestId, t);
+}
+
 async function getInvestorSearchRequests() {
     let userCreationRequests = await usersService.getInvestorSearchRequests();
     for (let req of userCreationRequests) {
@@ -261,6 +265,10 @@ async function getInvestorSearchRequests() {
 async function approveInvestorSearchRequest(requestId, t) {
     const request = await usersService.getInvestorSearchRequestById(requestId);
     await usersService.approveInvestorSearchRequest(request.userId, t);
+    return usersService.deleteInvestorSearchRequest(requestId, t);
+}
+
+async function rejectInvestorSearchRequest(requestId, t) {
     return usersService.deleteInvestorSearchRequest(requestId, t);
 }
 
@@ -388,4 +396,6 @@ module.exports = {
     requestPasswordReset,
     resetPassword,
     getInvestorCanSearchStartups,
+    rejectInvestorSearchRequest,
+    rejectUserCreationRequest,
 };

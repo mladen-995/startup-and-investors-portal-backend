@@ -90,6 +90,25 @@ async function getCities(req, res, next) {
     }
 }
 
+async function getAllCities(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { pagination } = req.params;
+        const filterParams = ["name"];
+        const filter = lodash.pick(req.query, filterParams);
+        const result = await locationsController.getAllCities(filter, pagination);
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function getCity(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -139,6 +158,25 @@ async function deleteCity(req, res, next) {
     }
 }
 
+async function getAllMunicipalities(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { pagination } = req.params;
+        const filterParams = ["name"];
+        const filter = lodash.pick(req.query, filterParams);
+        const result = await locationsController.getAllMunicipalities(filter, pagination);
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function getMunicipalities(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -170,6 +208,25 @@ async function getMunicipality(req, res, next) {
         const filter = lodash.pick(req.query, filterParams);
         const municipalityId = req.params.municipalityId;
         const result = await locationsController.getMunicipality(municipalityId, filter, pagination);
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
+async function getAllStreets(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { pagination } = req.params;
+        const filterParams = ["name"];
+        const filter = lodash.pick(req.query, filterParams);
+        const result = await locationsController.getAllStreets(filter, pagination);
         res.status(200).json({
             success: true,
             data: result,
@@ -280,6 +337,25 @@ async function deleteStreet(req, res, next) {
     }
 }
 
+async function getAllStreetNumbers(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { pagination } = req.params;
+        const filterParams = ["name"];
+        const filter = lodash.pick(req.query, filterParams);
+        const result = await locationsController.getAllStreetNumbers(filter, pagination);
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 async function getStreetNumbers(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -370,4 +446,8 @@ module.exports = {
     getStreetNumber,
     createStreetNumber,
     deleteStreetNumber,
+    getAllCities,
+    getAllMunicipalities,
+    getAllStreets,
+    getAllStreetNumbers,
 };

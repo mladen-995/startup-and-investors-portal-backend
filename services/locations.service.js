@@ -47,6 +47,20 @@ async function getCitiesByCountryId(countryId, filter, pagination) {
     });
 }
 
+
+async function getAllCities(filter, pagination) {
+    return db.Cities.findAll({
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Countries,
+            as: "cities",
+        },
+    });
+}
+
 async function getCityById(id) {
     return db.Cities.findOne({
         where: {
@@ -72,6 +86,19 @@ async function deleteCity(userId, id) {
     return db.Cities.destroy({
         where: {
             id,
+        },
+    });
+}
+
+async function getAllMunicipalities(filter, pagination) {
+    return db.Municipalities.findAll({
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Cities,
+            as: "municipalities",
         },
     });
 }
@@ -115,6 +142,19 @@ async function deleteMunicipality(userId, id) {
     });
 }
 
+async function getAllStreets(filter, pagination) {
+    return db.Streets.findAll({
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Municipalities,
+            as: "streets",
+        },
+    });
+}
+
 async function getStreetsByMunicipalityId(municipalityId, filter, pagination) {
     filter.municipalityId = municipalityId;
     return db.Streets.findAll({
@@ -150,6 +190,19 @@ async function deleteStreet(userId, id) {
     return db.Streets.destroy({
         where: {
             id,
+        },
+    });
+}
+
+async function getAllStreetNumbers(filter, pagination) {
+    return db.StreetNumbers.findAll({
+        where: filter,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [[pagination.orderBy, pagination.direction]],
+        include: {
+            model: db.Streets,
+            as: "streetNumbers",
         },
     });
 }
@@ -214,4 +267,8 @@ module.exports = {
     getStreetNumberById,
     createStreetNumber,
     deleteStreetNumber,
+    getAllCities,
+    getAllMunicipalities,
+    getAllStreets,
+    getAllStreetNumbers,
 };

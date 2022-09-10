@@ -324,6 +324,25 @@ async function approveUserCreationRequest(req, res, next) {
     }
 }
 
+async function rejectUserCreationRequest(req, res, next) {
+    const t = await db.sequelize.transaction();
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const requestId = req.params.requestId;
+        await usersController.rejectUserCreationRequest(requestId, t);
+        await t.commit();
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        await t.rollback();
+        next(err);
+    }
+}
+
 async function getInvestorSearchRequests(req, res, next) {
     try {
         const errors = validationResult(req);
@@ -349,6 +368,25 @@ async function approveInvestorSearchRequest(req, res, next) {
         }
         const requestId = req.params.requestId;
         await usersController.approveInvestorSearchRequest(requestId, t);
+        await t.commit();
+        res.status(200).json({
+            success: true,
+        });
+    } catch(err) {
+        await t.rollback();
+        next(err);
+    }
+}
+
+async function rejectInvestorSearchRequest(req, res, next) {
+    const t = await db.sequelize.transaction();
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const requestId = req.params.requestId;
+        await usersController.rejectInvestorSearchRequest(requestId, t);
         await t.commit();
         res.status(200).json({
             success: true,
@@ -495,4 +533,6 @@ module.exports = {
     requestPasswordReset,
     resetPassword,
     getInvestorCanSearchStartups,
+    rejectUserCreationRequest,
+    rejectInvestorSearchRequest,
 };

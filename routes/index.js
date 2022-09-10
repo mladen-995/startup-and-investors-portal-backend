@@ -33,10 +33,12 @@ router.post("/password-reset/:token", userValidators.resetPassword, users.resetP
 
 router.get("/user-creation-requests", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, users.getUserCreationRequests);
 router.post("/user-creation-requests/approve/:requestId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.approveUserCreationRequest, users.approveUserCreationRequest);
+router.post("/user-creation-requests/reject/:requestId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.approveUserCreationRequest, users.rejectUserCreationRequest);
 
 router.post("/investor-search-requests", userMiddleware.checkUser, userMiddleware.checkIfInvestor, users.createInvestorSearchRequest);
 router.get("/investor-search-requests", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, users.getInvestorSearchRequests);
 router.post("/investor-search-requests/approve/:requestId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.approveInvestorSearchRequest, users.approveInvestorSearchRequest);
+router.post("/investor-search-requests/reject/:requestId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.approveInvestorSearchRequest, users.rejectInvestorSearchRequest);
 
 router.get("/investors", userMiddleware.checkUser, addPagination, users.getInvestors);
 router.get("/investors/:investorId", userMiddleware.checkUser, userValidators.getInvestor, users.getInvestor); // mozda svi da mogu da vide
@@ -121,21 +123,25 @@ router.get("/countries/id/:countryId", locationsValidators.getCountry, locations
 router.post("/countries", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createCountry, locations.createCountry);
 router.delete("/countries/:countryId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.deleteCountry, locations.deleteCountry);
 
+router.get("/cities", addPagination, locations.getAllCities);
 router.get("/cities/:countryId", addPagination, locationsValidators.getCities, locations.getCities);
 router.get("/cities/id/:cityId", locationsValidators.getCity, locations.getCity);
 router.post("/cities", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createCity, locations.createCity);
 router.delete("/cities/:cityId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.deleteCity, locations.deleteCity);
 
+router.get("/municipalities", addPagination, locations.getAllMunicipalities);
 router.get("/municipalities/:cityId", addPagination, locationsValidators.getMunicipalities, locations.getMunicipalities);
 router.get("/municipalities/id/:municipalityId", userMiddleware.checkUser, locationsValidators.getMunicipality, locations.getMunicipality);
 router.post("/municipalities", userMiddleware.checkUser, locationsValidators.createMunicipality, locations.createMunicipality);
 router.delete("/municipalities/:municipalityId", userMiddleware.checkUser, locationsValidators.deleteMunicipality, locations.deleteMunicipality);
 
+router.get("/streets", addPagination, locations.getAllStreets);
 router.get("/streets/:municipalityId", addPagination, locationsValidators.getStreets, locations.getStreets);
 router.get("/streets/id/:streetId", locationsValidators.getStreet, locations.getStreet);
 router.post("/streets", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createStreet, locations.createStreet);
 router.delete("/streets/:streetId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.deleteStreet, locations.deleteStreet);
 
+router.get("/street-numbers", addPagination, locations.getAllStreetNumbers);
 router.get("/street-numbers/:streetId", addPagination, locationsValidators.getStreetNumbers, locations.getStreetNumbers);
 router.get("/street-numbers/id/:streetNumberId", locationsValidators.getStreetNumber, locations.getStreetNumber);
 router.post("/street-numbers", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, locationsValidators.createStreetNumber, locations.createStreetNumber);

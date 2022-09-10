@@ -30,6 +30,16 @@ async function getCities(countryId, filter, pagination) {
     return locationsService.getCitiesByCountryId(countryId, filter, pagination);
 }
 
+
+async function getAllCities(filter, pagination) {
+    const cities = await locationsService.getAllCities(filter, pagination);
+    for (const city of cities) {
+        city.dataValues.country = city.cities.name;
+        delete city.dataValues.cities;
+    }
+    return cities;
+}
+
 async function getCity(cityId) {
     return locationsService.getCityById(cityId);
 }
@@ -52,6 +62,15 @@ async function deleteCity(userId, cityId) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
     }
     return locationsService.deleteCity(userId, cityId);
+}
+
+async function getAllMunicipalities(filter, pagination) {
+    const municipalities = await locationsService.getAllMunicipalities(filter, pagination);
+    for (const municipality of municipalities) {
+        municipality.dataValues.city = municipality.municipalities.name;
+        delete municipality.dataValues.municipalities;
+    }
+    return municipalities;
 }
 
 async function getMunicipalities(cityId, filter, pagination) {
@@ -82,6 +101,15 @@ async function deleteMunicipality(userId, municipalityId) {
     return locationsService.deleteMunicipality(userId, municipalityId);
 }
 
+async function getAllStreets(filter, pagination) {
+    const streets = await locationsService.getAllStreets(filter, pagination);
+    for (const street of streets) {
+        street.dataValues.municipality = street.streets.name;
+        delete street.dataValues.streets;
+    }
+    return streets;
+}
+
 async function getStreets(municipalityId, filter, pagination) {
     return locationsService.getStreetsByMunicipalityId(municipalityId, filter, pagination);
 }
@@ -108,6 +136,15 @@ async function deleteStreet(userId, streetId) {
         throw new ApplicationError("Cipher cannot be deleted because it exists in an entity!", 422);
     }
     return locationsService.deleteStreet(userId, streetId);
+}
+
+async function getAllStreetNumbers(filter, pagination) {
+    const streetNumbers = await locationsService.getAllStreetNumbers(filter, pagination);
+    for (const streetNumber of streetNumbers) {
+        streetNumber.dataValues.street = streetNumber.streetNumbers.name;
+        delete streetNumber.dataValues.streetNumbers;
+    }
+    return streetNumbers;
 }
 
 async function getStreetNumbers(streetId, filter, pagination) {
@@ -159,4 +196,8 @@ module.exports = {
     getStreetNumber,
     createStreetNumber,
     deleteStreetNumber,
+    getAllCities,
+    getAllMunicipalities,
+    getAllStreets,
+    getAllStreetNumbers,
 };
