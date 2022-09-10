@@ -199,7 +199,7 @@ async function updateAdministrator(userId, role, user) {
 }
 
 async function getStartupPublicFields(userId, role, startupId) {
-    if (userId !== startupId || role !== ROLENAMES.ADMINISTARTOR) {
+    if (userId !== startupId && role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("You can only get public fields for yourself!", 401);
     }
     return usersService.getStartupPublicFields(startupId);
