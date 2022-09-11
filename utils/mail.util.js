@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const { ApplicationError } = require("../utils/errors");
+const { ApplicationError } = require("../utils/errors.util");
 
 const transporter = nodemailer.createTransport({
     host: process.env.MAILHOG_CONTAINER_NAME,

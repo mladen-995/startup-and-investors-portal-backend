@@ -2,9 +2,9 @@ const notifsService = require("../services/notifications.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
 const startupGroupService = require("../services/startup-groups.service");
-const { NOTIFADVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
-const { ApplicationError } = require("../utils/errors");
-const { sendMail } = require("../utils/mail");
+const { NOTIFADVISIBILITYTYPES, ROLENAMES } = require("../utils/consts.util");
+const { ApplicationError } = require("../utils/errors.util");
+const { sendMail } = require("../utils/mail.util");
 
 async function createNotification(userId, title, text, isEmailNotification, visibility, visibilityPairObject, transaction) {
     const notif = await notifsService.createNotification(userId, title, text, isEmailNotification, visibility, transaction);

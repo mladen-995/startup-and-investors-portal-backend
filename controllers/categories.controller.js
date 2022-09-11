@@ -1,7 +1,7 @@
 const categoriesService = require("../services/categories.service");
 const newsService = require("../services/news.service");
 const discussionsService = require("../services/discussions.service");
-const { ApplicationError } = require("../utils/errors");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function createCategory(userId, name, dateFrom, dateTo, entityName) {
     const existingCategory = await categoriesService.getCategoryWithName(name, entityName, dateFrom, dateTo);

@@ -1,11 +1,11 @@
 'use strict';
 const db = require("../models");
-const rolesService = require("../services/roles.service")
-const { ROLENAMES } = require("../utils/consts")
+const rolesService = require("../services/roles.service");
+const { ROLENAMES } = require("../utils/consts.util");
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    const adminRole = await rolesService.getRoleByName(ROLENAMES.ADMINISTARTOR)
+    const adminRole = await rolesService.getRoleByName(ROLENAMES.ADMINISTARTOR);
     await db.Users.create({
       username: "administrator",
       password: "administrator1",

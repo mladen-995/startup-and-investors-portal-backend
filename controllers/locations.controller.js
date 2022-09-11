@@ -1,6 +1,6 @@
 const locationsService = require("../services/locations.service");
 const usersService = require("../services/users.service");
-const { ApplicationError } = require("../utils/errors");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function getCountries(filter, pagination) {
     return locationsService.getAllCountries(filter, pagination);

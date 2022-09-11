@@ -1,6 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const { DISCUSSIONVISIBILITYTYPES } = require("../utils/consts");
+const { DISCUSSIONVISIBILITYTYPES } = require("../utils/consts.util");
 
 async function createDiscussion(userId, title, text, visibility, categoryId = null, transaction = null) {
     return db.Discussions.create({

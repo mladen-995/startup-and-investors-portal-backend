@@ -1,8 +1,8 @@
 const adsService = require("../services/ads.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
-const { NOTIFADVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
-const { ApplicationError } = require("../utils/errors");
+const { NOTIFADVISIBILITYTYPES, ROLENAMES } = require("../utils/consts.util");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function createAd(userId, title, text, expiryDate, visibility, visibilityPairObject, transaction) {
     const ad = await adsService.createAd(userId, title, text, expiryDate, visibility, transaction);

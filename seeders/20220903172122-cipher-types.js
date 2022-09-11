@@ -1,6 +1,6 @@
 'use strict';
 const db = require("../models");
-const { CYPHERTYPES } = require("../utils/consts");
+const { CYPHERTYPES } = require("../utils/consts.util");
 
 module.exports = {
   async up (queryInterface, Sequelize) {

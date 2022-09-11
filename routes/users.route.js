@@ -2,7 +2,7 @@ const lodash = require("lodash");
 const usersController = require("../controllers/users.controller");
 const { validationResult } = require("express-validator");
 const db = require("../models");
-const { STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts");
+const { STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts.util");
 
 async function login(req, res, next) {
     try {

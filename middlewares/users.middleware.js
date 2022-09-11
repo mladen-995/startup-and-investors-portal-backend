@@ -1,7 +1,7 @@
 const usersService = require("../services/users.service");
 const rolesService = require("../services/roles.service");
-const { ROLENAMES } = require("../utils/consts");
-const { ApplicationError } = require("../utils/errors");
+const { ROLENAMES } = require("../utils/consts.util");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function checkUser(req, res, next) {    
     try {

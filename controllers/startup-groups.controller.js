@@ -1,5 +1,5 @@
 const startupGroupsService = require("../services/startup-groups.service");
-const { ApplicationError } = require("../utils/errors");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function createStartupGroup(userId, name, description, startupIds, transaction) {
     const existingStartupGroup = await startupGroupsService.getStartupGroupByName(name);

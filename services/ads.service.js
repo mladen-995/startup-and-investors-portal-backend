@@ -1,6 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const { NOTIFADVISIBILITYTYPES } = require("../utils/consts");
+const { NOTIFADVISIBILITYTYPES } = require("../utils/consts.util");
 const startupGroupsService = require("../services/startup-groups.service");
 const usersService = require("../services/users.service");
 

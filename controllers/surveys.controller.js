@@ -1,10 +1,10 @@
 const surveysService = require("../services/surveys.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
-const utilHelper = require("../utils/helper");
+const utilHelper = require("../utils/helper.util");
 const db = require("../models");
-const { ApplicationError } = require("../utils/errors");
-const { ROLENAMES } = require("../utils/consts");
+const { ApplicationError } = require("../utils/errors.util");
+const { ROLENAMES } = require("../utils/consts.util");
 
 async function createSurvey(userId, title, public, questions, transaction) {
     const survey = await surveysService.createSurvey(userId, title, public, transaction);

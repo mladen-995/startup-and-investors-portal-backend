@@ -2,8 +2,8 @@ const jwt = require("jsonwebtoken");
 const db = require("../models");
 const { Op } = require("sequelize");
 const rolesService = require("./roles.service");
-const { ApplicationError } = require("../utils/errors");
-const { ROLENAMES } = require("../utils/consts");
+const { ApplicationError } = require("../utils/errors.util");
+const { ROLENAMES } = require("../utils/consts.util");
 
 async function getUserByEmail(email) {
     return db.Users.findOne({

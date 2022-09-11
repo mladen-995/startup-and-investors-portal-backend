@@ -7,10 +7,10 @@ const newsService = require("../services/news.service");
 const discussionsService = require("../services/discussions.service");
 const lodash = require("lodash");
 const crypto = require("crypto");
-const { ROLENAMES, STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts");
-const { ApplicationError } = require("../utils/errors");
-const { sendMail } = require("../utils/mail");
-const emailTemplates = require("../utils/email-templates");
+const { ROLENAMES, STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts.util");
+const { ApplicationError } = require("../utils/errors.util");
+const { sendMail } = require("../utils/mail.util");
+const emailTemplates = require("../utils/email-templates.util");
 
 async function login(username, password) {
     const databaseUser = await usersService.getUserByUsername(username);
@@ -23,22 +23,12 @@ async function login(username, password) {
     }
     if (databaseUser.roleId === 2) {
         let startupNotLoggedInAYear;
-        let userDateForComparison;
-        if (databaseUser.lastLoginAt && databaseUser.approvedDate) {
-            userDateForComparison = new Date(databaseUser.lastLoginAt).getTime() > new Date(databaseUser.approvedDate).getTime() ?
-                databaseUser.lastLoginAt : databaseUser.approvedDate;
-        } else {
-            userDateForComparison = databaseUser.lastLoginAt ? databaseUser.lastLoginAt : databaseUser.approvedDate;
-        }
-        if (userDateForComparison) {
-            startupNotLoggedInAYear = new Date() - new Date(userDateForComparison) > (1000 * 3600 * 24*365);
-        }
-        await usersService.findOrCreateUserCreationRequest(databaseUser.id);
+        if (databaseUser.lastLoginAt) {
+        startupNotLoggedInAYear = new Date() - new Date(databaseUser.lastLoginAt) > (1000 * 3600 * 24*365);
         if (startupNotLoggedInAYear) {
             throw new ApplicationError("Startup has not logged in for over a year so the account is disabled!", 401);
         }
     } else if (databaseUser.roleId === 3 && !databaseUser.approved) {
-        await usersService.findOrCreateUserCreationRequest(databaseUser.id);
         throw new ApplicationError("User is not approved! A request has been sent to the administrator.", 401);
     }
     const token = usersService.createUserJWTToken(databaseUser.id, databaseUser.username);

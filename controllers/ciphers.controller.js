@@ -1,7 +1,7 @@
 const ciphersService = require("../services/ciphers.service");
 const usersService = require("../services/users.service");
-const { ROLENAMES } = require("../utils/consts");
-const { ApplicationError } = require("../utils/errors");
+const { ROLENAMES } = require("../utils/consts.util");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function getCiphers(cipherTypeName, filter, pagination) {
     const cipherType = await ciphersService.getCipherTypeByName(cipherTypeName);

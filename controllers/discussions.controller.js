@@ -2,8 +2,8 @@ const discussionsService = require("../services/discussions.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
 const categoriesService = require("../services/categories.service");
-const { DISCUSSIONVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../utils/consts");
-const { ApplicationError } = require("../utils/errors");
+const { DISCUSSIONVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../utils/consts.util");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function createDiscussion(userId, title, text, categoryId, visibility, visibilityPairObject, transaction) {
     if (categoryId) {

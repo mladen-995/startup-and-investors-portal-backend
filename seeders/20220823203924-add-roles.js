@@ -1,6 +1,6 @@
 'use strict';
 const db = require("../models");
-const { ROLENAMES } = require("../utils/consts");
+const { ROLENAMES } = require("../utils/consts.util");
 
 module.exports = {
   async up (queryInterface, Sequelize) {

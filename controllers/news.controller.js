@@ -2,8 +2,8 @@ const newsService = require("../services/news.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
 const categoriesService = require("../services/categories.service");
-const { NEWSVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../utils/consts");
-const { ApplicationError } = require("../utils/errors");
+const { NEWSVISIBILITYTYPES, ROLENAMES, CATEGORYENTITITES } = require("../utils/consts.util");
+const { ApplicationError } = require("../utils/errors.util");
 
 async function createNews(userId, title, text, categoryId, visibility, visibilityPairObject, transaction) {
     if (categoryId) {
