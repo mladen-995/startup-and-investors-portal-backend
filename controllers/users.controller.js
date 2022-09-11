@@ -24,9 +24,10 @@ async function login(username, password) {
     if (databaseUser.roleId === 2) {
         let startupNotLoggedInAYear;
         if (databaseUser.lastLoginAt) {
-        startupNotLoggedInAYear = new Date() - new Date(databaseUser.lastLoginAt) > (1000 * 3600 * 24*365);
-        if (startupNotLoggedInAYear) {
-            throw new ApplicationError("Startup has not logged in for over a year so the account is disabled!", 401);
+            startupNotLoggedInAYear = new Date() - new Date(databaseUser.lastLoginAt) > (1000 * 3600 * 24*365);
+            if (startupNotLoggedInAYear) {
+                throw new ApplicationError("Startup has not logged in for over a year so the account is disabled!", 401);
+            }
         }
     } else if (databaseUser.roleId === 3 && !databaseUser.approved) {
         throw new ApplicationError("User is not approved! A request has been sent to the administrator.", 401);
