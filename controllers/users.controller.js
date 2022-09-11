@@ -1,11 +1,16 @@
 const usersService = require("../services/users.service");
 const rolesService = require("../services/roles.service");
+const adsService = require("../services/ads.service");
+const notificationsService = require("../services/notifications.service");
+const surveysService = require("../services/surveys.service");
+const newsService = require("../services/news.service");
+const discussionsService = require("../services/discussions.service");
 const lodash = require("lodash");
 const crypto = require("crypto");
 const { ROLENAMES, STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
-const db = require("../models");
-const { sendMail } = require("../utils/mail")
+const { sendMail } = require("../utils/mail");
+const emailTemplates = require("../utils/email-templates");
 
 async function login(username, password) {
     const databaseUser = await usersService.getUserByUsername(username);
@@ -60,12 +65,15 @@ async function changePassword(userId, oldPassword, newPassword) {
 
 async function requestPasswordReset(username) {
     const databaseUser = await usersService.getUserByUsername(username);
+    if (!databaseUser) {
+        throw new ApplicationError("User with email doesn't exist!", 422);
+    }
     const token = crypto.randomBytes(32).toString("hex");
-    await usersService.createResetPasswordToken(databaseUser.id, token);    
-    return process.env.CLIENT_URL + '/set-password?token=' + token;
-
-    // const bodyPlain = "You have requested a password reset. To reset the password please go to this link " + process.env.CLIENT_URL + '/set-password?token=' + token;
-    // await sendMail("Password reset", databaseUser.email, bodyHTML, bodyPlain);
+    await usersService.createResetPasswordToken(databaseUser.id, token);
+    const bodyPlain = "You have requested a password reset. To reset the password please go to this link " + process.env.CLIENT_URL + '/set-password?token=' + token;
+    let bodyHTML = emailTemplates.getResetPasswordEmailTemplate();
+    bodyHTML = bodyHTML.split("linkPlaceholder").join(process.env.CLIENT_URL + '/set-password?token=' + token);
+    await sendMail("Password reset", databaseUser.email, bodyHTML, bodyPlain);
 }
 
 async function resetPassword(token, newPassword) {
@@ -97,6 +105,8 @@ async function registerInvestor(user, userProfile, transaction = null) {
     userProfile.userId = databaseUser.id;
     await usersService.findOrCreateUserCreationRequest(databaseUser.id, transaction);
     await usersService.createInvestorUserProfile(userProfile, transaction);
+    const mailText = "Your registration application has been created. We will notify you once the application is reviewed.";
+    await sendMail("Registration application created", user.email, null, mailText);
 }
 
 async function registerStartup(user, userProfile, transaction = null) {
@@ -110,12 +120,13 @@ async function registerStartup(user, userProfile, transaction = null) {
     }
     const startupRole = await rolesService.getRoleByName(ROLENAMES.STARTUP);
     user.roleId = startupRole.id;
-    // @TODO disable user until an administrator approves it
     const databaseUser = await usersService.createUser(user, transaction);
     userProfile.userId = databaseUser.id;
     await usersService.createStartupUserProfile(userProfile, transaction);
     // await usersService.findOrCreateUserCreationRequest(databaseUser.id, transaction);
     await usersService.createStartupUserPublicFields(databaseUser.id, transaction);
+    const mailText = "You have successfuly registered to the Startups and Investors portal.";
+    await sendMail("Registration successful", user.email, null, mailText);
 }
 
 async function getInvestors(role, userFilter, profileFilter, pagination) {
@@ -289,11 +300,18 @@ async function getUserCreationRequests(userId) {
 async function approveUserCreationRequest(requestId, t) {
     const request = await usersService.getUserCreationRequestById(requestId);
     await usersService.approveUser(request.userId, t);
-    return usersService.deleteUserCreationRequest(requestId, t);
+    await usersService.deleteUserCreationRequest(requestId, t);
+    const user = await usersService.getUserById(request.userId);
+    const mailText = "Your registration application has been approved.";
+    await sendMail("Registration application approved", user.email, null, mailText);
 }
 
 async function rejectUserCreationRequest(requestId, t) {
-    return usersService.deleteUserCreationRequest(requestId, t);
+    await usersService.deleteUserCreationRequest(requestId, t);
+    const request = await usersService.getUserCreationRequestById(requestId);
+    const user = await usersService.getUserById(request.userId);
+    const mailText = "Your registration application has been rejected.";
+    await sendMail("Registration application rejected", user.email, null, mailText);
 }
 
 async function getInvestorSearchRequests() {
@@ -307,11 +325,18 @@ async function getInvestorSearchRequests() {
 async function approveInvestorSearchRequest(requestId, t) {
     const request = await usersService.getInvestorSearchRequestById(requestId);
     await usersService.approveInvestorSearchRequest(request.userId, t);
-    return usersService.deleteInvestorSearchRequest(requestId, t);
+    await usersService.deleteInvestorSearchRequest(requestId, t);
+    const user = await usersService.getUserById(request.userId);
+    const mailText = "Your startups search request has been approved.";
+    await sendMail("Startups search request approved", user.email, null, mailText);
 }
 
 async function rejectInvestorSearchRequest(requestId, t) {
-    return usersService.deleteInvestorSearchRequest(requestId, t);
+    await usersService.deleteInvestorSearchRequest(requestId, t);
+    const request = await usersService.getInvestorSearchRequestById(requestId);
+    const user = await usersService.getUserById(request.userId);
+    const mailText = "Your startups search request has been rejected.";
+    await sendMail("Startups search request rejected", user.email, null, mailText);
 }
 
 async function createInvestorSearchRequest(investorId) {
@@ -343,6 +368,23 @@ async function getInvestorCanSearchStartups(userId) {
     return {
         canSearchStartups,
         requestExists,
+    };
+}
+
+async function getStatistics(dateFrom, dateTo) {
+    const usersCount = await usersService.getUsersCreatedInTimePeriodCount(dateFrom, dateTo);
+    const adsCount = await adsService.getAdsCreatedInTimePeriodCount(dateFrom, dateTo);
+    const notificationsCount = await notificationsService.getNotificationsCreatedInTimePeriodCount(dateFrom, dateTo);
+    const discussionsCount = await discussionsService.getDiscussionsCreatedInTimePeriodCount(dateFrom, dateTo);
+    const surveysCount = await surveysService.getSurveysCreatedInTimePeriodCount(dateFrom, dateTo);
+    const newsCount = await newsService.getNewsCreatedInTimePeriodCount(dateFrom, dateTo);
+    return {
+        usersCount,
+        adsCount,
+        notificationsCount,
+        discussionsCount,
+        surveysCount,
+        newsCount,
     };
 }
 
@@ -440,4 +482,5 @@ module.exports = {
     getInvestorCanSearchStartups,
     rejectInvestorSearchRequest,
     rejectUserCreationRequest,
+    getStatistics,
 };

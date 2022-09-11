@@ -158,6 +158,16 @@ async function getNotificationsForStartup(startupId, startupBusinessTypeId, filt
     });
 }
 
+async function getNotificationsCreatedInTimePeriodCount(dateFrom, dateTo){
+    return db.Notifications.count({
+        where: {
+            createdAt: {
+                [Op.between]: [dateFrom, dateTo],
+            },
+        },
+    });
+}
+
 module.exports = {
     createNotification,
     createNotificationVisibilityPair,
@@ -170,4 +180,5 @@ module.exports = {
     getNotificationsForStartup,
     declineNotificationDeleteRequest,
     archiveNotification,
+    getNotificationsCreatedInTimePeriodCount,
 };

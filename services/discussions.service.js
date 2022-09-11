@@ -185,6 +185,16 @@ async function getDiscussionsForInvestor(investorId, filter, pagination) {
     }); 
 }
 
+async function getDiscussionsCreatedInTimePeriodCount(dateFrom, dateTo){
+    return db.Discussions.count({
+        where: {
+            createdAt: {
+                [Op.between]: [dateFrom, dateTo],
+            },
+        },
+    });
+}
+
 module.exports = {
     archiveDiscussion,
     createDiscussion,
@@ -200,4 +210,5 @@ module.exports = {
     getDiscussionReplies,
     getDiscussionByCategoryId,
     declineDiscussionDeleteRequest,
+    getDiscussionsCreatedInTimePeriodCount,
 };

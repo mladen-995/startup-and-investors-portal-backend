@@ -174,6 +174,16 @@ async function getAllNews(filter, pagination) {
     });
 }
 
+async function getNewsCreatedInTimePeriodCount(dateFrom, dateTo){
+    return db.News.count({
+        where: {
+            createdAt: {
+                [Op.between]: [dateFrom, dateTo],
+            },
+        },
+    });
+}
+
 module.exports = {
     createNews,
     createNewsVisibilityPair,
@@ -187,4 +197,5 @@ module.exports = {
     getAllNews,
     getNewsByCategoryId,
     declineNewsDeleteRequest,
+    getNewsCreatedInTimePeriodCount,
 };

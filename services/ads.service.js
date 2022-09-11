@@ -146,6 +146,16 @@ async function getAdsForStartup(startupId, startupBusinessTypeId, filter, pagina
     });
 }
 
+async function getAdsCreatedInTimePeriodCount(dateFrom, dateTo){
+    return db.Ads.count({
+        where: {
+            createdAt: {
+                [Op.between]: [dateFrom, dateTo],
+            },
+        },
+    });
+}
+
 module.exports = {
     createAd,
     createAdVisibilityPair,
@@ -157,4 +167,5 @@ module.exports = {
     getAdsForGuest,
     getAdsForStartup,
     declineAdDeleteRequest,
+    getAdsCreatedInTimePeriodCount,
 };

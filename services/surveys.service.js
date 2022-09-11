@@ -146,6 +146,16 @@ async function getAllSurveys(filter, pagination) {
     }); 
 }
 
+async function getSurveysCreatedInTimePeriodCount(dateFrom, dateTo){
+    return db.Surveys.count({
+        where: {
+            createdAt: {
+                [Op.between]: [dateFrom, dateTo],
+            },
+        },
+    });
+}
+
 module.exports = {
     createSurvey,
     createSurveyQuestion,
@@ -162,4 +172,5 @@ module.exports = {
     getSurveyById,
     getUserSurveyAnswersByUserSurveyId,
     getUserSurveysBySurveyId,
+    getSurveysCreatedInTimePeriodCount,
 };

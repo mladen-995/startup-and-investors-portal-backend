@@ -479,6 +479,30 @@ async function getInvestorCanSearchStartups(req, res, next) {
     }
 }
 
+async function getStatistics(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errorCode: 422, errors: errors.array() });
+        }
+        const { dateFrom, dateTo } = req.body;
+        const { usersCount, adsCount, notificationsCount, discussionsCount, surveysCount, newsCount } = await usersController.getStatistics(dateFrom, dateTo);
+        res.status(200).json({
+            success: true,
+            data: {
+                usersCount,
+                adsCount,
+                notificationsCount,
+                discussionsCount,
+                surveysCount,
+                newsCount,
+            },
+        });
+    } catch(err) {
+        next(err);
+    }
+}
+
 function getUserFromRequestObject(obj, includePassword = false) {
     const userFields = ["username", "email", "firstName", "lastName", "middleName"];
     if (includePassword) {
@@ -535,4 +559,5 @@ module.exports = {
     getInvestorCanSearchStartups,
     rejectUserCreationRequest,
     rejectInvestorSearchRequest,
+    getStatistics,
 };

@@ -152,6 +152,8 @@ router.get("/ciphers/id/:cipherId", ciphersValidators.getCipher, ciphers.getCiph
 router.post("/ciphers", userMiddleware.checkUser, ciphersValidators.createCipher, ciphers.createCipher);
 router.delete("/ciphers/:cipherId", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, ciphersValidators.deleteCipher, ciphers.deleteCipher);
 
+router.get("/statistics", userMiddleware.checkUser, userMiddleware.checkIfAdministrator, userValidators.getStatistics, users.getStatistics);
+
 router.post("/login", users.login);
 
 router.use(errorHandleUtil.handleInternalApiError);

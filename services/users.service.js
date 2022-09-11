@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models");
+const { Op } = require("sequelize");
 const rolesService = require("./roles.service");
 const { ApplicationError } = require("../utils/errors");
 const { ROLENAMES } = require("../utils/consts");
@@ -485,14 +486,14 @@ async function updateStartupPublicFields(startupId, startupPublicFields) {
         );
 }
 
-function findOrCreateUserCreationRequest(userId, transaction = null) {
+async function findOrCreateUserCreationRequest(userId, transaction = null) {
     return db.UserCreationRequests.findOrCreate({
         where: { userId },
         transaction: transaction,
     });
 }
 
-function getUserCreationRequests() {
+async function getUserCreationRequests() {
     return db.UserCreationRequests.findAll({
         include: {
             model: db.Users,
@@ -527,21 +528,21 @@ async function deleteUserCreationRequest(id, transaction){
     });
 }
 
-function findOrCreateInvestorSearchRequest(userId, transaction = null) {
+async function findOrCreateInvestorSearchRequest(userId, transaction = null) {
     return db.InvestorSearchStartupRequest.findOrCreate({
         where: { userId },
         transaction: transaction,
     });
 }
 
-function getInvestorSearchRequestByUserId(userId) {
+async function getInvestorSearchRequestByUserId(userId) {
     return db.InvestorSearchStartupRequest.findOne({
         where: { userId },
     });
 }
 
 
-function getInvestorSearchRequests() {
+async function getInvestorSearchRequests() {
     return db.InvestorSearchStartupRequest.findAll();
 }
 
@@ -595,6 +596,68 @@ async function getInvestorMutePairs(userId){
         },
     });
 }
+
+async function getInvestorMutePairsForUserAndInvestor(userId, investorId){
+    return db.InvestorMutePairs.findOne({
+        where: {
+            userId,
+            investorId,
+        },
+    });
+}
+
+async function getUsersCreatedInTimePeriodCount(dateFrom, dateTo){
+    return db.Users.count({
+        where: {
+            createdAt: {
+                [Op.between]: [dateFrom, dateTo],
+            },
+        },
+    });
+}
+
+async function getAllStartupsByIds(ids) {
+    return db.StartupUserProfiles.findAll({
+        where: {
+            userId: ids,
+        },
+        include: {
+            model: db.Users,
+            as: "startupProfile",
+        },
+    });
+}
+
+async function getAllStartups() {
+    return db.StartupUserProfiles.findAll({
+        include: {
+            model: db.Users,
+            as: "startupProfile",
+        },
+    });
+}
+
+async function getAllInvestors() {
+    return db.InvestorUserProfiles.findAll({
+        include: {
+            model: db.Users,
+            as: "investorProfile",
+        },
+    });
+}
+
+async function getStartupsByBusinessTypeId(businessTypeId) {
+    return db.StartupUserProfiles.findAll({
+        where: {
+            businessTypeId: businessTypeId,
+        },
+        include: {
+            model: db.Users,
+            as: "startupProfile",
+        },
+    });
+}
+
 
 function createUserJWTToken(id, username) {
     try {
@@ -671,4 +734,10 @@ module.exports = {
     createResetPasswordToken,
     getTokenByToken,
     getInvestorSearchRequestByUserId,
+    getUsersCreatedInTimePeriodCount,
+    getAllStartups,
+    getAllInvestors,
+    getStartupsByBusinessTypeId,
+    getAllStartupsByIds,
+    getInvestorMutePairsForUserAndInvestor,
 };

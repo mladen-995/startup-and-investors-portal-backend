@@ -1,4 +1,5 @@
 const { body, param } = require("express-validator");
+const { ApplicationError } = require("../errors");
 
 module.exports = {
     registerInvestor: [
@@ -105,5 +106,17 @@ module.exports = {
         body("newPassword")
         .notEmpty()
         .withMessage("Please make sure you filled out all the fields."),
+    ],
+    getStatistics: [
+        body(["dateFrom", "dateTo" ])
+            .notEmpty()
+            .withMessage("Please make sure you filled out all the fields."),
+        
+        function(req, res, next) {
+            if (new Date(req.body.dateFrom).getTime() > new Date(req.body.dateTo).getTime()) {
+                throw new ApplicationError("dateFrom cannot be after dateTo!", 422);
+            }
+            return next();
+        }
     ]
 };

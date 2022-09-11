@@ -1,8 +1,10 @@
 const notifsService = require("../services/notifications.service");
 const rolesService = require("../services/roles.service");
 const usersService = require("../services/users.service");
+const startupGroupService = require("../services/startup-groups.service");
 const { NOTIFADVISIBILITYTYPES, ROLENAMES } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
+const { sendMail } = require("../utils/mail");
 
 async function createNotification(userId, title, text, isEmailNotification, visibility, visibilityPairObject, transaction) {
     const notif = await notifsService.createNotification(userId, title, text, isEmailNotification, visibility, transaction);
@@ -17,7 +19,76 @@ async function createNotification(userId, title, text, isEmailNotification, visi
             }
         }
     }
-    // send email! ukoliko nije mutiran
+    if(notif.isEmailNotification) {
+        let userEmailsAndIds = [];
+        switch (notif.visibility) {
+            case NOTIFADVISIBILITYTYPES.BUSINESSTYPE.name: {
+                const users = await usersService.getStartupsByBusinessTypeId(visibilityPairObject);
+                for (const user of users) {
+                    userEmailsAndIds.push({
+                        email: user.startupProfile.email,
+                        id:  user.startupProfile.id,
+                    });
+                }
+                break;
+            }
+            case NOTIFADVISIBILITYTYPES.STARTUPSONLY.name: {
+                const users = await usersService.getAllStartups();
+                for (const user of users) {
+                    userEmailsAndIds.push({
+                        email: user.startupProfile.email,
+                        id:  user.startupProfile.id,
+                    });
+                }
+                break;
+            }
+            case NOTIFADVISIBILITYTYPES.STARTUPGROUP.name: {
+                const startupGroupPairs = await startupGroupService.getStartupGroupPairsByStartupId(visibilityPairObject);
+                for (const startupGroupPair of startupGroupPairs) {
+                    const user = await usersService.getUserById(startupGroupPair.startupId);
+                    userEmailsAndIds.push({
+                        email: user.email,
+                        id:  user.id,
+                    });
+                }
+                break;
+            }
+            case NOTIFADVISIBILITYTYPES.STRATUPIDS.name: {
+                const users = await usersService.getAllStartupsByIds(visibilityPairObject);
+                for (const user of users) {
+                    userEmailsAndIds.push({
+                        email: user.startupProfile.email,
+                        id:  user.startupProfile.id,
+                    });
+                }
+                break;
+            }
+            case NOTIFADVISIBILITYTYPES.ALL.name: {
+                const startups = await usersService.getAllStartups();
+                for (const user of startups) {
+                    userEmailsAndIds.push({
+                        email: user.startupProfile.email,
+                        id:  user.startupProfile.id,
+                    });
+                }
+                const investors = await usersService.getAllInvestors();
+                for (const user of investors) {
+                    userEmailsAndIds.push({
+                        email: user.investorProfile.email,
+                        id:  user.investorProfile.id,
+                    });
+                }
+                break;
+            }
+        }
+
+        for (const userEmailAndId of userEmailsAndIds) {
+            const isUserMuted = await usersService.getInvestorMutePairsForUserAndInvestor(userEmailAndId.id, userId);
+            if (!isUserMuted) {
+                await sendMail(title, userEmailAndId.email, null, text);
+            }
+        }
+    }
 }
 
 async function notificationDeleteRequest(userId, notifId) {
