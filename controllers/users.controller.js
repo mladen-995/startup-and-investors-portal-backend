@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const { ROLENAMES, STARTUPPOENTIALYPRIVATEFIELDS } = require("../utils/consts");
 const { ApplicationError } = require("../utils/errors");
 const db = require("../models");
+const { sendMail } = require("../utils/mail")
 
 async function login(username, password) {
     const databaseUser = await usersService.getUserByUsername(username);
@@ -60,9 +61,11 @@ async function changePassword(userId, oldPassword, newPassword) {
 async function requestPasswordReset(username) {
     const databaseUser = await usersService.getUserByUsername(username);
     const token = crypto.randomBytes(32).toString("hex");
-    await usersService.createResetPasswordToken(databaseUser.id, token);
+    await usersService.createResetPasswordToken(databaseUser.id, token);    
     return process.env.CLIENT_URL + '/set-password?token=' + token;
-    // await send email
+
+    // const bodyPlain = "You have requested a password reset. To reset the password please go to this link " + process.env.CLIENT_URL + '/set-password?token=' + token;
+    // await sendMail("Password reset", databaseUser.email, bodyHTML, bodyPlain);
 }
 
 async function resetPassword(token, newPassword) {
@@ -176,7 +179,7 @@ async function getStartup(userId, role, startupId) {
 }
 
 async function updateInvestor(userId, role, user, userProfile, transaction = null) {
-    if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
+    if (userId !== user.id && role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("Cannot update user!", 401);
     }
     const existingUser = await usersService.getUserById(userId);
@@ -197,7 +200,7 @@ async function updateInvestor(userId, role, user, userProfile, transaction = nul
 }
 
 async function updateStartup(userId, role, user, userProfile, transaction = null) {
-    if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
+    if (userId !== user.id && role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("Cannot update user!", 401);
     }
     const existingUser = await usersService.getUserById(userId);
@@ -218,7 +221,7 @@ async function updateStartup(userId, role, user, userProfile, transaction = null
 }
 
 async function updateAdministrator(userId, role, user) {
-    if (userId !== user.id || role !== ROLENAMES.ADMINISTARTOR) {
+    if (userId !== user.id && role !== ROLENAMES.ADMINISTARTOR) {
         throw new ApplicationError("Cannot update user!", 401);
     }
     const existingUser = await usersService.getUserById(userId);
