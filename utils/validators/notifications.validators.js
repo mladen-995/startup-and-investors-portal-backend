@@ -1,6 +1,6 @@
 const { body, param } = require("express-validator");
-const { NOTIFADVISIBILITYTYPES } = require("../consts");
-const { ApplicationError } = require("../errors");
+const { NOTIFADVISIBILITYTYPES } = require("../consts.util");
+const { ApplicationError } = require("../errors.util");
 
 module.exports = {
     createNotif: [

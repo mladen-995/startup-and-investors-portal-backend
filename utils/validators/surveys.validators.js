@@ -1,6 +1,6 @@
 const { body, param } = require("express-validator");
-const { ApplicationError } = require("../errors");
-const { checkIfStringIsUUID4 } = require("../helper");
+const { ApplicationError } = require("../errors.util");
+const { checkIfStringIsUUID4 } = require("../helper.util");
 
 module.exports = {
     createSurvey: [

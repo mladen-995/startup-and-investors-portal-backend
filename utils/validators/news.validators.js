@@ -1,6 +1,6 @@
 const { body, param } = require("express-validator");
-const { NEWSVISIBILITYTYPES } = require("../consts");
-const { ApplicationError } = require("../errors");
+const { NEWSVISIBILITYTYPES } = require("../consts.util");
+const { ApplicationError } = require("../errors.util");
 
 module.exports = {
     createNews: [

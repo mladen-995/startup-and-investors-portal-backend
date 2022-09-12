@@ -1,6 +1,6 @@
 const { body, param, query } = require("express-validator");
-const { CATEGORYENTITITES } = require("../consts");
-const { ApplicationError } = require("../errors");
+const { CATEGORYENTITITES } = require("../consts.util");
+const { ApplicationError } = require("../errors.util");
 
 module.exports = {
     createCategory: [

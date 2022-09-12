@@ -1,6 +1,6 @@
 const { body, param } = require("express-validator");
-const { DISCUSSIONVISIBILITYTYPES } = require("../consts");
-const { ApplicationError } = require("../errors");
+const { DISCUSSIONVISIBILITYTYPES } = require("../consts.util");
+const { ApplicationError } = require("../errors.util");
 
 module.exports = {
     createDiscussion: [

@@ -1,5 +1,5 @@
 const { body, param } = require("express-validator");
-const { ApplicationError } = require("../errors");
+const { ApplicationError } = require("../errors.util");
 
 module.exports = {
     registerInvestor: [

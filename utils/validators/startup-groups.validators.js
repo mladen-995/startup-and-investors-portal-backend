@@ -1,6 +1,6 @@
 const { body, param } = require("express-validator");
-const { checkIfStringIsUUID4 } = require("../helper");
-const { ApplicationError } = require("../errors");
+const { checkIfStringIsUUID4 } = require("../helper.util");
+const { ApplicationError } = require("../errors.util");
 
 module.exports = {
     createStartupGroup: [
